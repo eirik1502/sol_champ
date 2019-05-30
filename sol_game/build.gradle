@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+	id 'application'
+
+}
+
+dependencies {
+    compile project(':sol_engine')
+}
+
+mainClassName = 'game.Main'

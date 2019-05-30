@@ -1,0 +1,48 @@
+{
+  "compSysPackages": [
+    "sol_engine",
+    "sol_engine.loaders"
+  ],
+  "componentSystems": [
+    "TestSys1",
+    "TestSys2"
+  ],
+  "entityClasses": [
+    {
+      "className": "character",
+      "components": [
+        {"type": "TestPosComp"}
+      ]
+    },
+    {
+      "className": "frank",
+      "extendsClasses": ["character"],
+      "components": [
+        {"type": "TestPosComp", "values": {"x": 100, "y": 100}}
+      ]
+    },
+    {
+      "className": "bill",
+      "extendsClasses": ["frank", "character"],
+      "components": [
+        {"type": "TestTextComp", "values": {"text": "hello there"}},
+        {"type": "TestPosComp"}
+      ]
+    }
+  ],
+
+  "initialEntities": [
+    {
+      "useClass": "frank",
+      "name": "Frank1",
+      "overrideComponents": []
+    },
+    {
+      "useClass": "frank",
+      "name": "Frank2",
+      "overrideComponents": [
+        {"type": "TestPosComp", "values": {"x":  300}}
+      ]
+    }
+  ]
+}

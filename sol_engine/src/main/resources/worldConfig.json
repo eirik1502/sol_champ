@@ -1,0 +1,37 @@
+{
+  "componentSystems": [
+    "SimpleMovementSys"
+  ],
+  "entityClasses": [
+    {
+      "name": "character",
+      "components": {
+        "PositionComp": {}
+      }
+    },
+    {
+      "name": "frank",
+      "components": {
+        "PositionComp": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    }
+  ],
+  "initialEntities": [
+    {
+      "name": "Frank",
+      "useClass": "frank"
+    },
+    {
+      "name": "Frank",
+      "useClass": "frank",
+      "overrideComponents": {
+        "PositionComp": {
+          "x": 300
+        }
+      }
+    }
+  ]
+}
