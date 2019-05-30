@@ -1,0 +1,24 @@
+Possible names for this project:
+
+sol_master
+	+ this project is directed towards our masters thesis, its a new era.
+	- to similar to git master etc.
+sol_champ
+	+ master synonym
+	+ a cool name
+sol_ace
+	+ master synonym
+sol_chief
+	+ master synonym
+sol_crack
+	+ is also said to be a synonnym of master: https://www.thesaurus.com/browse/crack
+	+ funny name
+sol_crackerjack
+sol_elite
+sol_pro
+sol_adept
+	+ a synonym of "accomplished", as we accomplished sol for our master
+sol_gottem
+	+ like sol_adept
+sol_ntnu
+	- boring
