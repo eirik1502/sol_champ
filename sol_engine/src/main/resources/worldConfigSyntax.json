@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "presence": "must",
+  "children": {
+    "componentSystems": {
+      "type": "array",
+      "presence": "should",
+      "children": {
+        "type": "string"
+      }
+    },
+    "entityClasses": {
+      "type": "array",
+      "presence": "should",
+      "children": {
+        "type": "object",
+        "children": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "character": {
+        "components": {
+          "PositionComp": {}
+        }
+      },
+      "frank": {
+        "extendsClass": [],
+        "components": {
+          "PositionComp": {
+            "x": 100,
+            "y": 100
+          }
+        }
+      }
+    },
+    "initialEntities": [
+      {
+        "useClass": "frank",
+        "name": "Frank"
+      },
+      {
+        "useClass": "frank",
+        "name": "Frank",
+        "overrideComponents": {
+          "PositionComp": {
+            "x": 300
+          }
+        }
+      }
+    ]
+  }
+}

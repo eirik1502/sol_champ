@@ -110,7 +110,7 @@ public class WorldLoader {
 
     }
 
-    private List<Class<? extends ComponentSystem>> loadCompoentSystems(JsonNode systemsNode) {
+    private List<Class<? extends SystemBase>> loadCompoentSystems(JsonNode systemsNode) {
         return streamArrayChildNodesAsText(systemsNode)
                 .map(sysName -> {
                     // check that the system is an existing class and retrieve it
@@ -122,10 +122,10 @@ public class WorldLoader {
 
                     // check that the given system is a component system and cast it
                     try {
-                        Class<? extends ComponentSystem> sysClass = sysClassGeneric.asSubclass(ComponentSystem.class);
+                        Class<? extends SystemBase> sysClass = sysClassGeneric.asSubclass(SystemBase.class);
                         return sysClass;
                     } catch (ClassCastException e) {
-                        logLoadError(ErrorType.ERROR, "component system was not a subclass of ComponentSystem: " + sysName);
+                        logLoadError(ErrorType.ERROR, "component system was not a subclass of SystemBase: " + sysName);
                         return null;
                     }
                 })

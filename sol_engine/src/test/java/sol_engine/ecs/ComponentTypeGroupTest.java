@@ -2,8 +2,6 @@ package sol_engine.ecs;
 
 import org.junit.Assert;
 import org.junit.Test;
-import sol_engine.ecs.Component;
-import sol_engine.ecs.ComponentTypeGroup;
 
 public class ComponentTypeGroupTest {
 

@@ -8,4 +8,11 @@ dependencies {
     compile project(':sol_engine')
 }
 
-mainClassName = 'game.Main'
+//project.ext.set('nativeLibsDir', "$buildDir/libs/natives")
+
+run {
+
+	// standardInput = System.in
+    mainClassName = 'game.Main'
+    systemProperty 'java.library.path', project(':sol_engine').nativeLibsDir
+}

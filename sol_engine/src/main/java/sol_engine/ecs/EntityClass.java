@@ -4,6 +4,7 @@ import sol_engine.utils.ImmutableListView;
 import sol_engine.utils.ImmutableSetView;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class EntityClass {
 
@@ -17,20 +18,27 @@ public class EntityClass {
         this.addSuperClasses(Arrays.asList(extendsClasses));
     }
 
-    public void addSuperClasses(List<String> superClasses) {
+    public EntityClass addSuperClasses(List<String> superClasses) {
         superClasses.forEach(this::addSuperClass);
+        return this;
     }
 
-    public void addSuperClass(String entityClassName) {
+    public EntityClass addSuperClass(String entityClassName) {
         extendsClasses.add(entityClassName);
+        return this;
     }
 
-    public void addBaseComponents(List<Component> components) {
+    public EntityClass addBaseComponents(Component... components) {
+        return addBaseComponents(Arrays.asList(components));
+    }
+    public EntityClass addBaseComponents(List<Component> components) {
         components.forEach(this::addBaseComponent);
+        return this;
     }
 
-    public void addBaseComponent(Component comp) {
+    public EntityClass addBaseComponent(Component comp) {
         baseComponents.add(comp);
+        return this;
     }
 
     public ImmutableListView<String> getSuperclassesView() {

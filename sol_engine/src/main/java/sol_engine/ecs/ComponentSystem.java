@@ -2,11 +2,13 @@ package sol_engine.ecs;
 
 import sol_engine.utils.ImmutableListView;
 
+import java.util.ArrayList;
+
 public abstract class ComponentSystem {
 
     protected World world;
     protected ComponentTypeGroup compGroupsIdentity = new ComponentTypeGroup();
-    protected ImmutableListView<Entity> entityGroups;
+    protected ImmutableListView<Entity> entityGroups = new ImmutableListView<>(new ArrayList<>());
 
     abstract public void start();
     abstract public void update();

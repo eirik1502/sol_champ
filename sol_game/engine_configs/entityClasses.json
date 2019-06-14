@@ -1,0 +1,27 @@
+{
+  "entityClasses": {
+    "character": {
+      "components": {
+        "PositionComp": {}
+      }
+    },
+    "frank": {
+      "extends": [],
+      "components": {
+        "PositionComp": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    }
+  },
+  "initialEntities": [
+    {
+      "class": "frank",
+      "name": "Frank",
+      "components": {
+
+      }
+    }
+  ]
+}

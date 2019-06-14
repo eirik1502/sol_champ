@@ -2,6 +2,9 @@ package sol_engine.ecs;
 
 
 import com.google.gson.Gson;
+import sol_engine.core.ModuleSystemBase;
+import sol_engine.modules.Module;
+import sol_engine.modules.ModulesHandler;
 import sol_engine.utils.ImmutableListView;
 
 import java.lang.reflect.Constructor;
@@ -13,7 +16,7 @@ public class World {
 
     private Map<String, EntityClass> entityClasses = new HashMap<>();
 
-    private List<ComponentSystem> systems = new ArrayList<>();
+    private List<SystemBase> systems = new ArrayList<>();
 
     private Set<Entity> entities = new HashSet<>();
     private Map<Class<? extends Component>, Set<Entity>> entitiesWithCompType = new HashMap<>();
@@ -21,16 +24,25 @@ public class World {
 
     private Set<Entity> entitiesScheduledForRemove = new HashSet<>();
 
+    private ModulesHandler modulesHandler;
 
-//    public void start() {
+    public World() {
+        this(null);
+    }
+    public World(ModulesHandler modules) {
+        this.modulesHandler = modules;
+    }
+
+//    public void onStart() {
 //        systems.forEach(s -> s.internalStart(this));
 //    }
     public void end() {
-        systems.forEach(ComponentSystem::internalEnd);
+        systems.forEach(SystemBase::internalEnd);
     }
     public void update() {
-        systems.forEach(ComponentSystem::internalUpdate);
+        systems.forEach(SystemBase::internalUpdate);
         removeScheduledEntities();
+        modulesHandler.stream().forEach(Module::onUpdate);
     }
 
     public void addEntityClass(EntityClass entityClass) {
@@ -38,16 +50,21 @@ public class World {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ComponentSystem> T addSystem(Class<T> systemType) {
+    public <T extends SystemBase> T addSystem(Class<T> systemType) {
         try {
-            Constructor<? extends ComponentSystem> constructor = systemType.getConstructor();
-            ComponentSystem sys = constructor.newInstance();
+            Constructor<? extends SystemBase> constructor = systemType.getConstructor();
+            SystemBase sys = constructor.newInstance();
             systems.add(sys);
+
+            if (sys instanceof ModuleSystemBase) {
+                ((ModuleSystemBase)sys).setModulesHandler(modulesHandler);
+            }
+
             sys.internalStart(this);
             return (T)sys;
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            System.err.println("ComponentSystem creation failed for system: "+systemType.getName()
+            System.err.println("SystemBase creation failed for system: "+systemType.getName()
                     +". ComponentSystems should have one no-arg constructor, and not be an inner class (may be a public static inner class).");
             e.printStackTrace();
             return null;
@@ -61,7 +78,9 @@ public class World {
     }
 
     public Entity instanciateEntityClass(String className, String name) {
-        return entityClasses.get(className).instanciate(this, name);
+        Entity e = entityClasses.get(className).instanciate(this, name);
+        addEntity(e);
+        return e;
     }
 
     public void addEntity(final Entity e) {
@@ -71,7 +90,7 @@ public class World {
                         entitiesWithCompType.computeIfAbsent(compType, key -> new HashSet<>()).add(e)
                 );
 
-        // update entity groups
+        // onUpdate entity groups
         final ComponentTypeGroup newEntityGroup = e.getComponentTypeGroup();
         entityGroups.entrySet().stream()
                 // filter groups that match the new entity
@@ -103,10 +122,10 @@ public class World {
                 entitiesWithCompType.get(compType).remove(e);
             });
 
-            // update entity groups
+            // onUpdate entity groups
             final ComponentTypeGroup newEntityGroup = e.getComponentTypeGroup();
 
-//            Iterator<Map.Entry<ComponentTypeGroup, List<sol_engine.ecs.Entity>>> it = entityGroups.entrySet().iterator();
+//            Iterator<Map.Entry<ComponentTypeGroup, List<sol_engine.ecs.Entity>>> it = groupEntities.entrySet().iterator();
 //            while( it.hasNext() ) {
 //                Map.Entry<ComponentTypeGroup, List<sol_engine.ecs.Entity>> entityGroup = it.next();
 //                // remove elements
@@ -154,11 +173,11 @@ public class World {
         return new ImmutableListView<>(entityGroupList);
     }
 
-    public List<ComponentSystem> getSystems() {
+    public List<SystemBase> getSystems() {
         return systems;
     }
-    public List<Class<? extends ComponentSystem>> getSystemTypes() {
-        return getSystems().stream().map(ComponentSystem::getClass).collect(Collectors.toList());
+    public List<Class<? extends SystemBase>> getSystemTypes() {
+        return getSystems().stream().map(SystemBase::getClass).collect(Collectors.toList());
     }
 
     public Set<Entity> getEntities() {
@@ -180,7 +199,7 @@ public class World {
         sb.append("---Component systems---\n");
         getSystems().forEach(cs -> {
             sb.append(cs.getClass().getSimpleName()).append(' ');
-            sb.append(gson.toJson(cs.getCompGroupsIdentity())).append('\n');
+            sb.append(gson.toJson(cs.getCompGroupIdentity())).append('\n');
         });
         sb.append("---Entities---\n");
         getEntities().forEach(e -> {

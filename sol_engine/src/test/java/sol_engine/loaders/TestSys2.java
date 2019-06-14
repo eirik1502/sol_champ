@@ -1,20 +1,20 @@
 package sol_engine.loaders;
 
-import sol_engine.ecs.ComponentSystem;
+import sol_engine.ecs.SystemBase;
 
-public class TestSys2 extends ComponentSystem {
+public class TestSys2 extends SystemBase {
     @Override
-    public void start() {
+    public void onStart() {
 
     }
 
     @Override
-    public void update() {
+    public void onUpdate() {
 
     }
 
     @Override
-    public void end() {
+    public void onEnd() {
 
     }
 }

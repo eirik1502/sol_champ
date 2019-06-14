@@ -47,7 +47,7 @@ public class WorldLoaderTest {
 
     @Test
     public void testSystemsLoaded() {
-        List<Class<? extends ComponentSystem>> targetSystems = new ArrayList<>(Arrays.asList(
+        List<Class<? extends SystemBase>> targetSystems = new ArrayList<>(Arrays.asList(
                 TestSys1.class,
                 TestSys2.class));
         assertThat(world.getSystemTypes(), is(equalTo(targetSystems)));

@@ -4,7 +4,7 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import sol_engine.ecs.Component;
-import sol_engine.ecs.ComponentSystem;
+import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.EntityClass;
 import sol_engine.ecs.World;
 
@@ -82,7 +82,7 @@ public class WorldLoaderOld {
 
         // check if the world config starts with a jsonObject
         if (!worldConfigElem.isJsonObject()) {
-            System.err.println("ERROR world config did not start with a json object");
+            System.err.println("ERROR world config did not onStart with a json object");
             return;
         }
 
@@ -118,9 +118,9 @@ public class WorldLoaderOld {
                 }
 
                 // check that the given system is a component system and cast it
-                Class<? extends ComponentSystem> sysClass;
+                Class<? extends SystemBase> sysClass;
                 try {
-                    sysClass = sysClassGeneric.asSubclass(ComponentSystem.class);
+                    sysClass = sysClassGeneric.asSubclass(SystemBase.class);
                 } catch (ClassCastException e) {
                     System.err.println("ERROR component system given was not a subclass of component system: " + sysName);
                     return;

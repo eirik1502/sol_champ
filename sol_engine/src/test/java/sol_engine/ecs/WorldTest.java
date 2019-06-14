@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Before;
 import org.junit.Test;
-import sol_engine.ecs.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -21,21 +20,21 @@ public class WorldTest {
         public String text;
     }
 
-    public static class MoveRightSys extends ComponentSystem {
-        public void start() {
-            super.setComponentTypes(PosComp.class);
+    public static class MoveRightSys extends SystemBase {
+        public void onStart() {
+            super.usingComponents(PosComp.class);
         }
-        public void update() {
-            super.entityGroups.stream().forEach(e -> {
+        public void onUpdate() {
+            super.groupEntities.stream().forEach(e -> {
                 e.getComponent(PosComp.class).x += 1;
             });
         }
-        public void end() {
+        public void onEnd() {
 
         }
     }
 
-    public static class TextRenderSys extends ComponentSystem {
+    public static class TextRenderSys extends SystemBase {
         private String space = ".";
 
         public String output = "";
@@ -44,19 +43,19 @@ public class WorldTest {
         public TextRenderSys() {
         }
 
-        public void start() {
-            super.setComponentTypes(TextComp.class, PosComp.class);
+        public void onStart() {
+            super.usingComponents(TextComp.class, PosComp.class);
         }
-        public void update() {
+        public void onUpdate() {
             output = "";
-            super.entityGroups.stream().forEach(e -> {
+            super.groupEntities.stream().forEach(e -> {
                 final PosComp posComp = e.getComponent(PosComp.class);
                 final TextComp textComp = e.getComponent(TextComp.class);
 
                 output += ""+posComp.x + " " + posComp.y + " " + textComp.text + "\n";
             });
         }
-        public void end() {
+        public void onEnd() {
 
         }
     }
@@ -111,7 +110,7 @@ public class WorldTest {
     }
 
 
-    private void checkWorldState(String checkLabel, World world, List<Entity> targetEntities, List<ComponentSystem> targetSystems) {
+    private void checkWorldState(String checkLabel, World world, List<Entity> targetEntities, List<SystemBase> targetSystems) {
 //        System.out.println(checkLabel + " num entities: " + targetEntities.size() + " num systems: " + targetSystems.size());
 
         WorldState ws = WorldState.getFor(world);
@@ -139,13 +138,13 @@ public class WorldTest {
         allCompTypes.forEach(ct -> Assert.assertTrue(ws.entitiesOfCompType.containsKey(ct)));  // test that all comp types are registered
 
 
-        //test entityGroups
+        //test groupEntities
         Map<ComponentTypeGroup, List<Entity>> targetEntityGroups = new HashMap<>();
         targetSystems.forEach(s ->
-                targetEntityGroups.computeIfAbsent(s.compGroupsIdentity, key -> new ArrayList<>())
+                targetEntityGroups.computeIfAbsent(s.compGroupIdentity, key -> new ArrayList<>())
                         .addAll(
                             targetEntities.stream()
-                                    .filter(e -> e.getComponentTypeGroup().contains(s.compGroupsIdentity))
+                                    .filter(e -> e.getComponentTypeGroup().contains(s.compGroupIdentity))
                                     .collect(Collectors.toList())
                         )
                 );
@@ -171,7 +170,7 @@ public class WorldTest {
         checkWorldState("first", world, Arrays.asList(e), Arrays.asList(textRenderSys));
 
 
-//        world.start();
+//        world.onStart();
         world.update();
 
         MoveRightSys moveRightSys = world.addSystem(MoveRightSys.class);
@@ -209,8 +208,8 @@ public class WorldTest {
 //        Assert.assertEquals(entitiesOfCompType.get(TextComp.class).size(), 1);
 //        Assert.assertTrue(entitiesOfCompType.get(TextComp.class).contains(e));
 //
-//        //test entityGroups has included the new system group
-//        Assert.assertEquals(entityGroups.size(), 2);
-//        Assert.assertTrue(entityGroups.containsKey(new ComponentTypeGroup(PosComp.class, TextComp.class)));
-//        Assert.assertTrue(entityGroups.containsKey(new ComponentTypeGroup(PosComp.class)));
-//        Assert.assertFalse(entityGroups.containsKey(new ComponentTypeGroup(TextComp.class)));
+//        //test groupEntities has included the new system group
+//        Assert.assertEquals(groupEntities.size(), 2);
+//        Assert.assertTrue(groupEntities.containsKey(new ComponentTypeGroup(PosComp.class, TextComp.class)));
+//        Assert.assertTrue(groupEntities.containsKey(new ComponentTypeGroup(PosComp.class)));
+//        Assert.assertFalse(groupEntities.containsKey(new ComponentTypeGroup(TextComp.class)));

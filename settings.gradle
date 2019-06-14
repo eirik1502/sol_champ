@@ -7,7 +7,8 @@
  * in the user manual at https://docs.gradle.org/5.4.1/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'sol_restart'
+rootProject.name = 'sol_champ'
 
 include 'sol_engine'
 include 'sol_game'
+include 'sol_examples'
