@@ -2,17 +2,11 @@ package sol_engine.graphics_module;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -33,8 +27,8 @@ public class Window {
         storeMonitor();
 
         // get relative monitor size
-        int width = (int)((float)vidmode.width() * config.relWidth);
-        int height = (int)((float)vidmode.height() * config.relHeight);
+        int width = (int) ((float) vidmode.width() * config.relWidth);
+        int height = (int) ((float) vidmode.height() * config.relHeight);
 
         createWindow(width, height, config.title);
         centerWindow();
@@ -64,7 +58,7 @@ public class Window {
     private void centerWindow() {
         //center window
         int width, height;
-        try (MemoryStack stack = stackPush() ) {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1);
             IntBuffer pHeight = stack.mallocInt(1);
 
@@ -93,7 +87,7 @@ public class Window {
         // inits GLFW and GL
         boolean glfwInited = glfwInit();
 
-        if (! glfwInited) {
+        if (!glfwInited) {
             throw new IllegalStateException("Could not initialize GLFW!");
         }
         GLFWErrorCallback.createPrint(System.err).set();
@@ -116,14 +110,33 @@ public class Window {
     public void hide() {
         glfwHideWindow(windowId);
     }
+
     public void show() {
         glfwShowWindow(windowId);
     }
+
     public void focus() {
         glfwFocusWindow(windowId);
     }
+
     public void minimize() {
         glfwIconifyWindow(windowId);
     }
 
+    public void setKeyCallback(WindowEventCallback.OnKey callback) {
+        glfwSetKeyCallback(windowId, (long window, int key, int scancode, int action, int mods) ->
+                callback.invoke(this, key, scancode, action));
+    }
+
+    public void setMouseButtonCallback(WindowEventCallback.OnMouseButton callback) {
+        glfwSetMouseButtonCallback(windowId, (long window, int button, int action, int mods) ->
+                callback.invoke(this, button, action)
+        );
+    }
+
+    public void setCursorPosCallback(WindowEventCallback.OnCursorPos callback) {
+        glfwSetCursorPosCallback(windowId, (long window, double xPos, double yPos) ->
+                callback.invoke(this, (float) xPos, (float) yPos)
+        );
+    }
 }

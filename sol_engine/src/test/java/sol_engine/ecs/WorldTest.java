@@ -170,7 +170,7 @@ public class WorldTest {
         checkWorldState("first", world, Arrays.asList(e), Arrays.asList(textRenderSys));
 
 
-//        world.onStart();
+//        world.setup();
         world.update();
 
         MoveRightSys moveRightSys = world.addSystem(MoveRightSys.class);

@@ -1,11 +1,10 @@
-package sol_engine.network_module;
+package sol_engine.network_module.network_ecs;
 
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
+import sol_engine.network_module.network_modules.NetworkServerModule;
 
-public class NetSystem extends ModuleSystemBase {
-
-
+public class NetServerSystem extends ModuleSystemBase {
 
 
     public void broadcastTransform(NetIdComp netIdComp, TransformComp transform) {
@@ -17,7 +16,7 @@ public class NetSystem extends ModuleSystemBase {
 
     @Override
     public void onStart() {
-        usingModules(NetworkModule.class);
+        usingModules(NetworkServerModule.class);
 
         usingComponents(NetIdComp.class, TransformComp.class);
     }

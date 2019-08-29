@@ -1,11 +1,9 @@
 package sol_engine.graphics_module;
 
 import sol_engine.graphics_module.graphical_objects.Renderable;
-import sol_engine.graphics_module.graphical_objects.Square;
-import sol_engine.modules.Module;
+import sol_engine.module.Module;
 
-public class GraphicsModule implements Module {
-
+public class GraphicsModule extends Module {
 
 
     private Window window;
@@ -23,8 +21,13 @@ public class GraphicsModule implements Module {
         renderer.addRenderable(renderable);
     }
 
-    public Window getWindow() { return window; }
-    public Renderer getRenderer() { return renderer; }
+    public Window getWindow() {
+        return window;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
+    }
 
     @Override
     public void onStart() {

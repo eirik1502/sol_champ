@@ -1,51 +1,59 @@
 plugins {
-	id 'java-library'
+    id 'java-library'
 //	id 'application'
 
+}
+
+sourceSets {
+    main {
+        java {
+            exclude 'sol_engine/network_module/trash/**'
+        }
+    }
 }
 
 project.ext.lwjglVersion = "3.2.2"
 project.ext.set('nativeLibsDir', "$buildDir/libs/natives")
 
 configurations {
-	natives
+    natives
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
-	//implementation 'com.google.code.gson:gson:2.8.5'
-	compile 'com.google.code.gson:gson:2.8.5'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    //implementation 'com.google.code.gson:gson:2.8.5'
+    compile 'com.google.code.gson:gson:2.8.5'
 
-	compile(group: "com.github.java-json-tools", name: "json-schema-validator", version: "2.2.10")
+    compile(group: "com.github.java-json-tools", name: "json-schema-validator", version: "2.2.10")
 
-	// https://mvnrepository.com/artifact/org.joml/joml
-	compile group: 'org.joml', name: 'joml', version: '1.9.14'
+    // https://mvnrepository.com/artifact/org.joml/joml
+    compile group: 'org.joml', name: 'joml', version: '1.9.14'
+
+    //kryonet
+    compile "com.esotericsoftware:kryonet:2.22.0-RC1"
 
 
+    // LWJGL
+    compile "org.lwjgl:lwjgl:${lwjglVersion}"
+    compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
+    compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
+    compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
+    compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
 
-	// LWJGL
-	compile "org.lwjgl:lwjgl:${lwjglVersion}"
-	compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
-	compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
-	compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
-	compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
+    natives "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows@jar"
+    natives "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows@jar"
+    natives "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows@jar"
+    natives "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-windows@jar"
+    natives "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-windows@jar"
 
-	natives "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows@jar"
-	natives "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows@jar"
-	natives "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows@jar"
-	natives "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-windows@jar"
-	natives "org.lwjgl:lwjgl-stb:${lwjglVersion}:natives-windows@jar"
-
-	testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
 }
 
 
-
-
 task extractNatives(type: Sync) {
-	from configurations.natives.collect { zipTree(it) }
-	into file(project.nativeLibsDir)
+    from configurations.natives.collect { zipTree(it) }
+    into file(project.nativeLibsDir)
 }
 
 

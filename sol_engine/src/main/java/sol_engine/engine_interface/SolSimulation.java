@@ -1,8 +1,10 @@
 package sol_engine.engine_interface;
 
+import sol_engine.core.ModuleSystemBase;
+import sol_engine.ecs.SystemAddedListener;
 import sol_engine.ecs.World;
-import sol_engine.modules.Module;
-import sol_engine.modules.ModulesHandler;
+import sol_engine.module.Module;
+import sol_engine.module.ModulesHandler;
 
 import java.util.stream.Stream;
 
@@ -10,21 +12,39 @@ public abstract class SolSimulation {
 
 
     protected World world;
-    protected ModulesHandler modules;
+    protected ModulesHandler modulesHandler;
 
+    private SystemAddedListener systemAddedListener;
     private boolean terminated = false;
 
+    protected abstract void setup();
 
-    protected abstract void onStart();
-    protected void onEnd() {}
-    protected void onStepStart() {}
-    protected void onStepEnd() {}
+    protected void onStart() {
+    }
+
+    protected void onEnd() {
+    }
+
+    protected void onStepStart() {
+    }
+
+    protected void onStepEnd() {
+    }
 
 
     public final void start() {
-        modules = new ModulesHandler();
-        world = new World(modules);
-        onStart();
+        modulesHandler = new ModulesHandler();
+        world = new World();
+
+        systemAddedListener = (sysType, sys) -> {
+            if (sys instanceof ModuleSystemBase) {
+                ((ModuleSystemBase) sys).setModulesHandler(modulesHandler);
+            }
+        };
+        world.addSystemAddedListener(systemAddedListener);
+
+        setup();
+        modulesHandler.internalStart();
     }
 
     public final void terminate() {
@@ -32,16 +52,14 @@ public abstract class SolSimulation {
 
         terminated = true;
         onEnd();
+        modulesHandler.internalEnd();
     }
 
     public final void step() {
         onStepStart();
 
         world.update();
-
-        if (modules != null) {
-            modules.stream().forEach(Module::onUpdate);
-        }
+        modulesHandler.internalUpdate();
 
         onStepEnd();
     }
@@ -55,9 +73,10 @@ public abstract class SolSimulation {
     }
 
     protected void addModule(Module m) {
-        modules.addModule(m);
+        modulesHandler.addModule(m);
     }
-    protected void addModules(Module...modules) {
+
+    protected void addModules(Module... modules) {
         Stream.of(modules).forEach(this::addModule);
     }
 }

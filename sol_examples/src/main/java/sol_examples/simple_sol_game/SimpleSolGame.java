@@ -1,14 +1,14 @@
 package sol_examples.simple_sol_game;
 
+import sol_engine.ecs.World;
 import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
 import sol_engine.engine_interface.ThreadedSimulationLoop;
-import sol_engine.ecs.World;
 
 public class SimpleSolGame extends SolSimulation {
 
     @Override
-    protected void onStart() {
+    protected void setup() {
         System.out.println("Simple SOL game started!");
         terminate();
     }
@@ -39,7 +39,7 @@ public class SimpleSolGame extends SolSimulation {
         // put the game simulation in a loop
         SimulationLoop gameLoop = new SimulationLoop(game);
 
-        // onStart the game loop,
+        // setup the game loop,
         // it will run and block until the loop is terminated or the game is terminated
         gameLoop.start();
 
@@ -59,7 +59,7 @@ public class SimpleSolGame extends SolSimulation {
         // put the game simulation in a loop
         ThreadedSimulationLoop threadedGameLoop = new ThreadedSimulationLoop(game);
 
-        // onStart the game loop,
+        // setup the game loop,
         // it will run on its own thread until the loop is terminated or the game is terminated
         threadedGameLoop.start();
 
@@ -84,7 +84,7 @@ public class SimpleSolGame extends SolSimulation {
         // create a game instance
         SolSimulation game = new SimpleSolGame();
 
-        // onStart the simulation, this will initialize everything needed for the simulation
+        // setup the simulation, this will initialize everything needed for the simulation
         game.start();
 
         // manually step the simulation forward

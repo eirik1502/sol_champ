@@ -7,18 +7,31 @@ import java.util.stream.Stream;
 
 public class NetChannel {
 
+    private final int id;
+    private List<NetInPacket> pendingPacketsIn = new ArrayList<>();
+    private List<NetOutPacket> pendingPacketsOut = new ArrayList<>();
 
-    private List<NetInPacket> pendingPackets = new ArrayList<>();
 
-
-//    public void broadcast()
-
-    public void popForEach(Consumer<NetInPacket> action) {
-        pendingPackets.forEach(action);
-        pendingPackets.clear();
+    public NetChannel(int id) {
+        this.id = id;
     }
 
-    void receivePacket(NetInPacket packet) {
-        pendingPackets.add(packet);
+    public void broadcast(NetOutPacket outPacket) {
+        pendingPacketsOut.add(outPacket);
+    }
+
+    public void popForEach(Consumer<NetInPacket> action) {
+        pendingPacketsIn.forEach(action);
+        pendingPacketsIn.clear();
+    }
+
+
+    void addInPacket(NetInPacket packet) {
+        pendingPacketsIn.add(packet);
+    }
+    List<NetOutPacket> popOutPackets() {
+        List<NetOutPacket> returnPackets = new ArrayList<>(pendingPacketsOut);
+        pendingPacketsOut.clear();
+        return returnPackets;
     }
 }

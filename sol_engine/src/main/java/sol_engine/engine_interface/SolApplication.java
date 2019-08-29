@@ -1,7 +1,7 @@
 package sol_engine.engine_interface;
 
-import sol_engine.modules.Module;
-import sol_engine.modules.ModulesHandler;
+import sol_engine.module.Module;
+import sol_engine.module.ModulesHandler;
 
 public abstract class SolApplication {
 
@@ -10,7 +10,6 @@ public abstract class SolApplication {
 
     private boolean started = false;
     private boolean terminated = false;
-
 
 
     protected void setSimulation(SolSimulation simulation) {
@@ -33,8 +32,8 @@ public abstract class SolApplication {
         started = true;
 
         onStart();
-//        modules.start();
-//        simulation.start(modules);
+//        modulesHandler.startListening();
+//        simulation.startListening(modulesHandler);
     }
 
     public final void terminate() {

@@ -1,6 +1,8 @@
-package sol_engine.network_module;
+package sol_engine.network_module.network_ecs;
 
 import sol_engine.core.TransformComp;
+import sol_engine.network_module.NetInPacket;
+import sol_engine.network_module.NetOutPacket;
 
 public class NetEcsUtil {
 

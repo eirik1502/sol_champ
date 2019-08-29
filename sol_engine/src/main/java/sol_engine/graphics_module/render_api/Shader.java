@@ -4,17 +4,14 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
-import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.utils.BufferUtils;
-import sol_engine.utils.ClassUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
+ * Unmodifyable shader representation
+ * <p>
  * Created by eirik on 13.06.2017.
  */
 public abstract class Shader {
@@ -74,6 +71,7 @@ public abstract class Shader {
         if (!bound) throw new IllegalStateException("Trying to use a shader while it is disabled");
         GL20.glUniform3f(getUniformLocation(prop), vector.x, vector.y, vector.z);
     }
+
     protected void setUniform4f(String prop, Vector4f vector) {
         if (!bound) throw new IllegalStateException("Trying to use a shader while it is disabled");
         GL20.glUniform4f(getUniformLocation(prop), vector.x, vector.y, vector.z, vector.w);

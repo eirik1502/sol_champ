@@ -2,6 +2,7 @@ package sol_engine.ecs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class Entity {
 
@@ -37,6 +38,11 @@ public class Entity {
     @SuppressWarnings("unchecked")
     public <T extends Component> T getComponent(Class<T> compType) {
         return (T)comps.get(compType);
+    }
+
+    public <T extends Component> Entity modifyComponent(Class<T> compType, Consumer<T> apply) {
+        apply.accept(getComponent(compType));
+        return this;
     }
 
 }

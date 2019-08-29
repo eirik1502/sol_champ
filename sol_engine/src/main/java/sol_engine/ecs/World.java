@@ -2,9 +2,6 @@ package sol_engine.ecs;
 
 
 import com.google.gson.Gson;
-import sol_engine.core.ModuleSystemBase;
-import sol_engine.modules.Module;
-import sol_engine.modules.ModulesHandler;
 import sol_engine.utils.ImmutableListView;
 
 import java.lang.reflect.Constructor;
@@ -24,25 +21,42 @@ public class World {
 
     private Set<Entity> entitiesScheduledForRemove = new HashSet<>();
 
-    private ModulesHandler modulesHandler;
+
+    private List<EntityClassInstanciateListener> entityClassInstanciateListeners = new ArrayList<>();
+    private List<SystemAddedListener> systemAddedListeners = new ArrayList<>();
+
 
     public World() {
-        this(null);
-    }
-    public World(ModulesHandler modules) {
-        this.modulesHandler = modules;
+
     }
 
-//    public void onStart() {
+
+    //    public void setup() {
 //        systems.forEach(s -> s.internalStart(this));
 //    }
     public void end() {
         systems.forEach(SystemBase::internalEnd);
     }
+
     public void update() {
         systems.forEach(SystemBase::internalUpdate);
         removeScheduledEntities();
-        modulesHandler.stream().forEach(Module::onUpdate);
+    }
+
+    public void addEntityClassInstanciatListener(EntityClassInstanciateListener listener) {
+        entityClassInstanciateListeners.add(listener);
+    }
+
+    public void removeEntityClassInstanciatListener(EntityClassInstanciateListener listener) {
+        entityClassInstanciateListeners.remove(listener);
+    }
+
+    public void addSystemAddedListener(SystemAddedListener listener) {
+        systemAddedListeners.add(listener);
+    }
+
+    public void removeSystemAddedListener(SystemAddedListener listener) {
+        systemAddedListeners.remove(listener);
     }
 
     public void addEntityClass(EntityClass entityClass) {
@@ -56,19 +70,24 @@ public class World {
             SystemBase sys = constructor.newInstance();
             systems.add(sys);
 
-            if (sys instanceof ModuleSystemBase) {
-                ((ModuleSystemBase)sys).setModulesHandler(modulesHandler);
-            }
+            systemAddedListeners.forEach(l -> l.onSystemAdded(systemType, sys));
 
             sys.internalStart(this);
-            return (T)sys;
+            return (T) sys;
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            System.err.println("SystemBase creation failed for system: "+systemType.getName()
-                    +". ComponentSystems should have one no-arg constructor, and not be an inner class (may be a public static inner class).");
+            System.err.println("SystemBase creation failed for system: " + systemType.getName()
+                    + ". ComponentSystems should have one no-arg constructor, and not be an inner class (may be a public static inner class).");
             e.printStackTrace();
             return null;
         }
+    }
+
+    public SystemBase addSystemInstance(SystemBase sys) {
+        systems.add(sys);
+        systemAddedListeners.forEach(l -> l.onSystemAdded(sys.getClass(), sys));
+        sys.internalStart(this);
+        return sys;
     }
 
 
@@ -80,6 +99,9 @@ public class World {
     public Entity instanciateEntityClass(String className, String name) {
         Entity e = entityClasses.get(className).instanciate(this, name);
         addEntity(e);
+
+        // call listeners
+        entityClassInstanciateListeners.forEach(l -> l.onEntityClassInstanciated(className, e));
         return e;
     }
 
@@ -87,8 +109,8 @@ public class World {
 
         // add the entity to component types mapping
         e.getComponents().forEach((compType, comp) ->
-                        entitiesWithCompType.computeIfAbsent(compType, key -> new HashSet<>()).add(e)
-                );
+                entitiesWithCompType.computeIfAbsent(compType, key -> new HashSet<>()).add(e)
+        );
 
         // onUpdate entity groups
         final ComponentTypeGroup newEntityGroup = e.getComponentTypeGroup();
@@ -176,6 +198,7 @@ public class World {
     public List<SystemBase> getSystems() {
         return systems;
     }
+
     public List<Class<? extends SystemBase>> getSystemTypes() {
         return getSystems().stream().map(SystemBase::getClass).collect(Collectors.toList());
     }

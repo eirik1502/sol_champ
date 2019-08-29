@@ -10,7 +10,7 @@ public class SimpleSolGame {
 
         SolSimulation game = new SolSimulation() {
             @Override
-            protected void onStart() {
+            protected void setup() {
                 System.out.println("Simple SOL game started!");
                 terminate();
             }

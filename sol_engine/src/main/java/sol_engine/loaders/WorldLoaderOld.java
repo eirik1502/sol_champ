@@ -4,8 +4,8 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import sol_engine.ecs.Component;
-import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.EntityClass;
+import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
 
 import java.io.InputStream;
@@ -13,15 +13,18 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * This is the main loader,
  * used to load the world configs.
- *
+ * <p>
  * The world exists of
- * - modules
+ * - modulesHandler
  * - entities
  * - components
  * - componentSystems
@@ -45,13 +48,15 @@ public class WorldLoaderOld {
     private static Set<String> compSysPackages = new HashSet<>();
     private static ClassLoader classLoader = WorldLoaderOld.class.getClassLoader();
     private static Gson gson = new Gson();
-    private static Type listStringType = new TypeToken<List<String>>() {}.getType();
+    private static Type listStringType = new TypeToken<List<String>>() {
+    }.getType();
 
     private enum ErrorType {
         ERROR("ERROR"),
         WARNING("WARNING");
 
         public final String name;
+
         ErrorType(String name) {
             this.name = name;
         }
@@ -82,18 +87,17 @@ public class WorldLoaderOld {
 
         // check if the world config starts with a jsonObject
         if (!worldConfigElem.isJsonObject()) {
-            System.err.println("ERROR world config did not onStart with a json object");
+            System.err.println("ERROR world config did not setup with a json object");
             return;
         }
 
         JsonObject worldConfig = worldConfigElem.getAsJsonObject();
 
         // check if there are compSys packages and store them
-        if (! worldConfig.has(COMPSYS_PACKAGES_FIELD)) {
+        if (!worldConfig.has(COMPSYS_PACKAGES_FIELD)) {
             System.err.println("WARNING no compSys packages are listed, looking only in the engine package." +
                     " Use the array field 'compSysPackages'");
-        }
-        else {
+        } else {
             // add all listed compSys packages
             JsonArray compSysPackagesJArr = worldConfig.getAsJsonArray(COMPSYS_PACKAGES_FIELD);
             compSysPackages.addAll(gson.fromJson(compSysPackagesJArr, listStringType));
@@ -101,10 +105,9 @@ public class WorldLoaderOld {
 
 
         // check if there are component systems and add them
-        if (! worldConfig.has(COMPONENT_SYSTEMS_FIELD)) {
+        if (!worldConfig.has(COMPONENT_SYSTEMS_FIELD)) {
             System.err.println("warning world config has no systems");
-        }
-        else {
+        } else {
             JsonArray componentSystemNamesArr = worldConfig.getAsJsonArray(COMPONENT_SYSTEMS_FIELD);
             List<String> componentSystemNames = gson.fromJson(componentSystemNamesArr, listStringType);
 
@@ -134,8 +137,7 @@ public class WorldLoaderOld {
         if (worldConfig.has(ENTITY_CLASSES_FIELD)) {
             List<EntityClass> entityClasses = loadEntityClasses(worldConfig.getAsJsonObject(ENTITY_CLASSES_FIELD));
             entityClasses.forEach(world::addEntityClass);
-        }
-        else {
+        } else {
             System.err.println("WARNING no entitiy classes in config");
         }
 
@@ -144,18 +146,15 @@ public class WorldLoaderOld {
             JsonElement initEntitiesJElem = worldConfig.get(INITIAL_ENTITIES_FIELD);
             if (initEntitiesJElem.isJsonArray()) {
                 loadInitEntitiesIntoWorld(world, initEntitiesJElem.getAsJsonArray());
-            }
-            else System.err.println("ERROR initialEntities was not a json object");
-        }
-        else System.err.println("WARNING no initial entities listed. Use key 'initialEntities'");
+            } else System.err.println("ERROR initialEntities was not a json object");
+        } else System.err.println("WARNING no initial entities listed. Use key 'initialEntities'");
     }
 
     private static void loadInitEntitiesIntoWorld(World world, JsonArray initEntitiesJArr) {
-        initEntitiesJArr.forEach( initEntJElem -> {
+        initEntitiesJArr.forEach(initEntJElem -> {
             if (initEntJElem.isJsonObject()) {
                 loadInitEntityIntoWorld(world, initEntJElem.getAsJsonObject());
-            }
-            else logLoadError(ErrorType.ERROR, "an initial entity is not a json object");
+            } else logLoadError(ErrorType.ERROR, "an initial entity is not a json object");
         });
     }
 //    INIT_ENTITIES_USE_CLASS_FIELD = "useClass",
@@ -216,8 +215,7 @@ public class WorldLoaderOld {
 
                     if (entityClassElem.isJsonObject()) {
                         return loadEntityClass(entityClassName, entityClassElem.getAsJsonObject());
-                    }
-                    else {
+                    } else {
                         System.err.println("ERROR entity class component was not a json object");
                         return null;
                     }
@@ -236,8 +234,7 @@ public class WorldLoaderOld {
             if (extendsObjectsElem.isJsonArray()) {
                 List<String> extendsClasses = gson.fromJson(extendsObjectsElem.getAsJsonArray(), listStringType);
                 entityClass.addSuperClasses(extendsClasses);
-            }
-            else {
+            } else {
                 System.err.println("ERROR extendsClasses field did not contain a jason array. EntityClass: " + entityClassName);
             }
         }
@@ -249,8 +246,7 @@ public class WorldLoaderOld {
             if (compsValsJElem.isJsonObject()) {
                 List<Component> comps = loadComponents(compsValsJElem.getAsJsonObject());
                 entityClass.addBaseComponents(comps);
-            }
-            else {
+            } else {
                 System.err.println("ERROR entity class components is was not a json object. EntityClass: " + entityClassName);
             }
         } else {
@@ -268,8 +264,7 @@ public class WorldLoaderOld {
 
                     if (compValsElem.isJsonObject()) {
                         return loadComponent(compClass, compValsElem.getAsJsonObject());
-                    }
-                    else {
+                    } else {
                         System.err.println("ERROR the values of component class component was not a json object. " +
                                 "comp class: " + compClass);
                         return null;
@@ -301,6 +296,7 @@ public class WorldLoaderOld {
             return null;
         }
     }
+
     private static Class<? extends Component> loadComponentClass(String compClassName) {
         Class<?> compClassGeneric = getClassInPackageList(compClassName, compSysPackages);
 
@@ -339,8 +335,7 @@ public class WorldLoaderOld {
         if (classesFound.size() == 0) {
             // the class wasn't found
             return null;
-        }
-        else {
+        } else {
             if (classesFound.size() > 1) {
                 System.err.println("WARNING multiple classes with equal name found in the specified packages. " +
                         "Returning the first. For class: " + className);

@@ -2,8 +2,8 @@ package sol_engine.core;
 
 import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
-import sol_engine.modules.Module;
-import sol_engine.modules.ModulesHandler;
+import sol_engine.module.Module;
+import sol_engine.module.ModulesHandler;
 
 import java.util.*;
 
@@ -15,31 +15,17 @@ public abstract class ModuleSystemBase extends SystemBase {
 
 
     @SafeVarargs
-    protected final void usingModules(Class<? extends Module>...moduleTypes) {
+    protected final void usingModules(Class<? extends Module>... moduleTypes) {
         usingModules(new HashSet<>(Arrays.asList(moduleTypes)));
     }
 
     protected final void usingModules(Set<Class<? extends Module>> moduleTypes) {
         moduleTypes.forEach(mt -> modules.put(mt, null));
-    }
 
-    @SuppressWarnings("unchecked")
-    protected final <T extends Module> T getModule(Class<T> moduleType) {
-        return (T)modules.get(moduleType);
-    }
-
-    public void setModulesHandler(ModulesHandler modulesHandler) {
-        this.modulesHandler = modulesHandler;
-    }
-
-    @Override
-    public void internalStart(World world) {
-        super.internalStart(world);
-
-        // check if the requested modules are present, else remove this system
+        // check if the requested modulesHandler are present, else remove this system
         if (modulesHandler == null) {
 //            world.removeSystem(this);
-            System.err.println("No modules handler attached");
+            System.err.println("No modulesHandler handler attached");
             return;
         }
 
@@ -51,13 +37,26 @@ public abstract class ModuleSystemBase extends SystemBase {
             }
         });
 
-        // if there are requested modules
+        // if there are requested modulesHandler not given, remove this system
         if (this.modules.values().contains(null)) {
 //            world.removeSystem(this);
-            System.err.println("Moudles handler did not have the required modules for: " + getClass().getSimpleName());
+            System.err.println("Moudles handler did not have the required modulesHandler for: " + getClass().getSimpleName());
             return;
         }
+    }
 
+    @SuppressWarnings("unchecked")
+    protected final <T extends Module> T getModule(Class<T> moduleType) {
+        return (T) modules.get(moduleType);
+    }
+
+    public void setModulesHandler(ModulesHandler modulesHandler) {
+        this.modulesHandler = modulesHandler;
+    }
+
+    @Override
+    public void internalStart(World world) {
+        super.internalStart(world);
 
     }
 

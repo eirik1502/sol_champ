@@ -1,7 +1,6 @@
-import sol_engine.engine_interface.SimulationLoop;
-import sol_engine.engine_interface.SolSimulation;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.EntityClass;
+import sol_engine.engine_interface.SolSimulation;
 import sol_engine.engine_interface.ThreadedSimulationLoop;
 import sol_engine.graphics_module.*;
 import sol_engine.graphics_module.graphical_objects.Square;
@@ -14,15 +13,15 @@ public class Main {
     public static class TestSimulation extends SolSimulation {
 
         @Override
-        protected void onStart() {
+        protected void setup() {
             float worldWidth = 1600;
             float worldHeight = 900;
 
 
-            modules.addModule(new GraphicsModule(
+            modulesHandler.addModule(new GraphicsModule(
                     new GraphicsModuleConfig(
                             new WindowConfig(0.3f, 0.3f, "Hello SOL"),
-                            new RenderConfig(worldWidth/2, worldHeight/2, worldWidth, worldHeight)
+                            new RenderConfig(worldWidth / 2, worldHeight / 2, worldWidth, worldHeight)
                     )
             ));
 
@@ -33,8 +32,8 @@ public class Main {
 
             world.addEntityClass(new EntityClass("rect").addBaseComponents(
                     new TransformComp(100, 100),
-                    new RenderComp(new Square( 100, 100,100, 100, MattMaterial.RED)),
-                    new MoveCircularComp(800-350, 100, 50)
+                    new RenderComp(new Square(100, 100, 100, 100, MattMaterial.RED)),
+                    new MoveCircularComp(800 - 350, 100, 50)
             ));
 
             world.instanciateEntityClass("rect", "rect1")
@@ -45,8 +44,8 @@ public class Main {
 
             System.out.println(
                     world.getEntityByName("rect1").getComponent(TransformComp.class)
-                    ==
-                    world.getEntityByName("rect2").getComponent(TransformComp.class)
+                            ==
+                            world.getEntityByName("rect2").getComponent(TransformComp.class)
             );
 
             System.out.println(world.getEntityByName("rect2").getComponent(TransformComp.class).x);
@@ -73,11 +72,10 @@ public class Main {
 
 //        SolSimulation sim = new TestSimulation();
 //        SimulationLoop simLoop = new SimulationLoop(sim, 0.16f / 4);
-//        simLoop.start();
+//        simLoop.startListening();
 
 
-
-//        sim.start();
+//        sim.startListening();
 
 
 //        float time = 0;
@@ -103,7 +101,7 @@ public class Main {
     }
 
 //    private static void simpleTest() {
-//        ModulesHandler modules = new ModulesHandler();
+//        ModulesHandler modulesHandler = new ModulesHandler();
 //
 //        float worldWidth = 1600;
 //        float worldHeight = 900;
@@ -112,11 +110,11 @@ public class Main {
 //                new RenderConfig(worldWidth/2, worldHeight/2, worldWidth, worldHeight)
 //        );
 //
-//        modules.addModule(new GraphicsModule(graphicsConfig));
+//        modulesHandler.addModule(new GraphicsModule(graphicsConfig));
 //
 //
 //
-//        World world = new World(modules);
+//        World world = new World(modulesHandler);
 //
 //        world.addSystem(RenderSystem.class);
 //        world.addSystem(MoveCircularSystem.class);

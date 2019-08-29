@@ -11,6 +11,10 @@ public class ImmutableSetView<T>  implements Iterable<T>{
         this.set = forList;
     }
 
+    public int size() {
+        return set.size();
+    }
+
     @Override
     public Iterator<T> iterator() {
         return set.iterator();
