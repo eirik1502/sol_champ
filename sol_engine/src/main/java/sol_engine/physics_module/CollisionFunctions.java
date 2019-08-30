@@ -1,7 +1,7 @@
 package sol_engine.physics_module;
 
 import org.joml.Vector2f;
-import sol_engine.utils.MathF;
+import sol_engine.utils.math.MathF;
 
 public class CollisionFunctions {
 

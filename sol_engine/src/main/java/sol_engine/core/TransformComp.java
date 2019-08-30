@@ -7,22 +7,27 @@ public class TransformComp extends Component {
 
     public float x, y;
     public float scaleX, scaleY;
-    public float rotX, rotY;
+    public float rotZ;
 
 
+    public TransformComp() {
+    }
 
-    public TransformComp() {}
     public TransformComp(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
     public TransformComp setX(float x) {
-        this.x = x; return this;
+        this.x = x;
+        return this;
     }
+
     public TransformComp setY(float y) {
-        this.y = y; return this;
+        this.y = y;
+        return this;
     }
+
     public TransformComp setXY(float x, float y) {
         return setX(x).setY(y);
     }

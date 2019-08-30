@@ -12,7 +12,7 @@ public class CollisionSystem extends SystemBase {
 
     @Override
     public void onUpdate() {
-
+        long startTime = System.nanoTime();
         // Doing a double travers of all entities to determine collisions, not optimal.
         groupEntities.forEach(entity -> {
             CollisionComp collComp = entity.getComponent(CollisionComp.class);
@@ -38,6 +38,8 @@ public class CollisionSystem extends SystemBase {
                         }
                     });
         });
+        long totalTime = System.nanoTime() - startTime;
+        System.out.println("Collisions calculated in: " + totalTime * 0.000001);
     }
 
     @Override

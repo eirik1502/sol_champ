@@ -28,11 +28,21 @@ public class InputModule extends Module {
     }
 
     public boolean keyHeld(int key) {
+        if (!checkRangeIncluded(0, this.keysHeld.length - 1, key)) {
+            return false;
+        }
         return this.keysHeld[key];
     }
 
     public boolean mouseButtonHeld(int mouseButton) {
+        if (!checkRangeIncluded(0, this.mouseButtonsHeld.length - 1, mouseButton)) {
+            return false;
+        }
         return this.mouseButtonsHeld[mouseButton];
+    }
+
+    private boolean checkRangeIncluded(int lower, int upper, int value) {
+        return value >= lower && value <= upper;
     }
 
     @Override

@@ -4,7 +4,7 @@ import org.joml.Vector2f;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.SystemBase;
-import sol_engine.utils.MathF;
+import sol_engine.utils.math.MathF;
 
 import java.util.HashSet;
 import java.util.Set;
