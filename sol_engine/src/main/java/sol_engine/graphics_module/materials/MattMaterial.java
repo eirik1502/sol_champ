@@ -5,15 +5,26 @@ import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
 import sol_engine.graphics_module.shaders.Shaders;
 
-public class MattMaterial extends Material{
+public class MattMaterial extends Material {
 
     private static ColorShader shader = null;
 
 
-    public static MattMaterial STANDARD = new MattMaterial(new Color(1,1,1));
-    public static MattMaterial RED = new MattMaterial(Color.RED);
-    public static MattMaterial GREEN = new MattMaterial(Color.GREEN);
-    public static MattMaterial BLUE = new MattMaterial(Color.BLUE);
+    public static MattMaterial STANDARD() {
+        return new MattMaterial(new Color(1, 1, 1));
+    }
+
+    public static MattMaterial RED() {
+        return new MattMaterial(Color.RED);
+    }
+
+    public static MattMaterial GREEN() {
+        return new MattMaterial(Color.GREEN);
+    }
+
+    public static MattMaterial BLUE() {
+        return new MattMaterial(Color.BLUE);
+    }
 
 
     private Color color;

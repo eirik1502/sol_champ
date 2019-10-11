@@ -9,13 +9,17 @@ public class PhysicsSystem extends SystemBase {
     private final Vector2f tempVec = new Vector2f();
 
     @Override
-    public void onStart() {
+    public void onSetup() {
         usingComponents(PhysicsBodyComp.class);
     }
 
     @Override
+    public void onStart() {
+    }
+
+    @Override
     public void onUpdate() {
-        groupEntities.forEach(entity -> {
+        entities.forEach(entity -> {
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);
 

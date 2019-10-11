@@ -13,14 +13,19 @@ public class SimpleKeyControlSystem extends ModuleSystemBase {
     private Vector2f moveDirection = new Vector2f();
 
     @Override
-    public void onStart() {
+    public void onSetup() {
         usingModules(InputModule.class);
         usingComponents(PhysicsBodyComp.class, SimpleKeyControlComp.class);
     }
 
     @Override
+    public void onStart() {
+
+    }
+
+    @Override
     public void onUpdate() {
-        groupEntities.forEach(entity -> {
+        entities.forEach(entity -> {
             SimpleKeyControlComp keyCtrlComp = entity.getComponent(SimpleKeyControlComp.class);
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
 

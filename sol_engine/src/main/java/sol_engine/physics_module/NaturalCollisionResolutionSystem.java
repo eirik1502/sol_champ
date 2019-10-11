@@ -14,15 +14,19 @@ public class NaturalCollisionResolutionSystem extends SystemBase {
     private Vector2f tempVec = new Vector2f();
 
     @Override
-    public void onStart() {
+    public void onSetup() {
         usingComponents(NaturalCollisionResolutionComp.class, TransformComp.class, PhysicsBodyComp.class, CollisionComp.class);
+    }
+
+    @Override
+    public void onStart() {
     }
 
     @Override
     public void onUpdate() {
         final Set<Entity> resolvedEntities = new HashSet<>();
 
-        groupEntities.forEach(entity -> {
+        entities.forEach(entity -> {
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
             CollisionComp collComp = entity.getComponent(CollisionComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);

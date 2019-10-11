@@ -3,6 +3,7 @@ package sol_engine.ecs;
 
 import com.google.gson.Gson;
 import sol_engine.utils.ImmutableListView;
+import sol_engine.utils.SetUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,43 +12,48 @@ import java.util.stream.Collectors;
 
 public class World {
 
+    private static List<Entity> EMPTY_ENTITIES_LIST = new ArrayList<>();
+    private static ImmutableListView<Entity> EMPTY_ENTITIES_LIST_VIEW = new ImmutableListView<>(EMPTY_ENTITIES_LIST);
+
     private Map<String, EntityClass> entityClasses = new HashMap<>();
 
-    private List<SystemBase> systems = new ArrayList<>();
+    private Map<Class<? extends SystemBase>, SystemBase> systems = new LinkedHashMap<>();
 
     private Set<Entity> entities = new HashSet<>();
     private Map<Class<? extends Component>, Set<Entity>> entitiesWithCompType = new HashMap<>();
-    private Map<ComponentTypeGroup, List<Entity>> entityGroups = new HashMap<>();
+    private Map<ComponentFamily, List<Entity>> entitiesOfFamilies = new HashMap<>();
 
     private Set<Entity> entitiesScheduledForRemove = new HashSet<>();
+    private Set<Entity> entitiesScheduledForAdd = new HashSet<>();
 
 
-    private List<EntityClassInstanciateListener> entityClassInstanciateListeners = new ArrayList<>();
-    private List<SystemAddedListener> systemAddedListeners = new ArrayList<>();
+    private Set<EntityClassInstanciateListener> entityClassInstanciateListeners = new HashSet<>();
+    private Set<SystemAddedListener> systemAddedListeners = new HashSet<>();
 
 
     public World() {
-
     }
 
+    // LIFECYCLE
 
-    //    public void setup() {
-//        systems.forEach(s -> s.internalStart(this));
-//    }
     public void end() {
-        systems.forEach(SystemBase::internalEnd);
+        systems.values().forEach(SystemBase::internalEnd);
     }
 
     public void update() {
-        systems.forEach(SystemBase::internalUpdate);
+        addScheduledEntities();
         removeScheduledEntities();
+
+        systems.values().forEach(SystemBase::internalUpdate);
     }
 
-    public void addEntityClassInstanciatListener(EntityClassInstanciateListener listener) {
+    // LISTENERS
+
+    public void addEntityClassInstanciateListener(EntityClassInstanciateListener listener) {
         entityClassInstanciateListeners.add(listener);
     }
 
-    public void removeEntityClassInstanciatListener(EntityClassInstanciateListener listener) {
+    public void removeEntityClassInstanciateListener(EntityClassInstanciateListener listener) {
         entityClassInstanciateListeners.remove(listener);
     }
 
@@ -59,21 +65,26 @@ public class World {
         systemAddedListeners.remove(listener);
     }
 
+    // SETUP
+
     public void addEntityClass(EntityClass entityClass) {
         entityClasses.put(entityClass.className, entityClass);
     }
 
+    // GENERAL USE
+
     @SuppressWarnings("unchecked")
-    public <T extends SystemBase> T addSystem(Class<T> systemType) {
+    public <T extends SystemBase> Class<T> addSystem(Class<T> systemType) {
         try {
-            Constructor<? extends SystemBase> constructor = systemType.getConstructor();
-            SystemBase sys = constructor.newInstance();
-            systems.add(sys);
-
-            systemAddedListeners.forEach(l -> l.onSystemAdded(systemType, sys));
-
-            sys.internalStart(this);
-            return (T) sys;
+            Constructor<T> constructor = systemType.getConstructor();
+            T sys = constructor.newInstance();
+//            systems.add(sys);
+//
+//            systemAddedListeners.forEach(l -> l.onSystemAdded(systemType, sys));
+//
+//            sys.internalStart(this);
+//            return (T) sys;
+            return addSystemInstance(sys);
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             System.err.println("SystemBase creation failed for system: " + systemType.getName()
@@ -83,13 +94,20 @@ public class World {
         }
     }
 
-    public SystemBase addSystemInstance(SystemBase sys) {
-        systems.add(sys);
+    @SuppressWarnings("unchecked")
+    public <T extends SystemBase> Class<T> addSystemInstance(T sys) {
+        Class<T> systemType = (Class<T>) sys.getClass();
+        systems.put(systemType, sys);
         systemAddedListeners.forEach(l -> l.onSystemAdded(sys.getClass(), sys));
+        sys.internalSetup();
         sys.internalStart(this);
-        return sys;
+        return systemType;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends SystemBase> T removeSystem(Class<T> systemType) {
+        return (T) systems.remove(systemType);
+    }
 
     public Entity createEntity(String name) {
         Entity e = new Entity(this, name);
@@ -106,22 +124,7 @@ public class World {
     }
 
     public void addEntity(final Entity e) {
-
-        // add the entity to component types mapping
-        e.getComponents().forEach((compType, comp) ->
-                entitiesWithCompType.computeIfAbsent(compType, key -> new HashSet<>()).add(e)
-        );
-
-        // onUpdate entity groups
-        final ComponentTypeGroup newEntityGroup = e.getComponentTypeGroup();
-        entityGroups.entrySet().stream()
-                // filter groups that match the new entity
-                .filter(group -> newEntityGroup.contains(group.getKey()))
-                // add the new wntity to the relevant groups
-                .forEach(existingEntityGroup -> existingEntityGroup.getValue().add(e));
-
-        // add entity to the list of all entities
-        entities.add(e);
+        entitiesScheduledForAdd.add(e);
     }
 
     public EntityClass getEntityClass(String name) {
@@ -133,7 +136,32 @@ public class World {
     }
 
     public Entity getEntityByName(String name) {
-        return entities.stream().filter(e -> e.name.equals(name)).findFirst().orElse(null);
+        return entities.stream().filter(e -> e.name.equals(name)).findFirst().orElseGet(() -> {
+            System.err.println("Trying to get an entity by name that is not present. Entity name: " + name);
+            return null;
+        });
+    }
+
+    public void addScheduledEntities() {
+        entitiesScheduledForAdd.forEach(entity -> {
+            // add the entity to component types mapping
+            entity.getComponents().forEach((compType, comp) ->
+                    entitiesWithCompType.computeIfAbsent(compType, key -> new HashSet<>()).add(entity)
+            );
+
+            // onUpdate entity groups
+            final ComponentFamily newEntityGroup = entity.getComponentTypeGroup();
+            entitiesOfFamilies.entrySet().stream()
+                    // filter groups that match the new entity
+                    .filter(group -> newEntityGroup.contains(group.getKey()))
+                    // add the new wntity to the relevant groups
+                    .forEach(existingEntityGroup -> existingEntityGroup.getValue().add(entity));
+
+            // add entity to the list of all entities
+            entities.add(entity);
+        });
+
+        entitiesScheduledForAdd.clear();
     }
 
     public void removeScheduledEntities() {
@@ -145,7 +173,7 @@ public class World {
             });
 
             // onUpdate entity groups
-            final ComponentTypeGroup newEntityGroup = e.getComponentTypeGroup();
+            final ComponentFamily newEntityGroup = e.getComponentTypeGroup();
 
 //            Iterator<Map.Entry<ComponentTypeGroup, List<sol_engine.ecs.Entity>>> it = groupEntities.entrySet().iterator();
 //            while( it.hasNext() ) {
@@ -155,7 +183,7 @@ public class World {
 //                    it.remove();
 //                }
 //            }
-            entityGroups.entrySet().stream()
+            entitiesOfFamilies.entrySet().stream()
                     // filter groups that match the entity
                     .filter(group -> newEntityGroup.contains(group.getKey()))
                     // remove the new entity from the relevant groups
@@ -169,34 +197,30 @@ public class World {
         entitiesScheduledForRemove.clear();
     }
 
-    public ImmutableListView<Entity> getEntityGroup(ComponentTypeGroup compGroupsIdentity) {
-        List<Entity> entityGroupList = entityGroups.computeIfAbsent(compGroupsIdentity, key -> {
+    public ImmutableListView<Entity> getEntitiesOfFamily(ComponentFamily compFamily) {
+        List<Entity> entityGroupList = entitiesOfFamilies.computeIfAbsent(compFamily, newCompFamily -> {
 
             // find all entities associated with the comp group
-            List<Set<Entity>> entitiesInGroups = key.stream()
+            Set<Set<Entity>> entitiesInGroups = newCompFamily.stream()
                     .map(entitiesWithCompType::get)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
 
-            // if some comp types wasn't present, there are no entities that matches the group
+            // if some comp types weren't present, there are no entities that matches the group
             if (entitiesInGroups.isEmpty() || entitiesInGroups.contains(null)) {
                 return new ArrayList<>();
             }
 
             // take the intersection of entities by comp
-            final Set<Entity> entitiesInGroup = new HashSet<>(entitiesInGroups.get(0));
-            entitiesInGroups.stream()
-                    .skip(1)
-                    .forEach(entitiesInGroup::retainAll);
+            final Set<Entity> entitiesInGroup = SetUtils.intersection(entitiesInGroups);
 
             return new ArrayList<>(entitiesInGroup);
-
         });
 
         return new ImmutableListView<>(entityGroupList);
     }
 
     public List<SystemBase> getSystems() {
-        return systems;
+        return new ArrayList<>(systems.values());
     }
 
     public List<Class<? extends SystemBase>> getSystemTypes() {
@@ -222,7 +246,7 @@ public class World {
         sb.append("---Component systems---\n");
         getSystems().forEach(cs -> {
             sb.append(cs.getClass().getSimpleName()).append(' ');
-            sb.append(gson.toJson(cs.getCompGroupIdentity())).append('\n');
+            sb.append(gson.toJson(cs.getCompFamily())).append('\n');
         });
         sb.append("---Entities---\n");
         getEntities().forEach(e -> {

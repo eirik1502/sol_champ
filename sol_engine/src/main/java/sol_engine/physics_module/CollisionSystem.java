@@ -6,21 +6,25 @@ import sol_engine.ecs.SystemBase;
 
 public class CollisionSystem extends SystemBase {
     @Override
-    public void onStart() {
+    public void onSetup() {
         usingComponents(CollisionComp.class, TransformComp.class);
+    }
+
+    @Override
+    public void onStart() {
     }
 
     @Override
     public void onUpdate() {
         long startTime = System.nanoTime();
         // Doing a double travers of all entities to determine collisions, not optimal.
-        groupEntities.forEach(entity -> {
+        entities.forEach(entity -> {
             CollisionComp collComp = entity.getComponent(CollisionComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);
 
             collComp.collidingEntities.clear();
 
-            groupEntities.stream()
+            entities.stream()
                     .filter(otherEntity -> otherEntity != entity)
                     .forEach(otherEntity -> {
                         CollisionComp otherCollComp = otherEntity.getComponent(CollisionComp.class);
@@ -39,7 +43,7 @@ public class CollisionSystem extends SystemBase {
                     });
         });
         long totalTime = System.nanoTime() - startTime;
-        System.out.println("Collisions calculated in: " + totalTime * 0.000001);
+//        System.out.println("Collisions calculated in: " + totalTime * 0.000001);
     }
 
     @Override

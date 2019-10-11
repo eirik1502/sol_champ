@@ -1,10 +1,7 @@
 package sol_engine.graphics_module;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import sol_engine.graphics_module.graphical_objects.Renderable;
-import sol_engine.graphics_module.graphical_objects.Square;
-import sol_engine.graphics_module.render_api.Mesh;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
 
@@ -30,7 +27,9 @@ public class Renderer {
         this.context = context;
     }
 
-    public RenderingContext getContext() { return context; }
+    public RenderingContext getContext() {
+        return context;
+    }
 
     public void render() {
         float cameraDist = 4;
@@ -56,8 +55,7 @@ public class Renderer {
 
             Matrix4f modTrans = new Matrix4f()
                     .translate(s.getX(), s.getY(), 0)
-                    .scale(s.getWidth(), s.getHeight(), 1)
-                    ;//.rotate(time/10, 0, 1, 0 );
+                    .scale(s.getWidth(), s.getHeight(), 1);//.rotate(time/10, 0, 1, 0 );
 
             s.getMaterial().bind();
             MVPShader shader = s.getMaterial().getShader();
@@ -65,7 +63,7 @@ public class Renderer {
             shader.setViewTransform(viewTrans);
             shader.setProjectionTransform(projTrans);
             shader.setModelTransform(modTrans);
-            ((ColorShader)shader).setTime(time);
+            ((ColorShader) shader).setTime(time);
 
             s.getMesh().bind();
             glDrawElements(GL_TRIANGLES, s.getMesh().getIndicesCount(), GL_UNSIGNED_BYTE, 0);
@@ -82,6 +80,10 @@ public class Renderer {
             renderables.add(renderable);
         }
 
+    }
+
+    public boolean removeRenderable(Renderable renderable) {
+        return renderables.remove(renderable);
     }
 
 }

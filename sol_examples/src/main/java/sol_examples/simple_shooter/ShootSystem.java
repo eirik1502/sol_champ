@@ -14,16 +14,21 @@ public class ShootSystem extends ModuleSystemBase {
     private Vector2f tempVec = new Vector2f();
 
     @Override
-    public void onStart() {
+    public void onSetup() {
         usingModules(InputModule.class);
         usingComponents(ShootComp.class, TransformComp.class);
+    }
+
+    @Override
+    public void onStart() {
+
     }
 
     @Override
     public void onUpdate() {
         InputModule inp = super.getModule(InputModule.class);
 
-        groupEntities.forEach(entity -> {
+        entities.forEach(entity -> {
             ShootComp shootComp = entity.getComponent(ShootComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);
 

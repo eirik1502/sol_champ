@@ -27,6 +27,11 @@ public class NetworkServerModule extends Module {
     }
 
     @Override
+    public void onSetup() {
+
+    }
+
+    @Override
     public void onStart() {
         connectionListener.startListening(config.port);
     }

@@ -5,14 +5,17 @@ import sol_engine.ecs.World;
 import sol_engine.module.Module;
 import sol_engine.module.ModulesHandler;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class ModuleSystemBase extends SystemBase {
 
-
-    private Map<Class<? extends Module>, Module> modules = new HashMap<>();
+    private Set<Class<? extends Module>> modulesToBeUsed = new HashSet<>();
     private ModulesHandler modulesHandler;
 
+    // FOR SETUP
 
     @SafeVarargs
     protected final void usingModules(Class<? extends Module>... moduleTypes) {
@@ -20,34 +23,11 @@ public abstract class ModuleSystemBase extends SystemBase {
     }
 
     protected final void usingModules(Set<Class<? extends Module>> moduleTypes) {
-        moduleTypes.forEach(mt -> modules.put(mt, null));
-
-        // check if the requested modulesHandler are present, else remove this system
-        if (modulesHandler == null) {
-//            world.removeSystem(this);
-            System.err.println("No modulesHandler handler attached");
-            return;
-        }
-
-        this.modules.keySet().forEach(mt -> {
-            // get module if it is present
-            Module m = modulesHandler.getModule(mt);
-            if (m != null) {
-                this.modules.put(mt, modulesHandler.getModule(mt));
-            }
-        });
-
-        // if there are requested modulesHandler not given, remove this system
-        if (this.modules.values().contains(null)) {
-//            world.removeSystem(this);
-            System.err.println("Moudles handler did not have the required modulesHandler for: " + getClass().getSimpleName());
-            return;
-        }
+        modulesToBeUsed.addAll(moduleTypes);
     }
 
-    @SuppressWarnings("unchecked")
     protected final <T extends Module> T getModule(Class<T> moduleType) {
-        return (T) modules.get(moduleType);
+        return modulesHandler.getModule(moduleType);
     }
 
     public void setModulesHandler(ModulesHandler modulesHandler) {
@@ -56,8 +36,27 @@ public abstract class ModuleSystemBase extends SystemBase {
 
     @Override
     public void internalStart(World world) {
-        super.internalStart(world);
+        // check if the modules handler is present, else remove the system
+        if (modulesHandler == null) {
+            world.removeSystem(this.getClass());
+            System.err.println("No modulesHandler attached system." +
+                    "\nSystem: " + this.getClass().getSimpleName()
+            );
+            return;
+        }
 
+        // check if all required modules are present, else remove the system
+        if (!modulesHandler.hasAllModules(this.modulesToBeUsed)) {
+            world.removeSystem(this.getClass());
+            System.err.println("All required modules for the system are not present." +
+                    "\nSystem: " + this.getClass().getSimpleName() +
+                    "\nRequired modules: "
+                    + modulesToBeUsed.stream().map(Class::getSimpleName).collect(Collectors.joining(", "))
+            );
+            return;
+        }
+
+        super.internalStart(world);
     }
 
 }

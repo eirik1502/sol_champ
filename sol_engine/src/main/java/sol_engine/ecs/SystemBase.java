@@ -1,34 +1,80 @@
 package sol_engine.ecs;
 
+import sol_engine.utils.Function;
 import sol_engine.utils.ImmutableListView;
+
+import java.util.stream.Stream;
 
 public abstract class SystemBase {
 
     protected World world;
-    protected ComponentTypeGroup compGroupIdentity = new ComponentTypeGroup();
-    protected ImmutableListView<Entity> groupEntities;
+    protected ComponentFamily compFamily = new ComponentFamily();
+    protected ImmutableListView<Entity> entities;
 
-//    abstract public void onSetup();
+    abstract protected void onSetup();
 
-    abstract public void onStart();
+    protected void onStart() {
+    }
 
-    abstract public void onUpdate();
+    abstract protected void onUpdate();
 
-    abstract public void onEnd();
+    protected void onEnd() {
+    }
+
+    // FOR SETUP
 
     @SafeVarargs
     final protected void usingComponents(Class<? extends Component>... compTypes) {
-        this.compGroupIdentity = new ComponentTypeGroup(compTypes);
+        this.compFamily = new ComponentFamily(compTypes);
     }
 
-    private void retrieveGroupEntities() {
-        groupEntities = world.getEntityGroup(compGroupIdentity);
+    // GENERAL USE
+
+    public Stream<Entity> entitiesStream() {
+        return entities.stream();
+    }
+
+    public <T extends Component> void forEachWithComponents(Class<T> compType1, Function.TwoArg<Entity, T> consumer) {
+        EntitiesUtils.ForEachWithComponents(entitiesStream(), compType1, consumer);
+    }
+
+    public <T extends Component, U extends Component> void forEachWithComponents(
+            Class<T> compType1, Class<U> compType2, Function.ThreeArg<Entity, T, U> consumer) {
+        EntitiesUtils.ForEachWithComponents(entitiesStream(), compType1, compType2, consumer);
+    }
+
+    public <T extends Component, U extends Component, V extends Component> void forEachWithComponents(
+            Class<T> compType1, Class<U> compType2, Class<V> compType3, Function.FourArg<Entity, T, U, V> consumer) {
+        EntitiesUtils.ForEachWithComponents(entitiesStream(), compType1, compType2, compType3, consumer);
+    }
+
+    public <T extends Component, U extends Component, V extends Component, W extends Component> void forEachWithComponents(
+            Class<T> compType1, Class<U> compType2, Class<V> compType3, Class<W> compType4,
+            Function.FiveArg<Entity, T, U, V, W> consumer) {
+        EntitiesUtils.ForEachWithComponents(entitiesStream(), compType1, compType2, compType3, compType4, consumer);
+    }
+
+    public <T extends Component, U extends Component, V extends Component, W extends Component, X extends Component> void forEachWithComponents(
+            Class<T> compType1, Class<U> compType2, Class<V> compType3, Class<W> compType4, Class<X> compType5,
+            Function.SixArg<Entity, T, U, V, W, X> consumer) {
+        EntitiesUtils.ForEachWithComponents(
+                entitiesStream(), compType1, compType2, compType3, compType4, compType5, consumer);
+    }
+
+    // INTERNALS
+
+    private void retrieveFamilyEntities() {
+        entities = world.getEntitiesOfFamily(compFamily);
+    }
+
+    protected void internalSetup() {
+        onSetup();
     }
 
     public void internalStart(World world) {
         this.world = world;
+        retrieveFamilyEntities();
         onStart();
-        retrieveGroupEntities();
     }
 
     public void internalUpdate() {
@@ -37,9 +83,10 @@ public abstract class SystemBase {
 
     public void internalEnd() {
         this.onEnd();
+
     }
 
-    public ComponentTypeGroup getCompGroupIdentity() {
-        return compGroupIdentity;
+    public ComponentFamily getCompFamily() {
+        return compFamily;
     }
 }

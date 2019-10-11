@@ -13,7 +13,7 @@ public class MoveCircularSystem extends SystemBase {
 
     @Override
     public void onUpdate() {
-        groupEntities.forEach(e -> {
+        entities.forEach(e -> {
             TransformComp transComp = e.getComponent(TransformComp.class);
             MoveCircularComp mvCircComp = e.getComponent(MoveCircularComp.class);
             mvCircComp.currAngle += 0.1;

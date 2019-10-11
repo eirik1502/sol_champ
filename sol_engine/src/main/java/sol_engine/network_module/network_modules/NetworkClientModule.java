@@ -19,6 +19,11 @@ public class NetworkClientModule extends Module {
     }
 
     @Override
+    public void onSetup() {
+
+    }
+
+    @Override
     public void onStart() {
         ConnectionEstablisher connEst = new ConnectionEstablisher();
         connEst.connectToServer(config.serverAddr, config.port);

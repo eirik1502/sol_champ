@@ -14,11 +14,11 @@ public class ComponentTypeGroupTest {
 
     @Test
     public void testComponentTypeGroup() {
-        ComponentTypeGroup g1 = new ComponentTypeGroup(PosComp.class);
-        ComponentTypeGroup g2 = new ComponentTypeGroup(PosComp.class);
-        ComponentTypeGroup g3 = new ComponentTypeGroup(PosComp.class, TextComp.class);
-        ComponentTypeGroup g4 = new ComponentTypeGroup(TextComp.class, PosComp.class);
-        ComponentTypeGroup g5 = new ComponentTypeGroup(TextComp.class);
+        ComponentFamily g1 = new ComponentFamily(PosComp.class);
+        ComponentFamily g2 = new ComponentFamily(PosComp.class);
+        ComponentFamily g3 = new ComponentFamily(PosComp.class, TextComp.class);
+        ComponentFamily g4 = new ComponentFamily(TextComp.class, PosComp.class);
+        ComponentFamily g5 = new ComponentFamily(TextComp.class);
 
         // check equals
         Assert.assertEquals(g1, g2);

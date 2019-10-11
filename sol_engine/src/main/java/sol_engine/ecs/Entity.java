@@ -10,14 +10,20 @@ public class Entity {
 
     private World world;
 
-    /** Component container for this entity */
+    /**
+     * Component container for this entity
+     */
     private Map<Class<? extends Component>, Component> comps = new HashMap<>();
 
 
+    Entity(World world, String name) {
+        this.world = world;
+        this.name = name;
+    }
 
 
-    public ComponentTypeGroup getComponentTypeGroup() {
-        return new ComponentTypeGroup(comps.keySet());
+    public ComponentFamily getComponentTypeGroup() {
+        return new ComponentFamily(comps.keySet());
     }
 
     Map<Class<? extends Component>, Component> getComponents() {
@@ -25,19 +31,18 @@ public class Entity {
     }
 
 
-    public Entity(World world, String name) {
-        this.world = world;
-        this.name = name;
+    public Entity addComponent(Component comp) {
+        this.comps.put(comp.getClass(), comp);
+        return this;
     }
 
-
-    public void addComponent(Component comp) {
-        this.comps.put(comp.getClass(), comp);
+    public boolean hasComponent(Class<? extends Component> compType) {
+        return comps.containsKey(compType);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Component> T getComponent(Class<T> compType) {
-        return (T)comps.get(compType);
+        return (T) comps.get(compType);
     }
 
     public <T extends Component> Entity modifyComponent(Class<T> compType, Consumer<T> apply) {

@@ -1,0 +1,18 @@
+{
+  "modules": [
+    {
+      "name": "Graphics",
+      "config": {
+        "relWidth": 0.7,
+        "relHeight": 0.7,
+        "title": "Simple shooter"
+      }
+    }
+  ],
+  "componentSystems": [
+  ],
+  "entityClasses": [
+  ],
+  "initialEntities": [
+  ]
+}

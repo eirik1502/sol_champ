@@ -4,7 +4,7 @@ import sol_engine.graphics_module.graphical_objects.Renderable;
 import sol_engine.module.Module;
 
 public class GraphicsModule extends Module {
-
+    public static boolean OPEN_GL_INITED = false;
 
     private Window window;
     private Renderer renderer;
@@ -15,10 +15,15 @@ public class GraphicsModule extends Module {
         window = new Window(config.windowConfig);
         renderer = new Renderer(config.renderConfig, window.getRenderingContext());
 
+        OPEN_GL_INITED = true;
     }
 
     public void addRenderable(Renderable renderable) {
         renderer.addRenderable(renderable);
+    }
+
+    public boolean removeRenderable(Renderable renderable) {
+        return renderer.removeRenderable(renderable);
     }
 
     public Window getWindow() {
@@ -27,6 +32,11 @@ public class GraphicsModule extends Module {
 
     public Renderer getRenderer() {
         return renderer;
+    }
+
+    @Override
+    public void onSetup() {
+
     }
 
     @Override
@@ -41,6 +51,9 @@ public class GraphicsModule extends Module {
     @Override
     public void onUpdate() {
         window.pollEvents();
+        if (window.shouldClose()) {
+            simulationShouldTerminate();
+        }
         renderer.render();
     }
 }

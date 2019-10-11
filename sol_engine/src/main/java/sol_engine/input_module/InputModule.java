@@ -7,16 +7,19 @@ import sol_engine.module.Module;
 
 public class InputModule extends Module {
 
+    private InputModuleConfig config;
+
     private Window window;
 
-    private final boolean[] keysHeld;
-    private final boolean[] mouseButtonsHeld;
-    private final Vector2f cursorPosition;
+    private final Vector2f cursorPosScale = new Vector2f();
 
-    public InputModule() {
-        keysHeld = new boolean[InputConsts.KEY_LAST];
-        mouseButtonsHeld = new boolean[InputConsts.MOUSE_BUTTON_LAST];
-        cursorPosition = new Vector2f();
+    private final boolean[] keysHeld = new boolean[InputConsts.KEY_LAST];
+    private final boolean[] mouseButtonsHeld = new boolean[InputConsts.MOUSE_BUTTON_LAST];
+    private final Vector2f cursorPosition = new Vector2f();
+
+
+    public InputModule(InputModuleConfig config) {
+        this.config = config;
     }
 
     public Vector2f cursorPosition() {
@@ -46,8 +49,23 @@ public class InputModule extends Module {
     }
 
     @Override
+    public void onSetup() {
+        usingModules(GraphicsModule.class);
+    }
+
+    @Override
     public void onStart() {
         window = getModule(GraphicsModule.class).getWindow();
+
+        if (config.cursorPosScaleToSize == null || config.cursorPosScaleToSize.equals(new Vector2f())) {
+            cursorPosScale.set(1, 1);
+        } else {
+            Vector2f windowSize = window.getWindowSize();
+            cursorPosScale.set(
+                    config.cursorPosScaleToSize.x / windowSize.x,
+                    config.cursorPosScaleToSize.y / windowSize.y
+            );
+        }
 
         window.setKeyCallback((window1, key, scancode, action) -> {
             if (action == InputConsts.ACTION_PRESS) {
@@ -66,7 +84,7 @@ public class InputModule extends Module {
         });
 
         window.setCursorPosCallback((window1, xpos, ypos) -> {
-            this.cursorPosition.set(xpos, ypos);
+            this.cursorPosition.set(xpos, ypos).mul(cursorPosScale);
         });
     }
 

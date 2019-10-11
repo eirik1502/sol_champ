@@ -6,25 +6,34 @@ public abstract class Component implements Cloneable {
 
     private static Gson gson = new Gson();
 
-    /** check equality by gson conversion. Field order should be consistent */
+    /**
+     * check equality by gson conversion. Field order should be consistent
+     */
     public static boolean areEqual(Component comp1, Component comp2) {
         return gson.toJson(comp1).equals(gson.toJson(comp2));
     }
 
-    public Component clone() {
+    private Component internalClone() {
         try {
             return (Component) super.clone();
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             // this should not happen as every descending class is a component
             e.printStackTrace();
             return null;
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             // this should not happen as we implement cloneable
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Component clone() {
+        return internalClone();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Component> T cloneAs(Class<T> compType) {
+        return (T) this.internalClone();
     }
 
     // Don't think that cloning to class is necessary

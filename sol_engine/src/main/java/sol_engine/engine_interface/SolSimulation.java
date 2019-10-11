@@ -60,6 +60,9 @@ public abstract class SolSimulation {
 
         world.update();
         modulesHandler.internalUpdate();
+        if (modulesHandler.isSimulationShouldTerminate()) {
+            terminate();
+        }
 
         onStepEnd();
     }

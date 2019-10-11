@@ -5,15 +5,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class ComponentTypeGroup {
+public class ComponentFamily {
 
     private Set<Class<? extends Component>> compTypes;
 
     @SafeVarargs
-    public ComponentTypeGroup(Class<? extends Component>... compTypes) {
+    public ComponentFamily(Class<? extends Component>... compTypes) {
         this(new HashSet<>(Arrays.asList(compTypes)));
     }
-    public ComponentTypeGroup(Set<Class<? extends Component>> compTypes) {
+    public ComponentFamily(Set<Class<? extends Component>> compTypes) {
         this.compTypes = new HashSet<>(compTypes);
     }
 
@@ -21,13 +21,13 @@ public class ComponentTypeGroup {
         return compTypes.stream();
     }
 
-    public boolean contains(ComponentTypeGroup other) {
+    public boolean contains(ComponentFamily other) {
         return compTypes.containsAll(other.compTypes);
     }
 
     @Override
     public boolean equals(Object o) {
-        ComponentTypeGroup other = (ComponentTypeGroup)o;
+        ComponentFamily other = (ComponentFamily)o;
         return other.compTypes.equals(compTypes);
     }
 

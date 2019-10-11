@@ -25,7 +25,7 @@ public class WorldTest {
             super.usingComponents(PosComp.class);
         }
         public void onUpdate() {
-            super.groupEntities.stream().forEach(e -> {
+            super.entities.stream().forEach(e -> {
                 e.getComponent(PosComp.class).x += 1;
             });
         }
@@ -48,7 +48,7 @@ public class WorldTest {
         }
         public void onUpdate() {
             output = "";
-            super.groupEntities.stream().forEach(e -> {
+            super.entities.stream().forEach(e -> {
                 final PosComp posComp = e.getComponent(PosComp.class);
                 final TextComp textComp = e.getComponent(TextComp.class);
 
@@ -74,7 +74,7 @@ public class WorldTest {
                     entityGroupsField.setAccessible(true);
 
                     ws.entitiesOfCompType = (Map<Class<? extends Component>, Set<Entity>>) entitiesOfComponentTypeField.get(world);
-                    ws.entityGroups = (Map<ComponentTypeGroup, List<Entity>>) entityGroupsField.get(world);
+                    ws.entityGroups = (Map<ComponentFamily, List<Entity>>) entityGroupsField.get(world);
 
                     return ws;
 
@@ -87,7 +87,7 @@ public class WorldTest {
         }
 
         public Map<Class<? extends Component>, Set<Entity>> entitiesOfCompType;
-        public Map<ComponentTypeGroup, List<Entity>> entityGroups;
+        public Map<ComponentFamily, List<Entity>> entityGroups;
     }
 
 
@@ -139,12 +139,12 @@ public class WorldTest {
 
 
         //test groupEntities
-        Map<ComponentTypeGroup, List<Entity>> targetEntityGroups = new HashMap<>();
+        Map<ComponentFamily, List<Entity>> targetEntityGroups = new HashMap<>();
         targetSystems.forEach(s ->
-                targetEntityGroups.computeIfAbsent(s.compGroupIdentity, key -> new ArrayList<>())
+                targetEntityGroups.computeIfAbsent(s.compFamily, key -> new ArrayList<>())
                         .addAll(
                             targetEntities.stream()
-                                    .filter(e -> e.getComponentTypeGroup().contains(s.compGroupIdentity))
+                                    .filter(e -> e.getComponentTypeGroup().contains(s.compFamily))
                                     .collect(Collectors.toList())
                         )
                 );

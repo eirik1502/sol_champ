@@ -10,13 +10,13 @@ public class TornadoWetherSystem extends SystemBase {
     private Vector2f worldCenter = new Vector2f(1600f / 2f, 900f / 2f);
 
     @Override
-    public void onStart() {
+    protected void onSetup() {
         usingComponents(PhysicsBodyComp.class, TransformComp.class);
     }
 
     @Override
     public void onUpdate() {
-        groupEntities.forEach(entity -> {
+        entities.forEach(entity -> {
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);
             if (physComp.mass != PhysicsBodyComp.INF_MASS) {
@@ -29,10 +29,5 @@ public class TornadoWetherSystem extends SystemBase {
                 physComp.acceleration.add(windAcceleration);
             }
         });
-    }
-
-    @Override
-    public void onEnd() {
-
     }
 }

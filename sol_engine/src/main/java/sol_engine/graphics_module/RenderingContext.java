@@ -4,9 +4,6 @@ import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class RenderingContext {
 
@@ -43,7 +40,7 @@ public class RenderingContext {
     }
 
     public void setVsync(boolean val) {
-        glfwSwapInterval(val? 1 : 0);// Enable v-sync
+        glfwSwapInterval(val ? 1 : 0);// Enable v-sync
     }
 
     public void clear() {

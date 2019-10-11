@@ -1,5 +1,6 @@
 package sol_engine.graphics_module;
 
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
@@ -55,8 +56,7 @@ public class Window {
         }
     }
 
-    private void centerWindow() {
-        //center window
+    public Vector2f getWindowSize() {
         int width, height;
         try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1);
@@ -68,12 +68,16 @@ public class Window {
             height = pHeight.get(0);
         }
 
-        // Center our window
-        glfwSetWindowPos(
-                windowId,
-                (vidmode.width() - width) / 2,
-                (vidmode.height() - height) / 2
-        );
+        return new Vector2f(width, height);
+    }
+
+    public void setWindowPosition(Vector2f position) {
+        glfwSetWindowPos(windowId, (int) position.x, (int) position.y);
+    }
+
+    private void centerWindow() {
+        Vector2f screenSize = new Vector2f(vidmode.width(), vidmode.height());
+        setWindowPosition(screenSize.sub(getWindowSize(), new Vector2f()).mul(0.5f));
     }
 
     private void createRenderingContext() {
@@ -105,6 +109,10 @@ public class Window {
 
     public void pollEvents() {
         glfwPollEvents();
+    }
+
+    public boolean shouldClose() {
+        return glfwWindowShouldClose(windowId);
     }
 
     public void hide() {

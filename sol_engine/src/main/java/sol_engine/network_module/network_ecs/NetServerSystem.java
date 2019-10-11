@@ -15,15 +15,18 @@ public class NetServerSystem extends ModuleSystemBase {
     }
 
     @Override
-    public void onStart() {
+    public void onSetup() {
         usingModules(NetworkServerModule.class);
-
         usingComponents(NetIdComp.class, TransformComp.class);
     }
 
     @Override
+    public void onStart() {
+    }
+
+    @Override
     public void onUpdate() {
-        groupEntities.forEach(e -> {
+        entities.forEach(e -> {
 
             TransformComp transComp = e.getComponent(TransformComp.class);
 
