@@ -1,7 +1,6 @@
 package sol_engine.graphics_module.shaders;
 
 import org.joml.Matrix4f;
-import sol_engine.graphics_module.render_api.Shader;
 
 public abstract class MVPShader extends Shader {
 

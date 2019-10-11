@@ -8,7 +8,12 @@ import sol_engine.engine_interface.ThreadedSimulationLoop;
 public class SimpleSolGame extends SolSimulation {
 
     @Override
-    protected void setup() {
+    protected void onSetupModules() {
+
+    }
+
+    @Override
+    protected void onSetupWorld() {
         System.out.println("Simple SOL game started!");
         terminate();
     }
@@ -99,6 +104,4 @@ public class SimpleSolGame extends SolSimulation {
         }
         world = game.getGameState();
     }
-
-
 }

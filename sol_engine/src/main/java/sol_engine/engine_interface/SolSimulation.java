@@ -17,7 +17,9 @@ public abstract class SolSimulation {
     private SystemAddedListener systemAddedListener;
     private boolean terminated = false;
 
-    protected abstract void setup();
+    protected abstract void onSetupModules();
+
+    protected abstract void onSetupWorld();
 
     protected void onStart() {
     }
@@ -34,6 +36,9 @@ public abstract class SolSimulation {
 
     public final void start() {
         modulesHandler = new ModulesHandler();
+        onSetupModules();
+        modulesHandler.internalStart();
+
         world = new World();
 
         systemAddedListener = (sysType, sys) -> {
@@ -43,8 +48,7 @@ public abstract class SolSimulation {
         };
         world.addSystemAddedListener(systemAddedListener);
 
-        setup();
-        modulesHandler.internalStart();
+        onSetupWorld();
     }
 
     public final void terminate() {

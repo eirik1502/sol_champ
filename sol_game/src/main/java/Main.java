@@ -3,7 +3,7 @@ import sol_engine.ecs.EntityClass;
 import sol_engine.engine_interface.SolSimulation;
 import sol_engine.engine_interface.ThreadedSimulationLoop;
 import sol_engine.graphics_module.*;
-import sol_engine.graphics_module.graphical_objects.Square;
+import sol_engine.graphics_module.graphical_objects.Rectangle;
 import sol_engine.graphics_module.materials.MattMaterial;
 import sol_game.sol_client.ClientSimulation;
 import sol_game.sol_server.ServerSimulation;
@@ -32,7 +32,7 @@ public class Main {
 
             world.addEntityClass(new EntityClass("rect").addBaseComponents(
                     new TransformComp(100, 100),
-                    new RenderComp(new Square(100, 100, 100, 100, MattMaterial.RED)),
+                    new RenderComp(new Rectangle(100, 100, 100, 100, MattMaterial.RED)),
                     new MoveCircularComp(800 - 350, 100, 50)
             ));
 

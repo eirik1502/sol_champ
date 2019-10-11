@@ -1,10 +1,9 @@
-package sol_engine.graphics_module.render_api;
+package sol_engine.graphics_module.shaders;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
-import sol_engine.graphics_module.GraphicsModule;
 import sol_engine.utils.BufferUtils;
 
 import java.util.HashMap;
@@ -26,11 +25,9 @@ public abstract class Shader {
 
 
     public Shader(String vertex, String frag) {
-        if (GraphicsModule.OPEN_GL_INITED) {
-            System.out.println("Compiling shader: " + vertex + " " + frag);
-            this.programId = ShaderLoader.loadShader(vertex, frag);
-            System.out.println("Shadered compiled: " + vertex + " " + frag);
-        }
+        System.out.println("Compiling shader: " + vertex + " " + frag);
+        this.programId = ShaderLoader.loadShader(vertex, frag);
+        System.out.println("Shadered compiled: " + vertex + " " + frag);
     }
 
     public void bind() {

@@ -1,4 +1,4 @@
-package sol_engine.graphics_module.render_api;
+package sol_engine.graphics_module.render;
 
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
@@ -6,13 +6,13 @@ import org.lwjgl.opengl.GL30;
 public class Mesh {
 
     public static final Mesh UNIT_CORNERED_RECTANGLE_MESH = new Mesh(
-            new float[] {
+            new float[]{
                     0.0f, 0.0f, 0.0f,
                     0.0f, 1.0f, 0.0f,
                     1.0f, 1.0f, 0.0f,
                     1.0f, 0.0f, 0.0f
             },
-            new byte[] {
+            new byte[]{
                     0, 1, 2,
                     2, 3, 0
             }
@@ -42,6 +42,7 @@ public class Mesh {
         // this is a bug, that this has to be bound
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesId);
     }
+
     public void unbind() {
         //unbind vao
         GL30.glBindVertexArray(0);

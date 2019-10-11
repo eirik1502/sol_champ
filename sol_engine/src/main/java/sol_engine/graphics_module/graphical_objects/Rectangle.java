@@ -1,21 +1,20 @@
 package sol_engine.graphics_module.graphical_objects;
 
-import sol_engine.graphics_module.Color;
-import sol_engine.graphics_module.materials.EmptyMaterial;
 import sol_engine.graphics_module.materials.Material;
-import sol_engine.graphics_module.render_api.Mesh;
+import sol_engine.graphics_module.materials.MattMaterial;
+import sol_engine.graphics_module.render.Mesh;
 
-public class Square implements Renderable{
+public class Rectangle implements Renderable {
 
     private float x, y, width, height;
     private Mesh mesh;
     private Material material;
 
-    public Square() {
-        this(0, 0, 0, 0, EmptyMaterial.STANDARD);
+    public Rectangle() {
+        this(0, 0, 0, 0, MattMaterial.STANDARD());
     }
 
-    public Square(float x, float y, float width, float height, Material material) {
+    public Rectangle(float x, float y, float width, float height, Material material) {
         setProps(x, y, width, height, material);
 
         mesh = Mesh.UNIT_CORNERED_RECTANGLE_MESH;

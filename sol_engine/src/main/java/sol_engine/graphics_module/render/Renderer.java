@@ -1,9 +1,14 @@
-package sol_engine.graphics_module;
+package sol_engine.graphics_module.render;
 
 import org.joml.Matrix4f;
+import sol_engine.graphics_module.FrameBuffer;
+import sol_engine.graphics_module.RenderConfig;
+import sol_engine.graphics_module.RenderingContext;
 import sol_engine.graphics_module.graphical_objects.Renderable;
+import sol_engine.graphics_module.materials.Material;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
+import sol_engine.graphics_module.shaders.ShaderManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +22,8 @@ public class Renderer {
 
     private RenderingContext context;
     private FrameBuffer frameBuffer;
+    private ShaderManager shaderManager;
+
 
     private List<Renderable> renderables = new ArrayList<>();
 
@@ -25,6 +32,9 @@ public class Renderer {
     public Renderer(RenderConfig config, RenderingContext context) {
         this.config = config;
         this.context = context;
+
+        shaderManager = new ShaderManager();
+
     }
 
     public RenderingContext getContext() {
@@ -51,22 +61,25 @@ public class Renderer {
 //        mesh.bind();
 //        glDrawElements(GL_TRIANGLES, mesh.getIndicesCount(), GL_UNSIGNED_BYTE, 0);
 
-        renderables.forEach(s -> {
+        renderables.forEach(renderable -> {
 
             Matrix4f modTrans = new Matrix4f()
-                    .translate(s.getX(), s.getY(), 0)
-                    .scale(s.getWidth(), s.getHeight(), 1);//.rotate(time/10, 0, 1, 0 );
+                    .translate(renderable.getX(), renderable.getY(), 0)
+                    .scale(renderable.getWidth(), renderable.getHeight(), 1);//.rotate(time/10, 0, 1, 0 );
 
-            s.getMaterial().bind();
-            MVPShader shader = s.getMaterial().getShader();
+            Material material = renderable.getMaterial();
+            Class<? extends MVPShader> shaderType = material.getShaderType();
+            MVPShader shader = shaderManager.get(shaderType);
+            shader.bind();
+            material.applyShaderProps(shader);
 
             shader.setViewTransform(viewTrans);
             shader.setProjectionTransform(projTrans);
             shader.setModelTransform(modTrans);
             ((ColorShader) shader).setTime(time);
 
-            s.getMesh().bind();
-            glDrawElements(GL_TRIANGLES, s.getMesh().getIndicesCount(), GL_UNSIGNED_BYTE, 0);
+            renderable.getMesh().bind();
+            glDrawElements(GL_TRIANGLES, renderable.getMesh().getIndicesCount(), GL_UNSIGNED_BYTE, 0);
 
         });
 

@@ -39,8 +39,8 @@ public abstract class ModuleSystemBase extends SystemBase {
         // check if the modules handler is present, else remove the system
         if (modulesHandler == null) {
             world.removeSystem(this.getClass());
-            System.err.println("No modulesHandler attached system." +
-                    "\nSystem: " + this.getClass().getSimpleName()
+            System.err.println("No modulesHandler attached to a system." +
+                    "\n\tSystem: " + this.getClass().getSimpleName()
             );
             return;
         }
@@ -48,9 +48,9 @@ public abstract class ModuleSystemBase extends SystemBase {
         // check if all required modules are present, else remove the system
         if (!modulesHandler.hasAllModules(this.modulesToBeUsed)) {
             world.removeSystem(this.getClass());
-            System.err.println("All required modules for the system are not present." +
-                    "\nSystem: " + this.getClass().getSimpleName() +
-                    "\nRequired modules: "
+            System.err.println("All required modules for a system are not present." +
+                    "\n\tSystem: " + this.getClass().getSimpleName() +
+                    "\n\tRequired modules: "
                     + modulesToBeUsed.stream().map(Class::getSimpleName).collect(Collectors.joining(", "))
             );
             return;

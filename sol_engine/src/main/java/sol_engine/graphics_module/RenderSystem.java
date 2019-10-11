@@ -4,8 +4,8 @@ import com.google.common.collect.Sets;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.Entity;
+import sol_engine.graphics_module.graphical_objects.Rectangle;
 import sol_engine.graphics_module.graphical_objects.Renderable;
-import sol_engine.graphics_module.graphical_objects.Square;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,8 +47,8 @@ public class RenderSystem extends ModuleSystemBase {
             RenderSquareComp renderSquareComp = e.getComponent(RenderSquareComp.class);
             TransformComp transComp = e.getComponent(TransformComp.class);
 
-            Renderable renderable = entityRenderables.computeIfAbsent(e, newE -> new Square());
-            ((Square) renderable).setProps(
+            Renderable renderable = entityRenderables.computeIfAbsent(e, newE -> new Rectangle());
+            ((Rectangle) renderable).setProps(
                     transComp.x + renderSquareComp.offsetX,
                     transComp.y + renderSquareComp.offsetY,
                     renderSquareComp.width, renderSquareComp.height,

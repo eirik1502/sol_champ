@@ -1,7 +1,7 @@
 package sol_engine.graphics_module.graphical_objects;
 
-import sol_engine.graphics_module.render_api.Mesh;
-import sol_engine.graphics_module.render_api.Texture;
+import sol_engine.graphics_module.render.Mesh;
+import sol_engine.graphics_module.render.Texture;
 
 public class Sprite {
 

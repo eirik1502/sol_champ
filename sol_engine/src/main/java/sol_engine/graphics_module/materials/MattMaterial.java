@@ -3,12 +3,8 @@ package sol_engine.graphics_module.materials;
 import sol_engine.graphics_module.Color;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
-import sol_engine.graphics_module.shaders.Shaders;
 
 public class MattMaterial extends Material {
-
-    private static ColorShader shader = null;
-
 
     public static MattMaterial STANDARD() {
         return new MattMaterial(new Color(1, 1, 1));
@@ -27,26 +23,22 @@ public class MattMaterial extends Material {
     }
 
 
-    private Color color;
+    public Color color;
 
 
-    public MattMaterial(Color color) {
-        this.color = color;
-
-        if (shader == null) {
-            shader = Shaders.get(ColorShader.class);
-        }
-
+    public MattMaterial() {
+        super(ColorShader.class);
+        this.color = Color.BLACK;
     }
 
-    public void bind() {
-
-        MattMaterial.shader.bind();
-        shader.setColor(color.getRGBVec());
+    public MattMaterial(Color color) {
+        this();
+        this.color = color;
     }
 
     @Override
-    public MVPShader getShader() {
-        return shader;
+    public void applyShaderProps(MVPShader shader) {
+        ColorShader colorShader = (ColorShader) shader;
+        colorShader.setColor(color.getRGBVec());
     }
 }

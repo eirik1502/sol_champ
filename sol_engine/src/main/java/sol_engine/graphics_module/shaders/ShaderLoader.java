@@ -1,10 +1,9 @@
-package sol_engine.graphics_module.render_api;
+package sol_engine.graphics_module.shaders;
 
 import sol_engine.utils.ResourceUtils;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glDeleteShader;
 
 public class ShaderLoader {
 

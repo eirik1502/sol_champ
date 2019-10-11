@@ -40,13 +40,11 @@ public class SimpleShooter extends SolSimulation {
         game.start();
     }
 
+    private float worldWidth = 1600;
+    private float worldHeight = 900;
+
     @Override
-    protected void setup() {
-
-        float worldWidth = 1600;
-        float worldHeight = 900;
-
-
+    protected void onSetupModules() {
         modulesHandler.addModule(new GraphicsModule(
                 new GraphicsModuleConfig(
                         new WindowConfig(0.7f, 0.7f, "Hello SOL"),
@@ -57,6 +55,10 @@ public class SimpleShooter extends SolSimulation {
         modulesHandler.addModule(new InputModule(new InputModuleConfig(
                 new Vector2f(worldWidth, worldHeight)
         )));
+    }
+
+    @Override
+    protected void onSetupWorld() {
 
         world.addSystem(PhysicsSystem.class);
 
@@ -165,34 +167,15 @@ public class SimpleShooter extends SolSimulation {
 
     @Override
     protected void onStepEnd() {
-        System.out.println("entity count: " + world.getEntities().size());
     }
 
     private ModuleSystemBase createDebugSystem() {
         return new ModuleSystemBase() {
-            private int lastCollCount = 0;
 
-            @Override
             public void onSetup() {
-                usingComponents(CollisionComp.class);
-            }
-
-            public void onStart() {
             }
 
             public void onUpdate() {
-                entities.stream().findFirst().ifPresent(entity -> {
-                    CollisionComp collComp = entity.getComponent(CollisionComp.class);
-                    if (lastCollCount == 0 && collComp.collidingEntities.size() > 0) {
-                        System.out.println("Collision!");
-                    } else if (lastCollCount > 0 && collComp.collidingEntities.size() == 0) {
-                        System.out.println("Collision END!");
-                    }
-                    lastCollCount = collComp.collidingEntities.size();
-                });
-            }
-
-            public void onEnd() {
             }
         };
     }

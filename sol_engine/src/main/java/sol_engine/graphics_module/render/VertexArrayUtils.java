@@ -1,4 +1,4 @@
-package sol_engine.graphics_module.render_api;
+package sol_engine.graphics_module.render;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -16,10 +16,12 @@ public class VertexArrayUtils {
         GL30.glBindVertexArray(id);
         return id;
     }
+
     public static void bindVertexArray(int vaoId, int indicesId) {
         GL30.glBindVertexArray(vaoId);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesId);
     }
+
     public static void unbindVertexArray() {
         GL30.glBindVertexArray(0);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);

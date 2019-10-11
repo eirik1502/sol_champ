@@ -1,21 +1,17 @@
 package sol_engine.graphics_module;
 
 import sol_engine.graphics_module.graphical_objects.Renderable;
+import sol_engine.graphics_module.render.Renderer;
 import sol_engine.module.Module;
 
 public class GraphicsModule extends Module {
-    public static boolean OPEN_GL_INITED = false;
-
     private Window window;
     private Renderer renderer;
-
 
     public GraphicsModule(GraphicsModuleConfig config) {
 
         window = new Window(config.windowConfig);
         renderer = new Renderer(config.renderConfig, window.getRenderingContext());
-
-        OPEN_GL_INITED = true;
     }
 
     public void addRenderable(Renderable renderable) {
