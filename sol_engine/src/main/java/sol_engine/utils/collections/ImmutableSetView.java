@@ -1,9 +1,11 @@
-package sol_engine.utils;
+package sol_engine.utils.collections;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.stream.Stream;
 
-public class ImmutableSetView<T>  implements Iterable<T>{
+public class ImmutableSetView<T> implements Iterable<T> {
 
     private Set<T> set;
 
@@ -24,15 +26,19 @@ public class ImmutableSetView<T>  implements Iterable<T>{
         return set.stream();
     }
 
-    public Set<T> asSet() {
-        return new HashSet<>(set);
+    public Set<T> copyToSet() {
+        return copyToSet(new HashSet<>());
+    }
+
+    public Set<T> copyToSet(Set<T> copyTo) {
+        copyTo.addAll(set);
+        return copyTo;
     }
 
     public boolean equals(Object o) {
         if (o instanceof Set) {
             return set.equals(o);
-        }
-        else if (o instanceof ImmutableSetView) {
+        } else if (o instanceof ImmutableSetView) {
             return set.equals(((ImmutableSetView) o).set);
         }
         return false;

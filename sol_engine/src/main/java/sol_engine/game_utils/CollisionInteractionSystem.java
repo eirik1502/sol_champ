@@ -21,7 +21,7 @@ public class CollisionInteractionSystem extends SystemBase {
 
     @Override
     public void onUpdate() {
-        Set<Entity> entitiesSet = new HashSet<>(entities.asList());
+        Set<Entity> entitiesSet = new HashSet<>(entities.copyToList());
 
         forEachWithComponents(
                 CollisionComp.class,

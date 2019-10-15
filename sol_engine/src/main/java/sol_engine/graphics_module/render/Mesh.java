@@ -5,6 +5,8 @@ import org.lwjgl.opengl.GL30;
 
 public class Mesh {
 
+    public static final Mesh NULL_MESH = new Mesh(new float[0], new byte[0]);
+
     public static final Mesh UNIT_CORNERED_RECTANGLE_MESH = new Mesh(
             new float[]{
                     0.0f, 0.0f, 0.0f,

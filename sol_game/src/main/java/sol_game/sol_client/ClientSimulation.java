@@ -36,7 +36,7 @@ public class ClientSimulation extends SolSimulation {
 
         world.addEntityClass(new EntityClass("rect").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderSquareComp(100, 100, MattMaterial.RED),
+                new RenderShapeComp(100, 100, MattMaterial.RED),
                 new MoveCircularComp(800 - 350, 100, 50)
         ));
 

@@ -1,6 +1,6 @@
 package sol_engine.ecs;
 
-import sol_engine.utils.ImmutableListView;
+import sol_engine.utils.collections.ImmutableListView;
 
 import java.util.ArrayList;
 

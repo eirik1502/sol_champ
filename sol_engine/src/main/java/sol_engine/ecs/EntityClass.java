@@ -1,10 +1,9 @@
 package sol_engine.ecs;
 
-import sol_engine.utils.ImmutableListView;
-import sol_engine.utils.ImmutableSetView;
+import sol_engine.utils.collections.ImmutableListView;
+import sol_engine.utils.collections.ImmutableSetView;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class EntityClass {
 
@@ -31,6 +30,7 @@ public class EntityClass {
     public EntityClass addBaseComponents(Component... components) {
         return addBaseComponents(Arrays.asList(components));
     }
+
     public EntityClass addBaseComponents(List<Component> components) {
         components.forEach(this::addBaseComponent);
         return this;

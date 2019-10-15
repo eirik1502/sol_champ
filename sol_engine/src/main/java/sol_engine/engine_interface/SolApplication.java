@@ -3,6 +3,10 @@ package sol_engine.engine_interface;
 import sol_engine.module.Module;
 import sol_engine.module.ModulesHandler;
 
+// Don't use this class
+// Might be removed
+// Ore should integrate a simulation, loop and default modules
+
 public abstract class SolApplication {
 
     protected SolSimulation simulation;

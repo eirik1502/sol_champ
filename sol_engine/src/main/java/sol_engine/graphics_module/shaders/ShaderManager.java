@@ -13,7 +13,6 @@ public class ShaderManager {
     public <T extends Shader> T get(Class<T> shaderType) {
         return (T) shaderInstances.computeIfAbsent(shaderType, key -> {
             Shader s = ClassUtils.instanciateNoarg(key);
-            System.out.println(s);
             return s;
         });
     }

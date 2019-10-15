@@ -34,7 +34,7 @@ public class Window {
         createWindow(width, height, config.title);
         centerWindow();
 
-        createRenderingContext();
+        createRenderingContext(config.vsync);
         show();
         focus();
 
@@ -80,9 +80,9 @@ public class Window {
         setWindowPosition(screenSize.sub(getWindowSize(), new Vector2f()).mul(0.5f));
     }
 
-    private void createRenderingContext() {
+    private void createRenderingContext(boolean vsync) {
         if (windowId == -1) throw new IllegalStateException("cannot init OpenGL before a window is created");
-        context = new RenderingContext(windowId);
+        context = new RenderingContext(windowId, vsync);
     }
 
     private void initGLFW() {

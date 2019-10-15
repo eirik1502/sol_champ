@@ -1,16 +1,13 @@
 package sol_engine.graphics_module;
 
-import com.google.common.collect.Sets;
+import org.joml.Vector3f;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.Entity;
-import sol_engine.graphics_module.graphical_objects.Rectangle;
 import sol_engine.graphics_module.graphical_objects.Renderable;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class RenderSystem extends ModuleSystemBase {
 
@@ -21,7 +18,7 @@ public class RenderSystem extends ModuleSystemBase {
     @Override
     public void onSetup() {
         super.usingModules(GraphicsModule.class);
-        super.usingComponents(RenderSquareComp.class, TransformComp.class);
+        super.usingComponents(RenderShapeComp.class, TransformComp.class);
     }
 
     @Override
@@ -29,36 +26,54 @@ public class RenderSystem extends ModuleSystemBase {
     }
 
     @Override
-    public void onUpdate() {
+    protected void onUpdate() {
         GraphicsModule graphics = getModule(GraphicsModule.class);
 
-        Set<Entity> entitySet = new HashSet<>(entities.asList());
-        Set<Entity> entityWithRenderablesSet = entityRenderables.keySet();
-
-        Set<Entity> entitiesToBeRemoved = Sets.difference(entityWithRenderablesSet, entitySet).immutableCopy();
-//        Set<Entity> entitiesToBeAdded = Sets.difference(entitySet, entityWithRenderablesSet);
-
-        entitiesToBeRemoved.forEach(entity -> {
-            Renderable removedRenderable = entityRenderables.remove(entity);
-            graphics.removeRenderable(removedRenderable);
-        });
-
-        entities.forEach(e -> {
-            RenderSquareComp renderSquareComp = e.getComponent(RenderSquareComp.class);
-            TransformComp transComp = e.getComponent(TransformComp.class);
-
-            Renderable renderable = entityRenderables.computeIfAbsent(e, newE -> new Rectangle());
-            ((Rectangle) renderable).setProps(
-                    transComp.x + renderSquareComp.offsetX,
-                    transComp.y + renderSquareComp.offsetY,
-                    renderSquareComp.width, renderSquareComp.height,
-                    renderSquareComp.material
-            );
-
-            graphics.addRenderable(renderable);
-        });
-
+        forEachWithComponents(
+                RenderShapeComp.class,
+                TransformComp.class,
+                (entity, renderComp, transComp) -> {
+                    Vector3f position = new Vector3f(
+                            transComp.x + renderComp.offsetX,
+                            transComp.y + renderComp.offsetY,
+                            0
+                    );
+                    graphics.getRenderer().renderObject(renderComp.renderable, position);
+                }
+        );
     }
+
+//    @Override
+//    public void onUpdate() {
+//        GraphicsModule graphics = getModule(GraphicsModule.class);
+//
+//        Set<Entity> entitySet = new HashSet<>(entities.asList());
+//        Set<Entity> entityWithRenderablesSet = entityRenderables.keySet();
+//
+//        Set<Entity> entitiesToBeRemoved = Sets.difference(entityWithRenderablesSet, entitySet).immutableCopy();
+////        Set<Entity> entitiesToBeAdded = Sets.difference(entitySet, entityWithRenderablesSet);
+//
+//        entitiesToBeRemoved.forEach(entity -> {
+//            Renderable removedRenderable = entityRenderables.remove(entity);
+//            graphics.removeRenderable(removedRenderable);
+//        });
+//
+//        entities.forEach(e -> {
+//            RenderShapeComp renderSquareComp = e.getComponent(RenderShapeComp.class);
+//            TransformComp transComp = e.getComponent(TransformComp.class);
+//
+//            Renderable renderable = entityRenderables.computeIfAbsent(e, newE -> new Rectangle());
+//            renderable.setProps(
+//                    transComp.x + renderSquareComp.offsetX,
+//                    transComp.y + renderSquareComp.offsetY,
+//                    renderSquareComp.width, renderSquareComp.height,
+//                    renderSquareComp.material
+//            );
+//
+//            graphics.addRenderable(renderable);
+//        });
+//
+//    }
 
     @Override
     public void onEnd() {

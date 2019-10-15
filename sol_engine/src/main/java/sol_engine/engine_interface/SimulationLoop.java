@@ -1,51 +1,47 @@
 package sol_engine.engine_interface;
 
+import sol_engine.utils.tickers.LinearTicker;
 import sol_engine.utils.tickers.Ticker;
 
 public class SimulationLoop {
 
-    public static final float DEFAULT_UNIFORM_TICK_FREQ = 1.0f/60.0f;
+    public static final float DEFAULT_UNIFORM_TICK_FREQ = 1.0f / 60.0f;
 
 
     private SolSimulation simulation;
-    private boolean running;
+    private Ticker ticker;
 
 
     public SimulationLoop(SolSimulation simulation) {
         this(simulation, DEFAULT_UNIFORM_TICK_FREQ);
     }
+
     public SimulationLoop(SolSimulation simulation, float tickFrequency) {
-        this(simulation, null);
+        this(simulation, new LinearTicker(tickFrequency));
     }
+
     public SimulationLoop(SolSimulation simulation, Ticker stepTicker) {
         this.simulation = simulation;
-        this.running = false;
+        this.ticker = stepTicker;
     }
 
     public void start() {
         simulation.start();
-        this.running = true;
         runBlocking();
     }
 
     private void runBlocking() {
-        while(running) {
-
-            // time the simulation
+        ticker.setListener(deltaTime -> {
             simulation.step();
-
-            // check if the underlying simulation is ended, onEnd this loop
             if (simulation.isTerminated()) {
                 terminate();
             }
-        }
-
-        if (!simulation.isTerminated()) {
-            simulation.terminate();
-        }
+        });
+        ticker.start();
     }
 
     public void terminate() {
-        running = false;
+        ticker.stop();
+        simulation.terminate();
     }
 }

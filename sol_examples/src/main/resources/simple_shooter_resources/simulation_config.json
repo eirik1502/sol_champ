@@ -1,18 +1,102 @@
 {
   "modules": [
     {
-      "name": "Graphics",
+      "name": "GraphicsModule",
       "config": {
-        "relWidth": 0.7,
-        "relHeight": 0.7,
-        "title": "Simple shooter"
+        "windowConfig": {
+          "relWidth": 0.7,
+          "relHeight": 0.7,
+          "title": "Simple shooter",
+          "vsync": false
+        },
+        "renderConfig": {
+          "viewWidth": 1600,
+          "viewHeight": 900,
+          "cameraX": 800,
+          "cameraY": 450
+        }
+      }
+    },
+    {
+      "name": "InputModule",
+      "config": {
+        "cursorPosScaleToSize": {
+          "x": 1600,
+          "y": 900
+        }
       }
     }
   ],
-  "componentSystems": [
-  ],
-  "entityClasses": [
-  ],
-  "initialEntities": [
-  ]
+  "world": {
+    "componentSystems": [
+      "CollisionSystem",
+      "NaturalCollisionResolutionSystem",
+      "CollisionInteractionSystem",
+      "SimpleKeyControlSystem",
+      "ShootSystem",
+      "TornadoWetherSystem",
+      "FollowCursorSystem",
+      "RenderSystem"
+    ],
+    "entityClasses": [
+      {
+        "name": "player",
+        "comps": [
+          {
+            "type": "TransformComp",
+            "values": {
+              "x": 100,
+              "y": 100
+            }
+          },
+          {
+            "name": "RenderShapeComp",
+            "values": {
+              "renderable": {
+                "subClass": "RenderableShape.Circle",
+                "redius": 16,
+                "material": {
+                  "subClass": "MattMaterial",
+                  "color": {
+                    "r": 1,
+                    "g": 0,
+                    "b": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      new
+      TransformComp(100,
+      100),
+      new
+      RenderShapeComp(new
+      RenderableShape.Circle(pwidth
+      /
+      2,
+      MattMaterial.RED())),
+      new
+      PhysicsBodyComp(1,
+      1,
+      0.9f),
+      new
+      CollisionComp(new
+      PhysicsBodyShape.Circ(pwidth
+      /
+      2)),
+      new
+      NaturalCollisionResolutionComp(),
+      new
+      SimpleKeyControlComp(10),
+      new
+      ShootComp(InputConsts.MOUSE_BUTTON_LEFT,
+      "bullet",
+      1000,
+      10)
+    ],
+    "initialEntities": [
+    ]
+  }
 }

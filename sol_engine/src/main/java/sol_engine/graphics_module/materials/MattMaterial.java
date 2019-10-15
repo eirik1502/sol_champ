@@ -27,13 +27,17 @@ public class MattMaterial extends Material {
 
 
     public MattMaterial() {
-        super(ColorShader.class);
-        this.color = Color.BLACK;
+        this(Color.BLACK);
     }
 
     public MattMaterial(Color color) {
-        this();
+        this(color, 1);
+    }
+
+    public MattMaterial(Color color, float transparancy) {
+        super(ColorShader.class);
         this.color = color;
+        this.transparancy = transparancy;
     }
 
     @Override

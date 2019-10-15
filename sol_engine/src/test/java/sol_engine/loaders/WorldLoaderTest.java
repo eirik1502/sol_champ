@@ -9,8 +9,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class WorldLoaderTest {
 
@@ -82,17 +84,17 @@ public class WorldLoaderTest {
         billTextComp.text = "hello there";
 
         assertThat(setsAreEqualByReflection(
-                characterClass.getComponentsView().asSet(), asSet(characterPosComp)),
+                characterClass.getComponentsView().copyToSet(), asSet(characterPosComp)),
                 is(true));
         assertThat(setsAreEqualByReflection(
-                frankClass.getComponentsView().asSet(), asSet(frankPosComp)),
+                frankClass.getComponentsView().copyToSet(), asSet(frankPosComp)),
                 is(true));
         assertThat(setsAreEqualByReflection(
-                billClass.getComponentsView().asSet(), asSet(billTextComp, billPosComp)),
+                billClass.getComponentsView().copyToSet(), asSet(billTextComp, billPosComp)),
                 is(true));
     }
 
-    private <T> Set<T> asSet(T...elems) {
+    private <T> Set<T> asSet(T... elems) {
         return new HashSet<>(Stream.of(elems).collect(Collectors.toSet()));
     }
 

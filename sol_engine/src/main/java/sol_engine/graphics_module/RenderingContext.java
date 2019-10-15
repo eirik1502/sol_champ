@@ -10,13 +10,17 @@ public class RenderingContext {
     private long windowId;
 
 
-    RenderingContext(long windowId) {
+    RenderingContext(long windowId, boolean vsync) {
         this.windowId = windowId;
         generateGlContext();
         setContextSettings();
-        setVsync(true);
+        setVsync(vsync);
         clear();
         swapBuffers();  // to set the background color
+    }
+
+    RenderingContext(long windowId) {
+        this(windowId, true);
     }
 
     private void generateGlContext() {

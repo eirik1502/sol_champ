@@ -1,5 +1,7 @@
 package sol_engine.module;
 
+import sol_engine.utils.collections.ImmutableSetView;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +65,10 @@ public class ModulesHandler {
 
     public Stream<Module> stream() {
         return modules.values().stream();
+    }
+
+    public ImmutableSetView<Class<? extends Module>> viewModuleTypes() {
+        return new ImmutableSetView<>(modules.keySet());
     }
 
     public boolean isSimulationShouldTerminate() {

@@ -1,0 +1,217 @@
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2019-10-14 14:19:29,291 [   3200]   WARN - llij.ide.plugins.PluginManager - Gitee not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,291 [   3200]   WARN - llij.ide.plugins.PluginManager - Subversion not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,293 [   3202]   WARN - llij.ide.plugins.PluginManager - Task Management not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,294 [   3203]   WARN - llij.ide.plugins.PluginManager - SAP Cloud Commerce code guard not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,294 [   3203]   WARN - llij.ide.plugins.PluginManager - Command Line Tool Support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,294 [   3203]   WARN - llij.ide.plugins.PluginManager - Docker not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,296 [   3205]   WARN - llij.ide.plugins.PluginManager - Settings Repository not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,296 [   3205]   WARN - llij.ide.plugins.PluginManager - Angular and AngularJS not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,296 [   3205]   WARN - llij.ide.plugins.PluginManager - Blade not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,297 [   3206]   WARN - llij.ide.plugins.PluginManager - RubyMotion support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,297 [   3206]   WARN - llij.ide.plugins.PluginManager - Python not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,297 [   3206]   WARN - llij.ide.plugins.PluginManager - Ruby not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,297 [   3206]   WARN - llij.ide.plugins.PluginManager - Dart not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,298 [   3207]   WARN - llij.ide.plugins.PluginManager - Flutter not loaded: since build 192.6817.14 > IU-192.6603.28 
+2019-10-14 14:19:29,299 [   3208]   WARN - llij.ide.plugins.PluginManager - Bazel not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,299 [   3208]   WARN - llij.ide.plugins.PluginManager - Maven Versions + not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,300 [   3209]   WARN - llij.ide.plugins.PluginManager - TestCafe runner for Webstorm not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,300 [   3209]   WARN - llij.ide.plugins.PluginManager - PHP not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,300 [   3209]   WARN - llij.ide.plugins.PluginManager - Ambient not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,300 [   3209]   WARN - llij.ide.plugins.PluginManager - MoveTab not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,300 [   3209]   WARN - llij.ide.plugins.PluginManager - Kubernetes not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,301 [   3210]   WARN - llij.ide.plugins.PluginManager - Packages for Apex not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:19:29,957 [   3866]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: VibrantInk from plugin: com.intellij.database 
+2019-10-14 14:19:29,957 [   3866]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: WarmNeon from plugin: com.intellij.database 
+2019-10-14 14:19:29,958 [   3867]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: High ?ontrast from plugin: com.intellij.database 
+2019-10-14 14:19:30,187 [   4096]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Arc Dark - old: Arc Dark, new Arc Dark 
+2019-10-14 14:19:30,193 [   4102]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Dark - old: Atom One Dark, new Atom One Dark 
+2019-10-14 14:19:30,199 [   4108]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Light - old: Atom One Light, new Atom One Light 
+2019-10-14 14:19:30,210 [   4119]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Dracula - old: Dracula, new Dracula 
+2019-10-14 14:19:30,213 [   4122]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme GitHub (Material) - old: GitHub (Material), new GitHub (Material) 
+2019-10-14 14:19:30,220 [   4129]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Darker - old: Material Darker, new Material Darker 
+2019-10-14 14:19:30,226 [   4135]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Deep Ocean - old: Material Deep Ocean, new Material Deep Ocean 
+2019-10-14 14:19:30,231 [   4140]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Lighter - old: Material Lighter, new Material Lighter 
+2019-10-14 14:19:30,238 [   4147]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Oceanic - old: Material Oceanic, new Material Oceanic 
+2019-10-14 14:19:30,244 [   4153]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Palenight - old: Material Palenight, new Material Palenight 
+2019-10-14 14:19:30,251 [   4160]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Dark - old: Material Solarized Dark, new Material Solarized Dark 
+2019-10-14 14:19:30,259 [   4168]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Light - old: Material Solarized Light, new Material Solarized Light 
+2019-10-14 14:19:30,267 [   4176]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Monokai Pro - old: Monokai Pro, new Monokai Pro 
+2019-10-14 14:19:40,937 [  14846]   WARN - com.intellij.util.xmlb.Binding - no accessors for class org.jetbrains.kotlin.idea.highlighter.KotlinDefaultHighlightingSettingsProvider 
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2019-10-14 14:20:08,439 [   2968]   WARN - llij.ide.plugins.PluginManager - Gitee not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,439 [   2968]   WARN - llij.ide.plugins.PluginManager - Subversion not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,441 [   2970]   WARN - llij.ide.plugins.PluginManager - Task Management not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,441 [   2970]   WARN - llij.ide.plugins.PluginManager - SAP Cloud Commerce code guard not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,442 [   2971]   WARN - llij.ide.plugins.PluginManager - Command Line Tool Support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,442 [   2971]   WARN - llij.ide.plugins.PluginManager - Docker not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,443 [   2972]   WARN - llij.ide.plugins.PluginManager - Settings Repository not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,443 [   2972]   WARN - llij.ide.plugins.PluginManager - Angular and AngularJS not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,443 [   2972]   WARN - llij.ide.plugins.PluginManager - Blade not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,444 [   2973]   WARN - llij.ide.plugins.PluginManager - RubyMotion support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,444 [   2973]   WARN - llij.ide.plugins.PluginManager - Python not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,444 [   2973]   WARN - llij.ide.plugins.PluginManager - Ruby not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,444 [   2973]   WARN - llij.ide.plugins.PluginManager - Dart not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,444 [   2973]   WARN - llij.ide.plugins.PluginManager - Flutter not loaded: since build 192.6817.14 > IU-192.6603.28 
+2019-10-14 14:20:08,445 [   2974]   WARN - llij.ide.plugins.PluginManager - Bazel not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,446 [   2975]   WARN - llij.ide.plugins.PluginManager - Maven Versions + not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,446 [   2975]   WARN - llij.ide.plugins.PluginManager - TestCafe runner for Webstorm not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,446 [   2975]   WARN - llij.ide.plugins.PluginManager - PHP not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,446 [   2975]   WARN - llij.ide.plugins.PluginManager - Ambient not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,446 [   2975]   WARN - llij.ide.plugins.PluginManager - MoveTab not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,446 [   2975]   WARN - llij.ide.plugins.PluginManager - Kubernetes not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:08,447 [   2976]   WARN - llij.ide.plugins.PluginManager - Packages for Apex not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:20:09,065 [   3594]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: VibrantInk from plugin: com.intellij.database 
+2019-10-14 14:20:09,065 [   3594]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: WarmNeon from plugin: com.intellij.database 
+2019-10-14 14:20:09,065 [   3594]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: High ?ontrast from plugin: com.intellij.database 
+2019-10-14 14:20:09,306 [   3835]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Arc Dark - old: Arc Dark, new Arc Dark 
+2019-10-14 14:20:09,314 [   3843]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Dark - old: Atom One Dark, new Atom One Dark 
+2019-10-14 14:20:09,322 [   3851]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Light - old: Atom One Light, new Atom One Light 
+2019-10-14 14:20:09,329 [   3858]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Dracula - old: Dracula, new Dracula 
+2019-10-14 14:20:09,333 [   3862]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme GitHub (Material) - old: GitHub (Material), new GitHub (Material) 
+2019-10-14 14:20:09,347 [   3876]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Darker - old: Material Darker, new Material Darker 
+2019-10-14 14:20:09,352 [   3881]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Deep Ocean - old: Material Deep Ocean, new Material Deep Ocean 
+2019-10-14 14:20:09,356 [   3885]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Lighter - old: Material Lighter, new Material Lighter 
+2019-10-14 14:20:09,361 [   3890]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Oceanic - old: Material Oceanic, new Material Oceanic 
+2019-10-14 14:20:09,366 [   3895]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Palenight - old: Material Palenight, new Material Palenight 
+2019-10-14 14:20:09,373 [   3902]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Dark - old: Material Solarized Dark, new Material Solarized Dark 
+2019-10-14 14:20:09,380 [   3909]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Light - old: Material Solarized Light, new Material Solarized Light 
+2019-10-14 14:20:09,385 [   3914]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Monokai Pro - old: Monokai Pro, new Monokai Pro 
+2019-10-14 14:20:19,248 [  13777]   WARN - com.intellij.util.xmlb.Binding - no accessors for class org.jetbrains.kotlin.idea.highlighter.KotlinDefaultHighlightingSettingsProvider 
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2019-10-14 14:24:10,057 [   4168]   WARN - llij.ide.plugins.PluginManager - Gitee not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,057 [   4168]   WARN - llij.ide.plugins.PluginManager - Subversion not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,060 [   4171]   WARN - llij.ide.plugins.PluginManager - Task Management not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,060 [   4171]   WARN - llij.ide.plugins.PluginManager - SAP Cloud Commerce code guard not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,060 [   4171]   WARN - llij.ide.plugins.PluginManager - Command Line Tool Support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,061 [   4172]   WARN - llij.ide.plugins.PluginManager - Docker not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,061 [   4172]   WARN - llij.ide.plugins.PluginManager - Settings Repository not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,062 [   4173]   WARN - llij.ide.plugins.PluginManager - Angular and AngularJS not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,062 [   4173]   WARN - llij.ide.plugins.PluginManager - Blade not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,062 [   4173]   WARN - llij.ide.plugins.PluginManager - RubyMotion support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,062 [   4173]   WARN - llij.ide.plugins.PluginManager - Python not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,062 [   4173]   WARN - llij.ide.plugins.PluginManager - Ruby not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,063 [   4174]   WARN - llij.ide.plugins.PluginManager - Dart not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,063 [   4174]   WARN - llij.ide.plugins.PluginManager - Flutter not loaded: since build 192.6817.14 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - Bazel not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - Maven Versions + not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - TestCafe runner for Webstorm not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - PHP not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - Ambient not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - MoveTab not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,064 [   4175]   WARN - llij.ide.plugins.PluginManager - Kubernetes not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,065 [   4176]   WARN - llij.ide.plugins.PluginManager - Packages for Apex not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-14 14:24:10,868 [   4979]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: VibrantInk from plugin: com.intellij.database 
+2019-10-14 14:24:10,868 [   4979]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: WarmNeon from plugin: com.intellij.database 
+2019-10-14 14:24:10,868 [   4979]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: High ?ontrast from plugin: com.intellij.database 
+2019-10-14 14:24:11,790 [   5901]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Arc Dark - old: Arc Dark, new Arc Dark 
+2019-10-14 14:24:11,795 [   5906]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Dark - old: Atom One Dark, new Atom One Dark 
+2019-10-14 14:24:11,801 [   5912]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Light - old: Atom One Light, new Atom One Light 
+2019-10-14 14:24:11,806 [   5917]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Dracula - old: Dracula, new Dracula 
+2019-10-14 14:24:11,810 [   5921]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme GitHub (Material) - old: GitHub (Material), new GitHub (Material) 
+2019-10-14 14:24:11,817 [   5928]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Darker - old: Material Darker, new Material Darker 
+2019-10-14 14:24:11,822 [   5933]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Deep Ocean - old: Material Deep Ocean, new Material Deep Ocean 
+2019-10-14 14:24:11,826 [   5937]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Lighter - old: Material Lighter, new Material Lighter 
+2019-10-14 14:24:11,831 [   5942]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Oceanic - old: Material Oceanic, new Material Oceanic 
+2019-10-14 14:24:11,836 [   5947]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Palenight - old: Material Palenight, new Material Palenight 
+2019-10-14 14:24:11,842 [   5953]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Dark - old: Material Solarized Dark, new Material Solarized Dark 
+2019-10-14 14:24:11,848 [   5959]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Light - old: Material Solarized Light, new Material Solarized Light 
+2019-10-14 14:24:11,855 [   5966]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Monokai Pro - old: Monokai Pro, new Monokai Pro 
+2019-10-14 14:24:23,154 [  17265]   WARN - com.intellij.util.xmlb.Binding - no accessors for class org.jetbrains.kotlin.idea.highlighter.KotlinDefaultHighlightingSettingsProvider 
+2019-10-14 15:22:11,406 [3485517]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.KotlinAwareJavaGetterRenameProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 15:22:11,410 [3485521]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.RenameKotlinClassifierProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 15:22:11,412 [3485523]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.RenameKotlinFunctionProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 15:22:11,415 [3485526]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.RenameKotlinPropertyProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 15:22:11,416 [3485527]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.RenameKotlinParameterProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 15:22:11,419 [3485530]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.RenameKotlinFileProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 15:22:12,044 [3486155]   WARN - name.RenamePsiElementProcessor - org.jetbrains.kotlin.idea.refactoring.rename.RenameKotlinTypeParameterProcessor overrides deprecated findReferences(..).
+Override findReferences(PsiElement, SearchScope, boolean) instead. 
+2019-10-14 16:18:48,652 [6882763]  ERROR - llij.ide.plugins.PluginManager - Attempt to modify PSI for non-committed Document! 
+java.lang.IllegalStateException: Attempt to modify PSI for non-committed Document!
+	at com.intellij.pom.core.impl.PomModelImpl.startTransaction(PomModelImpl.java:313)
+	at com.intellij.pom.core.impl.PomModelImpl.lambda$runTransaction$2(PomModelImpl.java:136)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.registerIndicatorAndRun(CoreProgressManager.java:591)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.executeProcessUnderProgress(CoreProgressManager.java:537)
+	at com.intellij.openapi.progress.impl.ProgressManagerImpl.executeProcessUnderProgress(ProgressManagerImpl.java:59)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.executeNonCancelableSection(CoreProgressManager.java:197)
+	at com.intellij.pom.core.impl.PomModelImpl.runTransaction(PomModelImpl.java:135)
+	at com.intellij.psi.impl.source.tree.ChangeUtil.prepareAndRunChangeAction(ChangeUtil.java:149)
+	at com.intellij.psi.impl.source.tree.CompositeElement.replaceChild(CompositeElement.java:659)
+	at com.intellij.psi.impl.source.codeStyle.CodeEditUtil.replaceChild(CodeEditUtil.java:176)
+	at com.intellij.extapi.psi.ASTDelegatePsiElement.replaceChildInternal(ASTDelegatePsiElement.java:385)
+	at com.intellij.extapi.psi.ASTDelegatePsiElement.replace(ASTDelegatePsiElement.java:375)
+	at com.intellij.json.psi.impl.JsonPropertyMixin.setName(JsonPropertyMixin.java:27)
+	at com.intellij.json.psi.impl.JsonPropertyImpl.setName(JsonPropertyImpl.java:14)
+	at com.intellij.json.editor.JsonTypedHandler.addPropertyNameQuotesIfNeeded(JsonTypedHandler.java:108)
+	at com.intellij.json.editor.JsonTypedHandler.beforeCharTyped(JsonTypedHandler.java:59)
+	at com.intellij.codeInsight.editorActions.TypedHandler.lambda$execute$0(TypedHandler.java:207)
+	at com.intellij.openapi.editor.impl.CaretModelImpl.lambda$runForEachCaret$3(CaretModelImpl.java:354)
+	at com.intellij.openapi.editor.impl.CaretModelImpl.doWithCaretMerging(CaretModelImpl.java:453)
+	at com.intellij.openapi.editor.impl.CaretModelImpl.runForEachCaret(CaretModelImpl.java:346)
+	at com.intellij.openapi.editor.impl.CaretModelImpl.runForEachCaret(CaretModelImpl.java:336)
+	at com.intellij.codeInsight.editorActions.TypedHandler.execute(TypedHandler.java:160)
+	at com.intellij.codeInsight.lookup.impl.LookupTypedHandler.execute(LookupTypedHandler.java:75)
+	at com.intellij.codeInsight.template.emmet.EmmetPreviewTypedHandler.execute(EmmetPreviewTypedHandler.java:39)
+	at com.intellij.codeInsight.editorActions.AutoFormatTypedHandler.executeOriginalHandler(AutoFormatTypedHandler.java:167)
+	at com.intellij.codeInsight.editorActions.AutoFormatTypedHandler.execute(AutoFormatTypedHandler.java:94)
+	at com.intellij.execution.impl.ConsoleViewImpl$MyTypedHandler.execute(ConsoleViewImpl.java:1206)
+	at com.intellij.openapi.editor.impl.DefaultRawTypedHandler$1.run(DefaultRawTypedHandler.java:55)
+	at com.intellij.openapi.application.impl.ApplicationImpl.runWriteAction(ApplicationImpl.java:994)
+	at com.intellij.openapi.editor.impl.DefaultRawTypedHandler.execute(DefaultRawTypedHandler.java:49)
+	at com.intellij.openapi.editor.impl.EditorFactoryImpl$MyRawTypedHandler.execute(EditorFactoryImpl.java:278)
+	at com.intellij.openapi.editor.actionSystem.TypedAction.lambda$actionPerformed$0(TypedAction.java:130)
+	at com.intellij.reporting.FreezeLoggerImpl.runUnderPerformanceMonitor(FreezeLoggerImpl.java:28)
+	at com.intellij.openapi.editor.actionSystem.TypedAction.actionPerformed(TypedAction.java:130)
+	at com.intellij.openapi.editor.impl.EditorImpl.processKeyTypedNormally(EditorImpl.java:1304)
+	at com.intellij.openapi.editor.impl.EditorImpl.processKeyTyped(EditorImpl.java:1289)
+	at com.intellij.openapi.editor.impl.EditorImpl.processKeyTyped(EditorImpl.java:3359)
+	at com.intellij.openapi.editor.impl.EditorImpl$7.keyTyped(EditorImpl.java:1119)
+	at java.desktop/java.awt.Component.processKeyEvent(Component.java:6606)
+	at java.desktop/javax.swing.JComponent.processKeyEvent(JComponent.java:2849)
+	at java.desktop/java.awt.Component.processEvent(Component.java:6428)
+	at java.desktop/java.awt.Container.processEvent(Container.java:2263)
+	at java.desktop/java.awt.Component.dispatchEventImpl(Component.java:5026)
+	at java.desktop/java.awt.Container.dispatchEventImpl(Container.java:2321)
+	at java.desktop/java.awt.Component.dispatchEvent(Component.java:4858)
+	at java.desktop/java.awt.KeyboardFocusManager.redispatchEvent(KeyboardFocusManager.java:1950)
+	at java.desktop/java.awt.DefaultKeyboardFocusManager.dispatchKeyEvent(DefaultKeyboardFocusManager.java:879)
+	at java.desktop/java.awt.DefaultKeyboardFocusManager.preDispatchKeyEvent(DefaultKeyboardFocusManager.java:1149)
+	at java.desktop/java.awt.DefaultKeyboardFocusManager.typeAheadAssertions(DefaultKeyboardFocusManager.java:1018)
+	at java.desktop/java.awt.DefaultKeyboardFocusManager.dispatchEvent(DefaultKeyboardFocusManager.java:844)
+	at com.intellij.ide.IdeKeyboardFocusManager.dispatchEvent(IdeKeyboardFocusManager.java:40)
+	at java.desktop/java.awt.Component.dispatchEventImpl(Component.java:4907)
+	at java.desktop/java.awt.Container.dispatchEventImpl(Container.java:2321)
+	at java.desktop/java.awt.Window.dispatchEventImpl(Window.java:2772)
+	at java.desktop/java.awt.Component.dispatchEvent(Component.java:4858)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:778)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:727)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:95)
+	at java.desktop/java.awt.EventQueue$5.run(EventQueue.java:751)
+	at java.desktop/java.awt.EventQueue$5.run(EventQueue.java:749)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:748)
+	at com.intellij.ide.IdeEventQueue.defaultDispatchEvent(IdeEventQueue.java:878)
+	at com.intellij.ide.IdeEventQueue._dispatchEvent(IdeEventQueue.java:805)
+	at com.intellij.ide.IdeEventQueue.lambda$dispatchEvent$8(IdeEventQueue.java:466)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.computePrioritized(CoreProgressManager.java:704)
+	at com.intellij.ide.IdeEventQueue.dispatchEvent(IdeEventQueue.java:465)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+2019-10-14 16:18:48,652 [6882763]  ERROR - llij.ide.plugins.PluginManager - IntelliJ IDEA 2019.2.2  Build #IU-192.6603.28 
+2019-10-14 16:18:48,652 [6882763]  ERROR - llij.ide.plugins.PluginManager - JDK: 11.0.3; VM: OpenJDK 64-Bit Server VM; Vendor: JetBrains s.r.o 
+2019-10-14 16:18:48,652 [6882763]  ERROR - llij.ide.plugins.PluginManager - OS: Windows 10 
+2019-10-14 16:18:48,678 [6882789]  ERROR - llij.ide.plugins.PluginManager - Last Action: EditorEnter 

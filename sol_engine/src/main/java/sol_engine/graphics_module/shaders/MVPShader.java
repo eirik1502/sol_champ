@@ -4,10 +4,16 @@ import org.joml.Matrix4f;
 
 public abstract class MVPShader extends Shader {
 
+    public static class NULL extends MVPShader {
+    }
+
     private static final String UNIFORM_MODEL_TRANSFORM = "modelTransform";
     private static final String UNIFORM_VIEW_TRANSFORM = "viewTransform";
     private static final String UNIFORM_PROJECTION_TRANSFORM = "projectionTransform";
 
+    public MVPShader() {
+        super();
+    }
 
     public MVPShader(String vertexPath, String fragPath) {
         super(vertexPath, fragPath);

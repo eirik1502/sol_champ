@@ -2,8 +2,8 @@ package sol_engine.ecs;
 
 
 import com.google.gson.Gson;
-import sol_engine.utils.ImmutableListView;
-import sol_engine.utils.SetUtils;
+import sol_engine.utils.collections.ImmutableListView;
+import sol_engine.utils.collections.SetUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -87,9 +87,10 @@ public class World {
             return addSystemInstance(sys);
 
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            System.err.println("SystemBase creation failed for system: " + systemType.getName()
-                    + ". ComponentSystems should have one no-arg constructor, and not be an inner class (may be a public static inner class).");
-            e.printStackTrace();
+            EcsLogger.logger.severe("System creation failed." +
+                    "\n\tFor system: " + systemType.getName() +
+                    "\n\tComponentSystems should have a no-arg constructor, " +
+                    "and be a global class or a public static inner class.");
             return null;
         }
     }
@@ -137,7 +138,7 @@ public class World {
 
     public Entity getEntityByName(String name) {
         return entities.stream().filter(e -> e.name.equals(name)).findFirst().orElseGet(() -> {
-            System.err.println("Trying to get an entity by name that is not present. Entity name: " + name);
+            EcsLogger.logger.severe("Trying to get an entity by name that is not present.\n\tEntity name: " + name);
             return null;
         });
     }

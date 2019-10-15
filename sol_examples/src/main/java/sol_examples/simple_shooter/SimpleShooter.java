@@ -10,6 +10,7 @@ import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
 import sol_engine.game_utils.*;
 import sol_engine.graphics_module.*;
+import sol_engine.graphics_module.graphical_objects.RenderableShape;
 import sol_engine.graphics_module.materials.MattMaterial;
 import sol_engine.input_module.InputConsts;
 import sol_engine.input_module.InputModule;
@@ -47,7 +48,7 @@ public class SimpleShooter extends SolSimulation {
     protected void onSetupModules() {
         modulesHandler.addModule(new GraphicsModule(
                 new GraphicsModuleConfig(
-                        new WindowConfig(0.7f, 0.7f, "Hello SOL"),
+                        new WindowConfig(0.7f, 0.7f, "Hello SOL", false),
                         new RenderConfig(worldWidth / 2, worldHeight / 2, worldWidth, worldHeight)
                 )
         ));
@@ -76,29 +77,29 @@ public class SimpleShooter extends SolSimulation {
         float pwidth = 32, pheight = 32;
         world.addEntityClass(new EntityClass("player").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderSquareComp(pwidth, pheight, MattMaterial.RED(), -pwidth / 2, -pheight / 2),
+                new RenderShapeComp(new RenderableShape.Circle(pwidth / 2, MattMaterial.RED())),
                 new PhysicsBodyComp(1, 1, 0.9f),
-                new CollisionComp(new PhysicsBodyShape.Rect(pwidth, pheight)),
+                new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
                 new SimpleKeyControlComp(10),
                 new ShootComp(InputConsts.MOUSE_BUTTON_LEFT, "bullet", 1000, 10)
         ));
         world.addEntityClass(new EntityClass("marker").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderSquareComp(pwidth / 2, pwidth / 2, MattMaterial.RED(), -pwidth / 4, -pwidth / 4)
+                new RenderShapeComp(new RenderableShape.Rectangle(pwidth / 2, pheight / 2, MattMaterial.RED()), -pwidth / 4, -pwidth / 4)
         ));
 
         world.addEntity(world.createEntity("cursor")
                 .addComponent(new TransformComp())
                 .addComponent(new FollowCursorComp())
                 .addComponent(
-                        new RenderSquareComp(pwidth / 2, pwidth / 2, MattMaterial.RED(), -pwidth / 4, -pwidth / 4)
+                        new RenderShapeComp(new RenderableShape.Rectangle(pwidth / 2, pheight / 2, MattMaterial.RED()), -pwidth / 4, -pwidth / 4)
                 )
         );
 
         world.addEntityClass(new EntityClass("circ").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderSquareComp(pwidth, pwidth, MattMaterial.GREEN(), -pwidth / 2, -pwidth / 2),
+                new RenderShapeComp(new RenderableShape.Rectangle(pwidth, pwidth, MattMaterial.GREEN()), -pwidth / 2, -pwidth / 2),
                 new PhysicsBodyComp(1, 1, 1.2f),
                 new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
@@ -111,7 +112,7 @@ public class SimpleShooter extends SolSimulation {
 
         world.addEntityClass(new EntityClass("bullet").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderSquareComp(pwidth, pwidth, MattMaterial.BLUE(), -pwidth / 2, -pwidth / 2),
+                new RenderShapeComp(new RenderableShape.Rectangle(pwidth, pwidth, MattMaterial.BLUE()), -pwidth / 2, -pwidth / 2),
                 new PhysicsBodyComp(1, 1, 1.2f),
                 new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
@@ -123,7 +124,7 @@ public class SimpleShooter extends SolSimulation {
 
         world.addEntityClass(new EntityClass("wall").addBaseComponents(
                 new TransformComp(),
-                new RenderSquareComp(100, 100, MattMaterial.BLUE()),
+                new RenderShapeComp(new RenderableShape.Rectangle(100, 100, MattMaterial.BLUE())),
                 new PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1, 0.2f),
                 new CollisionComp(new PhysicsBodyShape.Rect(0, 0)),
                 new NaturalCollisionResolutionComp()
@@ -132,9 +133,9 @@ public class SimpleShooter extends SolSimulation {
         Function.FiveArgReturn<String, Float, Float, Float, Float, Void> createWall = (name, x, y, width, height) -> {
             world.instanciateEntityClass("wall", name)
                     .modifyComponent(TransformComp.class, transComp -> transComp.setXY(x + width / 2, y + height / 2))
-                    .modifyComponent(RenderSquareComp.class, comp -> {
-                        comp.width = width;
-                        comp.height = height;
+                    .modifyComponent(RenderShapeComp.class, comp -> {
+                        comp.renderable.width = width;
+                        comp.renderable.height = height;
                         comp.offsetX = -width / 2;
                         comp.offsetY = -height / 2;
                     })

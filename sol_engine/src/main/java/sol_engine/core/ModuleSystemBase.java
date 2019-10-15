@@ -1,5 +1,6 @@
 package sol_engine.core;
 
+import com.google.common.collect.Sets;
 import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
 import sol_engine.module.Module;
@@ -39,7 +40,7 @@ public abstract class ModuleSystemBase extends SystemBase {
         // check if the modules handler is present, else remove the system
         if (modulesHandler == null) {
             world.removeSystem(this.getClass());
-            System.err.println("No modulesHandler attached to a system." +
+            CoreLogger.logger.warning("No modulesHandler attached to a ModuleSystem. Removing system." +
                     "\n\tSystem: " + this.getClass().getSimpleName()
             );
             return;
@@ -48,10 +49,14 @@ public abstract class ModuleSystemBase extends SystemBase {
         // check if all required modules are present, else remove the system
         if (!modulesHandler.hasAllModules(this.modulesToBeUsed)) {
             world.removeSystem(this.getClass());
-            System.err.println("All required modules for a system are not present." +
+            CoreLogger.logger.warning("All required modules for a ModuleSystem are not present. Removing system." +
                     "\n\tSystem: " + this.getClass().getSimpleName() +
-                    "\n\tRequired modules: "
-                    + modulesToBeUsed.stream().map(Class::getSimpleName).collect(Collectors.joining(", "))
+                    "\n\tRequired modules: " +
+                    modulesToBeUsed.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")) +
+                    "\n\tMissing modules: " +
+                    Sets.difference(this.modulesToBeUsed, modulesHandler.viewModuleTypes().copyToSet()).stream()
+                            .map(Class::getSimpleName)
+                            .collect(Collectors.joining(", "))
             );
             return;
         }
