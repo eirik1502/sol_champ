@@ -11,7 +11,7 @@ task simpleShooter(type: JavaExec) {
     group = 'application'
     classpath = sourceSets.main.runtimeClasspath
     main = 'sol_examples.simple_shooter.SimpleShooter'
-    systemProperty 'java.library.path', project(':sol_engine').nativeLibsDir
+//    systemProperty 'java.library.path', project(':sol_engine').nativeLibsDir
 }
 
 //mainClassName = 'sol_examples.simple_sol_game.SimpleSolGame'

@@ -1,10 +1,7 @@
 package sol_examples.simple_shooter;
 
 import org.joml.Vector2f;
-import sol_engine.core.ModuleSystemBase;
-import sol_engine.core.SimpleKeyControlComp;
-import sol_engine.core.SimpleKeyControlSystem;
-import sol_engine.core.TransformComp;
+import sol_engine.core.*;
 import sol_engine.ecs.EntityClass;
 import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
@@ -71,6 +68,7 @@ public class SimpleShooter extends SolSimulation {
         world.addSystem(ShootSystem.class);
         world.addSystem(TornadoWetherSystem.class);
         world.addSystem(FollowCursorSystem.class);
+        world.addSystem(WatchEntitySystem.class);
         world.addSystem(RenderSystem.class);
 
 
@@ -82,7 +80,8 @@ public class SimpleShooter extends SolSimulation {
                 new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
                 new SimpleKeyControlComp(10),
-                new ShootComp(InputConsts.MOUSE_BUTTON_LEFT, "bullet", 1000, 10)
+                new ShootComp(InputConsts.MOUSE_BUTTON_LEFT, "bullet", 1000, 10),
+                new WatchComp()
         ));
         world.addEntityClass(new EntityClass("marker").addBaseComponents(
                 new TransformComp(100, 100),

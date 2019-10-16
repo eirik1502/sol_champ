@@ -40,6 +40,10 @@ public class Window {
 
     }
 
+    public long getNativeWindowId() {
+        return windowId;
+    }
+
     private void storeMonitor() {
         primaryMonitor = glfwGetPrimaryMonitor();
         vidmode = glfwGetVideoMode(primaryMonitor);
@@ -82,7 +86,7 @@ public class Window {
 
     private void createRenderingContext(boolean vsync) {
         if (windowId == -1) throw new IllegalStateException("cannot init OpenGL before a window is created");
-        context = new RenderingContext(windowId, vsync);
+        context = new RenderingContext(this, vsync);
     }
 
     private void initGLFW() {
@@ -146,5 +150,10 @@ public class Window {
         glfwSetCursorPosCallback(windowId, (long window, double xPos, double yPos) ->
                 callback.invoke(this, (float) xPos, (float) yPos)
         );
+    }
+
+    public void terminate() {
+        glfwDestroyWindow(windowId);
+        glfwTerminate();
     }
 }

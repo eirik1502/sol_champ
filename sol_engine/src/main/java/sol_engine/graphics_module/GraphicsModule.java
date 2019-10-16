@@ -8,7 +8,6 @@ public class GraphicsModule extends Module {
     private Renderer renderer;
 
     public GraphicsModule(GraphicsModuleConfig config) {
-
         window = new Window(config.windowConfig);
         renderer = new Renderer(config.renderConfig, window.getRenderingContext());
     }
@@ -28,11 +27,12 @@ public class GraphicsModule extends Module {
 
     @Override
     public void onStart() {
-
     }
 
     @Override
     public void onEnd() {
+        renderer.terminate();
+        window.terminate();
     }
 
     @Override

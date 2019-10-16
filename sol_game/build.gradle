@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-	id 'application'
+    id 'application'
 
 }
 
@@ -12,7 +12,7 @@ dependencies {
 
 run {
 
-	// standardInput = System.in
+    // standardInput = System.in
     mainClassName = 'sol_game.Main'
-    systemProperty 'java.library.path', project(':sol_engine').nativeLibsDir
+//    systemProperty 'java.library.path', project(':sol_engine').nativeLibsDir
 }

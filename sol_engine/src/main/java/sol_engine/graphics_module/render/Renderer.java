@@ -6,6 +6,7 @@ import sol_engine.graphics_module.FrameBuffer;
 import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.RenderingContext;
 import sol_engine.graphics_module.graphical_objects.Renderable;
+import sol_engine.graphics_module.imgui.Imgui;
 import sol_engine.graphics_module.materials.Material;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
@@ -39,6 +40,7 @@ public class Renderer {
 
     private RenderingContext context;
     private FrameBuffer frameBuffer;
+    private Imgui imgui;
     private ShaderManager shaderManager;
     private MeshManager meshManager;
 
@@ -51,10 +53,17 @@ public class Renderer {
         this.config = config;
         this.context = context;
 
+        imgui = new Imgui(context.getWindow());
+        imgui.startFrame();
+
         shaderManager = new ShaderManager();
         meshManager = new MeshManager();
         meshManager.addMesh(UNIT_CORNERED_RECTANGLE_MESH, MeshUtils.createUnitCorneredRectangleMesh());
         meshManager.addMesh(UNIT_CENTERED_CIRCLE_MESH, MeshUtils.createUnitCenteredCircleMesh(16));
+    }
+
+    public void terminate() {
+        imgui.terminate();
     }
 
     public RenderingContext getContext() {
@@ -63,6 +72,10 @@ public class Renderer {
 
     public void renderObject(Renderable renderable, Vector3f position) {
         toBeRendered.add(new RenderData(renderable, position));
+    }
+
+    public Imgui getImgui() {
+        return imgui;
     }
 
     public void render() {
@@ -107,9 +120,15 @@ public class Renderer {
             });
         });
 
+        //        boolean[] b = {true};
+//        imgui.imgui.text("Hello, world!");
+//        imgui.imgui.checkbox("Demo Window", b);
+//        imgui.imgui.showDemoWindow(b);
+        imgui.render();
         context.swapBuffers();
-        toBeRendered.clear();
 
+        toBeRendered.clear();
         time++;
+        imgui.startFrame();
     }
 }

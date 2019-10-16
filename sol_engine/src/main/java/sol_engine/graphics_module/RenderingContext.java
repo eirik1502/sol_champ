@@ -7,11 +7,11 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class RenderingContext {
 
-    private long windowId;
+    private Window window;
 
 
-    RenderingContext(long windowId, boolean vsync) {
-        this.windowId = windowId;
+    RenderingContext(Window window, boolean vsync) {
+        this.window = window;
         generateGlContext();
         setContextSettings();
         setVsync(vsync);
@@ -19,13 +19,14 @@ public class RenderingContext {
         swapBuffers();  // to set the background color
     }
 
-    RenderingContext(long windowId) {
-        this(windowId, true);
+    RenderingContext(Window window) {
+        this(window, true);
     }
 
     private void generateGlContext() {
-        glfwMakeContextCurrent(windowId);
-        GL.createCapabilities(); //get opengl context
+        glfwMakeContextCurrent(window.getNativeWindowId());
+        //get opengl context
+        GL.createCapabilities();
     }
 
     private void setContextSettings() {
@@ -47,12 +48,16 @@ public class RenderingContext {
         glfwSwapInterval(val ? 1 : 0);// Enable v-sync
     }
 
+    public Window getWindow() {
+        return window;
+    }
+
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT);
 
     }
 
     public void swapBuffers() {
-        glfwSwapBuffers(windowId);
+        glfwSwapBuffers(window.getNativeWindowId());
     }
 }
