@@ -2,7 +2,6 @@ package sol_engine.graphics_module.render;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 import sol_engine.graphics_module.FrameBuffer;
 import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.RenderingContext;
@@ -89,7 +88,7 @@ public class Renderer {
 
         Matrix4f viewTrans = new Matrix4f().identity();//.translate(-viewWidth/2, -viewHeight/2, -1);
         Matrix4f projTrans = new Matrix4f().ortho(0, config.viewWidth, config.viewHeight, 0, 10, -10);
-        GL11.glViewport(0, 0, 640, 480);
+//        GL11.glViewport(0, 0, 640, 480);
 
         context.clear();
 

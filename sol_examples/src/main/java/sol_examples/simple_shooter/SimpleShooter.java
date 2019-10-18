@@ -1,8 +1,13 @@
 package sol_examples.simple_shooter;
 
 import org.joml.Vector2f;
-import sol_engine.core.*;
+import sol_engine.core.ModuleSystemBase;
+import sol_engine.core.SimpleKeyControlComp;
+import sol_engine.core.SimpleKeyControlSystem;
+import sol_engine.core.TransformComp;
 import sol_engine.ecs.EntityClass;
+import sol_engine.editor.EditorEditableComp;
+import sol_engine.editor.EditorSystem;
 import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
 import sol_engine.game_utils.*;
@@ -45,7 +50,8 @@ public class SimpleShooter extends SolSimulation {
     protected void onSetupModules() {
         modulesHandler.addModule(new GraphicsModule(
                 new GraphicsModuleConfig(
-                        new WindowConfig(0.7f, 0.7f, "Hello SOL", false),
+                        new WindowConfig(0.5f, 0.5f, "Hello SOL", false),
+//                        new WindowConfig(0.7f, 0.7f, "Hello SOL", false),
                         new RenderConfig(worldWidth / 2, worldHeight / 2, worldWidth, worldHeight)
                 )
         ));
@@ -66,9 +72,9 @@ public class SimpleShooter extends SolSimulation {
         world.addSystemInstance(createDebugSystem());
         world.addSystem(SimpleKeyControlSystem.class);
         world.addSystem(ShootSystem.class);
-        world.addSystem(TornadoWetherSystem.class);
+//        world.addSystem(TornadoWetherSystem.class);
         world.addSystem(FollowCursorSystem.class);
-        world.addSystem(WatchEntitySystem.class);
+        world.addSystem(EditorSystem.class);
         world.addSystem(RenderSystem.class);
 
 
@@ -81,11 +87,12 @@ public class SimpleShooter extends SolSimulation {
                 new NaturalCollisionResolutionComp(),
                 new SimpleKeyControlComp(10),
                 new ShootComp(InputConsts.MOUSE_BUTTON_LEFT, "bullet", 1000, 10),
-                new WatchComp()
+                new EditorEditableComp()
         ));
         world.addEntityClass(new EntityClass("marker").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderShapeComp(new RenderableShape.Rectangle(pwidth / 2, pheight / 2, MattMaterial.RED()), -pwidth / 4, -pwidth / 4)
+                new RenderShapeComp(new RenderableShape.Rectangle(pwidth / 2, pheight / 2, MattMaterial.RED()), -pwidth / 4, -pwidth / 4),
+                new EditorEditableComp()
         ));
 
         world.addEntity(world.createEntity("cursor")
@@ -94,6 +101,7 @@ public class SimpleShooter extends SolSimulation {
                 .addComponent(
                         new RenderShapeComp(new RenderableShape.Rectangle(pwidth / 2, pheight / 2, MattMaterial.RED()), -pwidth / 4, -pwidth / 4)
                 )
+                .addComponent(new EditorEditableComp())
         );
 
         world.addEntityClass(new EntityClass("circ").addBaseComponents(
@@ -106,7 +114,9 @@ public class SimpleShooter extends SolSimulation {
                         .addTag("enemy")
                         .addInteraction("bullet",
                                 CollisionInteraction.Create("marker", "marker")
-                        )
+                        ),
+                new EditorEditableComp()
+
         ));
 
         world.addEntityClass(new EntityClass("bullet").addBaseComponents(
@@ -118,7 +128,9 @@ public class SimpleShooter extends SolSimulation {
                 new CollisionInteractionComp()
                         .addTag("bullet")
                         .addInteraction("bullet", CollisionInteraction.DestroySelf())
-                        .addInteraction("enemy", new CollisionInteraction().destroySelf().destroyOther())
+                        .addInteraction("enemy", new CollisionInteraction().destroySelf().destroyOther()),
+                new EditorEditableComp()
+
         ));
 
         world.addEntityClass(new EntityClass("wall").addBaseComponents(
@@ -126,7 +138,9 @@ public class SimpleShooter extends SolSimulation {
                 new RenderShapeComp(new RenderableShape.Rectangle(100, 100, MattMaterial.BLUE())),
                 new PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1, 0.2f),
                 new CollisionComp(new PhysicsBodyShape.Rect(0, 0)),
-                new NaturalCollisionResolutionComp()
+                new NaturalCollisionResolutionComp(),
+                new EditorEditableComp()
+
         ));
 
         Function.FiveArgReturn<String, Float, Float, Float, Float, Void> createWall = (name, x, y, width, height) -> {

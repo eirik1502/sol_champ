@@ -1,5 +1,6 @@
 package sol_engine.graphics_module.imgui;
 
+import imgui.DrawData;
 import imgui.IO;
 import imgui.ImGui;
 import imgui.imgui.Context;
@@ -49,6 +50,9 @@ public class Imgui {
 
     public void render() {
         imgui.render();
-        implGl3.renderDrawData(imgui.getDrawData());
+        DrawData drawData = imgui.getDrawData();
+        if (drawData != null) {
+            implGl3.renderDrawData(drawData);
+        }
     }
 }
