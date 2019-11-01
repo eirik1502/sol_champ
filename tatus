@@ -1,0 +1,96 @@
+[33mcommit f5754d7390aa7fcbde9aeb85f0db0d44741bd922[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Fri Oct 18 16:25:59 2019 +0200
+
+    add an editor. Currently EditorSystem and EditorEditableComp has to be added manually. They should be incorporated into a function in SolEditor or as a module
+
+[33mcommit 5eed7ae54199a089e36c681f01316d2fb6689ede[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Wed Oct 16 21:24:09 2019 +0200
+
+    add stream with index utility functions and mutable representation of some primitives
+
+[33mcommit 3f1514f382a2b47d31bd8bf2c6cd74b5f853bb57[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Wed Oct 16 21:09:25 2019 +0200
+
+    switch to kotlin in engine gradle build
+
+[33mcommit 8418cd3727b165c09866d47a26f312fe2d22d1eb[m[33m ([m[1;32madd-imgui[m[33m)[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Wed Oct 16 12:57:10 2019 +0200
+
+    add ImGui
+
+[33mcommit fd72e174d13c650f7984f32e23873b23d7e3eaf7[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Tue Oct 15 14:24:42 2019 +0200
+
+    clean up graphics module a bit, Material may now be created without instanciating any OpenGl stuff. Add rendering of circles
+
+[33mcommit bae0eec86b23fa3202dd44c6b7c9e9f6d5ffd811[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Sat Oct 12 01:37:53 2019 +0200
+
+    removing Graphics module lets the game run without graphics. Modules dependent on abscent modules are removed and systems depending on abscent modules are removed. Reorganize how materials interact with shaders, so shaders do not try to load statically
+
+[33mcommit 0c90c9fc6a73fce7c5949f43d9e40d8d3a64d618[m
+Author: Eirik Skjærseth <eirik1502@gmail.com>
+Date:   Fri Oct 11 20:47:50 2019 +0200
+
+    add custom collision interaction functionality. Works by giving a collision script that takes (world, entitySelf, entityOther). This approach stores functionality in components, which might not be wanted. Use this functionality in SimpleShooter example game. There are also some general structure changes.
+
+[33mcommit b42ad1ecfaf145e66334a77d6b9deae3a6c25fdd[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Fri Aug 30 13:56:12 2019 +0200
+
+    use input system in example game SimpleShooter
+
+[33mcommit ea2a53d88ca7e2f7b5c161247affc2e261e72f2f[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Fri Aug 30 13:55:38 2019 +0200
+
+    add user input system
+
+[33mcommit 83175b9f4e46d0f3980b8aec460d3c1578866f75[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Thu Aug 29 16:18:41 2019 +0200
+
+    minimal graphics and physics implemented. Network started, but not working
+
+[33mcommit f5306893f597a28499643e139ec7d1aea1c012d2[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Fri Jun 14 09:02:15 2019 +0200
+
+    update ecs, add modules concept, add simple graphics module, add framework for network module, add a simple game
+
+[33mcommit 35b1bb9fab4e7130a1f02a5a32968f017a7f7c04[m
+Merge: 50c7788 ddc619b
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Thu May 30 12:05:04 2019 +0200
+
+    Merge branch 'master' of github.com:eirik1502/sol_champ
+
+[33mcommit 50c7788ac09dabcc29e721a2dac588803a47937a[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Thu May 30 11:55:17 2019 +0200
+
+    add name proposals
+
+[33mcommit ddc619b264ec682700c13731703584ab23c3945f[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Thu May 30 11:52:29 2019 +0200
+
+    Initial commit
+
+[33mcommit d381cb0fce63041927e7db0143fe9c38533217ec[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Thu May 30 09:57:28 2019 +0200
+
+    add simple ecs (entity component systems) pattern and loading of ecs json files
+
+[33mcommit 845df7882f99a78e36693ee8d3e81309b9b3925f[m
+Author: eirik1502 <eirik1502@gmail.com>
+Date:   Thu May 30 09:51:20 2019 +0200
+
+    add gitignore

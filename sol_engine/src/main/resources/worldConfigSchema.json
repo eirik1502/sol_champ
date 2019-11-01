@@ -1,22 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "title": "World configurations",
   "description": "Configurations of the world",
-
   "type": "object",
   "additionalProperties": false,
-
   "properties": {
-
-    "compSysPackages": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "type": "string"
-      }
+    "rootPackage": {
+      "type": "string"
     },
-
     "componentSystems": {
       "description": "The componentSystems used in the world",
       "type": "array",
@@ -25,7 +16,6 @@
         "type": "string"
       }
     },
-
     "entityClasses": {
       "description": "The entity classes in the world that entities may use",
       "type": "array",
@@ -71,36 +61,34 @@
             "$ref": "#/definitions/components"
           }
         },
-        "required": ["name", "useClass"]
+        "required": [
+          "name",
+          "useClass"
+        ]
       }
     }
   },
-
   "definitions": {
-
     "components": {
       "type": "array",
       "items": {
         "$ref": "#/definitions/component"
       }
     },
-
     "component": {
       "type": "object",
       "properties": {
-
         "type": {
           "type": "string"
         },
         "values": {
           "type": "object"
         }
-
       },
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "additionalProperties": false
     }
-
   }
-
 }

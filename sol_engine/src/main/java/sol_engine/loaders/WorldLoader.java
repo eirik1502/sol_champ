@@ -1,39 +1,50 @@
 package sol_engine.loaders;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import sol_engine.ecs.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WorldLoader {
 
     private static final String
-            COMPSYS_PACKAGES_FIELD = "compSysPackages",
+            ROOT_PACKAGE_FIELD = "rootPackage",
 
-            COMPONENT_SYSTEMS_FIELD = "componentSystems",
+    COMPONENT_SYSTEMS_FIELD = "componentSystems",
 
-            ENTITY_CLASSES_FIELD = "entityClasses",
-                ENTITY_CLASS_CLASS_NAME_FIELD = "className",
-                ENTITY_CLASS_EXTENDS_CLASSES_FIELD = "extendsClasses",
-                ENTITY_CLASS_COMPONENTS_FIELD = "components",
+    ENTITY_CLASSES_FIELD = "entityClasses",
+            ENTITY_CLASS_CLASS_NAME_FIELD = "className",
+            ENTITY_CLASS_EXTENDS_CLASSES_FIELD = "extendsClasses",
+            ENTITY_CLASS_COMPONENTS_FIELD = "components",
 
-            INITIAL_ENTITIES_FIELD = "initialEntities",
-                INIT_ENTITIES_NAME_FIELD = "name",
-                INIT_ENTITIES_COMPONENTS_FIELD = "overrideComponents",
-                INIT_ENTITIES_USE_CLASS_FIELD = "useClass",
+    INITIAL_ENTITIES_FIELD = "initialEntities",
+            INIT_ENTITIES_NAME_FIELD = "name",
+            INIT_ENTITIES_COMPONENTS_FIELD = "overrideComponents",
+            INIT_ENTITIES_USE_CLASS_FIELD = "useClass",
 
-            COMPONENT_TYPE_FIELD = "type",
+    COMPONENT_TYPE_FIELD = "type",
             COMPONENT_VALUES_FIELD = "values";
 
     private static final String WORLD_CONFIG_SCHEMA_PATH = "worldConfigSchema.json";
@@ -42,20 +53,23 @@ public class WorldLoader {
 
     private static JsonSchema worldConfigSchema = null;
 
-    private static final ObjectMapper jacksonMapper = new ObjectMapper();
+    private static final ObjectMapper defaultMapper = new ObjectMapper();
 
     private enum ErrorType {
         ERROR("ERROR"),
         WARNING("WARNING");
 
         public final String name;
+
         ErrorType(String name) {
             this.name = name;
         }
     }
+
     private class LoadedComponent {
         public final Class<? extends Component> compType;
         public final ObjectNode values;
+
         public LoadedComponent(Class<? extends Component> compType, ObjectNode values) {
             this.compType = compType;
             this.values = values;
@@ -75,19 +89,59 @@ public class WorldLoader {
 
     public void loadIntoWorld(World world, String configPath) {
         this.configPath = configPath;
-
-        compSysPackages.addAll(ENGINE_COMP_SYS_PACKAGES);
-
         JsonNode configNode = loadJson(configPath);
+
+
+        System.out.println("Loading world");
+        Collection<URL> packageRoots = ClasspathHelper.forPackage("sol_engine");
+
+        withFieldIfExists(configNode, ROOT_PACKAGE_FIELD, rootPackageNode -> {
+            compSysPackages.addAll(getDescendingPackages(rootPackageNode.asText()));
+        });
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(.addAll(ClasspathHelper.forPackage("sol_engine")))
+                .setScanners(new ResourcesScanner(), new SubTypesScanner()));
+        Set<Class<? extends Component>> subClasses = reflections.getSubTypesOf(Component.class);
+        System.out.println("Sub classes:");
+        subClasses.stream().map(c -> c.getName()).forEach(cn -> System.out.println(cn));
+//        Set<String> transformCompPaths = reflections.getResources(Pattern.compile(".*\\.TransformComp.java"));
+//        System.out.println(transformCompPaths);
+
+
+//        try {
+//            String classesNames = StreamUtils.streamOfIterator(this.getClass().getClassLoader().getResources("sol_engine/core").asIterator())
+//                    .map(url -> url.getPath())
+//                    .collect(Collectors.joining("\n"));
+//            System.out.println("classes available: " + classesNames);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        System.exit(0);
+
+//        ObjectMapper compMapper = new ObjectMapper();
+//        compMapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, "_useClass");
+//
+//
+//        RenderShapeComp renderComp = new RenderShapeComp(new RenderableShape.Circle(32f, new MattMaterial()), 8f, 8f);
+//        try {
+//            System.out.println(compMapper.writeValueAsString(renderComp));
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//        System.exit(0);
+
+        compSysPackages.addAll(getDescendingPackages("sol_engine"));
+
         if (configNode == null) return;  // return if the json wasn't loaded
 
-        if (! testAgainstWorldConfigSchema(configNode)) return;
+        if (!testAgainstWorldConfigSchema(configNode)) return;
 
         // check if there are compSys packages and store them
-        if (configNode.has(COMPSYS_PACKAGES_FIELD)) {
-            // add all listed compSys packages
-            compSysPackages.addAll(getArrayChildNodesAsText(configNode.get(COMPSYS_PACKAGES_FIELD)));
-        }
+        withFieldIfExists(configNode, ROOT_PACKAGE_FIELD, rootPackageNode -> {
+            compSysPackages.addAll(getDescendingPackages(rootPackageNode.asText()));
+        });
+        System.out.println(compSysPackages);
 
         // check if there are component systems and add them
         if (configNode.has(COMPONENT_SYSTEMS_FIELD)) {
@@ -187,9 +241,9 @@ public class WorldLoader {
         // if vals are not present, create an empty object
         ObjectNode compValsObject;
         if (compNode.has(COMPONENT_VALUES_FIELD)) {
-            compValsObject = (ObjectNode)compNode.get(COMPONENT_VALUES_FIELD);
+            compValsObject = (ObjectNode) compNode.get(COMPONENT_VALUES_FIELD);
         } else {
-            compValsObject = jacksonMapper.createObjectNode();  // create an empty object
+            compValsObject = defaultMapper.createObjectNode();  // create an empty object
         }
 
         return new LoadedComponent(compClass, compValsObject);
@@ -197,8 +251,21 @@ public class WorldLoader {
 
     private Component newComponent(LoadedComponent loadedComp) {
         // create a component of the specified values
-        return jacksonMapper.convertValue(loadedComp.values, loadedComp.compType);
+//        StdDeserializer<Object> objectDeserializer = createStandardDeserializer(Object.class, (jp, ctx) -> {
+//            jp.getParsingContext().
+//                    JsonNode node = jp.getCodec().readTree(jp);
+//            System.out.println();
+//            return null;
+//        });
+
+//                jacksonMapper.conv
+        ObjectMapper compMapper = new ObjectMapper();
+        compMapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, "_subClass");
+        Component newComp = compMapper.convertValue(loadedComp.values, loadedComp.compType);
+        System.out.println("new component created: " + newComp);
+        return newComp;
     }
+
     private void overrideComponent(LoadedComponent loadedComp, Entity entity) {
         Component comp = entity.getComponent(loadedComp.compType);
         if (comp == null) {
@@ -207,11 +274,11 @@ public class WorldLoader {
             return;
         }
         try {
-            jacksonMapper.readerForUpdating(comp).readValue(loadedComp.values);
+            defaultMapper.readerForUpdating(comp).readValue(loadedComp.values);
         } catch (IOException e) {
             e.printStackTrace();
             logLoadError(ErrorType.ERROR, "Some weird thing happened when overriding component: "
-                    + loadedComp.compType.getSimpleName() + " for entity: " + entity.name );
+                    + loadedComp.compType.getSimpleName() + " for entity: " + entity.name);
         }
     }
 
@@ -239,7 +306,7 @@ public class WorldLoader {
 
         // override components: optional
         if (initEntityNode.has(INIT_ENTITIES_COMPONENTS_FIELD)) {
-            loadComponents(initEntityNode.get(INIT_ENTITIES_COMPONENTS_FIELD)).forEach( loadedComp ->
+            loadComponents(initEntityNode.get(INIT_ENTITIES_COMPONENTS_FIELD)).forEach(loadedComp ->
                     overrideComponent(loadedComp, entity)
             );
         }
@@ -248,7 +315,6 @@ public class WorldLoader {
 
     private Class<?> getClassInPackageList(String className, Set<String> packages) {
         ClassLoader classLoader = WorldLoaderOld.class.getClassLoader();
-
         List<Class<?>> classesFound = packages.stream()
                 .map(pname -> {
                     try {
@@ -263,8 +329,7 @@ public class WorldLoader {
         if (classesFound.size() == 0) {
             // the class wasn't found
             return null;
-        }
-        else {
+        } else {
             if (classesFound.size() > 1) {
                 logLoadError(ErrorType.WARNING, "multiple classes with equal name found in the specified packages. " +
                         "Returning the first. For class: " + className);
@@ -328,12 +393,12 @@ public class WorldLoader {
     }
 
     private boolean testAgainstWorldConfigSchema(JsonNode jsonNode) {
-        if (! loadWorldConfigSchema()) return false;
+        if (!loadWorldConfigSchema()) return false;
 
         try {
             ProcessingReport configSchemaReport = worldConfigSchema.validate(jsonNode);
 
-            if (! configSchemaReport.isSuccess()) {
+            if (!configSchemaReport.isSuccess()) {
                 logLoadError(ErrorType.ERROR, "world config syntax error");
                 System.out.println(configSchemaReport);
                 return false;
@@ -377,4 +442,29 @@ public class WorldLoader {
                 + "\n\tcause: " + cause);
     }
 
+    private void withFieldIfExists(JsonNode fromNode, String fieldName, Consumer<JsonNode> withFieldNode) {
+        if (fromNode.has(fieldName)) {
+            withFieldNode.accept(fromNode.get(fieldName));
+        }
+    }
+
+    private Set<String> getDescendingPackages(String... rootPackages) {
+        return Arrays.stream(getClass().getClassLoader().getDefinedPackages())
+                .map(Package::getName)
+                .filter(name -> Arrays.stream(rootPackages).anyMatch(name::startsWith))
+                .collect(Collectors.toSet());
+    }
+
+    private interface StdDeserializerI<T> {
+        T deserialize(JsonParser jp, DeserializationContext ctx) throws IOException, JsonProcessingException;
+    }
+
+    private <T> StdDeserializer<T> createStandardDeserializer(Class<T> forClass, StdDeserializerI<T> deserializer) {
+        return new StdDeserializer<T>(forClass) {
+            @Override
+            public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+                return deserializer.deserialize(jp, ctxt);
+            }
+        };
+    }
 }

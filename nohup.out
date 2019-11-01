@@ -215,3 +215,43 @@ java.lang.IllegalStateException: Attempt to modify PSI for non-committed Documen
 2019-10-14 16:18:48,652 [6882763]  ERROR - llij.ide.plugins.PluginManager - JDK: 11.0.3; VM: OpenJDK 64-Bit Server VM; Vendor: JetBrains s.r.o 
 2019-10-14 16:18:48,652 [6882763]  ERROR - llij.ide.plugins.PluginManager - OS: Windows 10 
 2019-10-14 16:18:48,678 [6882789]  ERROR - llij.ide.plugins.PluginManager - Last Action: EditorEnter 
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - Gitee not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - Subversion not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - Task Management not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - SAP Cloud Commerce code guard not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - Command Line Tool Support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - Docker not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,933 [  24737]   WARN - llij.ide.plugins.PluginManager - Settings Repository not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Angular and AngularJS not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Blade not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - RubyMotion support not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Python not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Ruby not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Dart not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Flutter not loaded: since build 192.6817.14 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Bazel not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Maven Versions + not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - TestCafe runner for Webstorm not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - PHP not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Ambient not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - MoveTab not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Kubernetes not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:37,937 [  24741]   WARN - llij.ide.plugins.PluginManager - Packages for Apex not loaded: since build 192.6817 > IU-192.6603.28 
+2019-10-15 14:33:38,844 [  25648]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: VibrantInk from plugin: com.intellij.database 
+2019-10-15 14:33:38,844 [  25648]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: WarmNeon from plugin: com.intellij.database 
+2019-10-15 14:33:38,844 [  25648]   WARN - s.impl.EditorColorsManagerImpl - Cannot find scheme: High ?ontrast from plugin: com.intellij.database 
+2019-10-15 14:33:39,612 [  26416]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Arc Dark - old: Arc Dark, new Arc Dark 
+2019-10-15 14:33:39,612 [  26416]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Dark - old: Atom One Dark, new Atom One Dark 
+2019-10-15 14:33:39,628 [  26432]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Atom One Light - old: Atom One Light, new Atom One Light 
+2019-10-15 14:33:39,632 [  26436]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Dracula - old: Dracula, new Dracula 
+2019-10-15 14:33:39,636 [  26440]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme GitHub (Material) - old: GitHub (Material), new GitHub (Material) 
+2019-10-15 14:33:39,644 [  26448]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Darker - old: Material Darker, new Material Darker 
+2019-10-15 14:33:39,648 [  26452]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Deep Ocean - old: Material Deep Ocean, new Material Deep Ocean 
+2019-10-15 14:33:39,656 [  26460]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Lighter - old: Material Lighter, new Material Lighter 
+2019-10-15 14:33:39,660 [  26464]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Oceanic - old: Material Oceanic, new Material Oceanic 
+2019-10-15 14:33:39,664 [  26468]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Palenight - old: Material Palenight, new Material Palenight 
+2019-10-15 14:33:39,668 [  26472]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Dark - old: Material Solarized Dark, new Material Solarized Dark 
+2019-10-15 14:33:39,676 [  26480]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Material Solarized Light - old: Material Solarized Light, new Material Solarized Light 
+2019-10-15 14:33:39,680 [  26484]   WARN - rationStore.ComponentStoreImpl - Duplicated scheme Monokai Pro - old: Monokai Pro, new Monokai Pro 
+2019-10-15 14:33:50,942 [  37746]   WARN - com.intellij.util.xmlb.Binding - no accessors for class org.jetbrains.kotlin.idea.highlighter.KotlinDefaultHighlightingSettingsProvider 

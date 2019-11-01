@@ -15,6 +15,10 @@ sourceSets {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.reflections/reflections
+    implementation(group = "org.reflections", name = "reflections", version = "0.9.11")
+
+
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.0")
     //implementation 'com.google.code.gson:gson:2.8.5'

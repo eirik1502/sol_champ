@@ -1,4 +1,5 @@
 {
+  "rootPackage": "sol_examples.simple_shooter",
   "modules": [
     {
       "name": "GraphicsModule",

@@ -1,0 +1,58 @@
+{
+  "rootPackage": "sol_examples.simple_shooter",
+  "componentSystems": [
+    "CollisionSystem",
+    "NaturalCollisionResolutionSystem",
+    "CollisionInteractionSystem",
+    "SimpleKeyControlSystem",
+    "ShootSystem",
+    "TornadoWetherSystem",
+    "FollowCursorSystem",
+    "RenderSystem"
+  ],
+  "entityClasses": [
+    {
+      "className": "player",
+      "components": [
+        {
+          "type": "TransformComp",
+          "values": {
+            "x": 100,
+            "y": 100
+          }
+        },
+        {
+          "type": "SimpleKeyControlComp",
+          "values": {
+            "velocity": 10
+          }
+        },
+        {
+          "type": "RenderShapeComp",
+          "values": {
+            "renderable": {
+              "width": 32,
+              "height": 32,
+              "meshName": "UNIT_CENTERED_CIRCLE_MESH",
+              "material": {
+                "_subClass": "sol_engine.graphics_module.materials.MattMaterial",
+                "color": {
+                  "r": 1,
+                  "g": 0,
+                  "b": 0
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "initialEntities": [
+    {
+      "useClass": "player",
+      "name": "Player",
+      "overrideComponents": []
+    }
+  ]
+}

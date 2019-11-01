@@ -5,7 +5,7 @@ import sol_engine.graphics_module.shaders.MVPShader;
 
 public abstract class Material implements Cloneable {
 
-    private Class<? extends MVPShader> shaderType;
+    private final Class<? extends MVPShader> shaderType;
 
     public float transparancy = 1;
 

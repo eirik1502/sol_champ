@@ -9,6 +9,9 @@ public class Renderable implements Cloneable {
     public Material material;
 
 
+    public Renderable() {
+    }
+
     public Renderable(float width, float height, String meshName, Material material) {
         this.meshName = meshName;
         setProps(width, height, material);

@@ -19,6 +19,10 @@ public class Color {
 
     public final float r, g, b, a;
 
+    public Color() {
+        this(0, 0, 0, 1);
+    }
+
     public Color(float r, float g, float b) {
         this(r, g, b, 1);
     }
@@ -30,15 +34,15 @@ public class Color {
         this.a = a;
     }
 
-    public float[] getAsArray() {
+    public float[] asArray() {
         return new float[]{r, g, b, a};
     }
 
-    public Vector4f getRGBAVec() {
+    public Vector4f asRGBAVec() {
         return new Vector4f(r, g, b, a);
     }
 
-    public Vector3f getRGBVec() {
+    public Vector3f asRGBVec() {
         return new Vector3f(r, g, b);
     }
 

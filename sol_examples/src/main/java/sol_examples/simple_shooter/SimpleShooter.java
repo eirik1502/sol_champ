@@ -7,7 +7,6 @@ import sol_engine.core.SimpleKeyControlSystem;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.EntityClass;
 import sol_engine.editor.EditorEditableComp;
-import sol_engine.editor.EditorSystem;
 import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
 import sol_engine.game_utils.*;
@@ -63,7 +62,6 @@ public class SimpleShooter extends SolSimulation {
 
     @Override
     protected void onSetupWorld() {
-
         world.addSystem(PhysicsSystem.class);
 
         world.addSystem(CollisionSystem.class);
@@ -74,7 +72,7 @@ public class SimpleShooter extends SolSimulation {
         world.addSystem(ShootSystem.class);
 //        world.addSystem(TornadoWetherSystem.class);
         world.addSystem(FollowCursorSystem.class);
-        world.addSystem(EditorSystem.class);
+//        world.addSystem(EditorSystem.class);
         world.addSystem(RenderSystem.class);
 
 

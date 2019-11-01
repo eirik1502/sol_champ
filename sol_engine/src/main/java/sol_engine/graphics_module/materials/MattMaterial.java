@@ -1,5 +1,6 @@
 package sol_engine.graphics_module.materials;
 
+
 import sol_engine.graphics_module.Color;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
@@ -43,6 +44,6 @@ public class MattMaterial extends Material {
     @Override
     public void applyShaderProps(MVPShader shader) {
         ColorShader colorShader = (ColorShader) shader;
-        colorShader.setColor(color.getRGBVec());
+        colorShader.setColor(color.asRGBVec());
     }
 }
