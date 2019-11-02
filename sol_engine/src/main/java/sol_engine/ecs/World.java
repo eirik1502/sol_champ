@@ -136,6 +136,15 @@ public class World {
         entitiesScheduledForRemove.add(e);
     }
 
+    public void removeEntityByName(String name) {
+        Entity e = getEntityByName(name);
+        removeEntity(e);
+    }
+
+    public Set<Entity> getEntitiesByName(String name) {
+        return entities.stream().filter(e -> e.name.equals(name)).collect(Collectors.toSet());
+    }
+
     public Entity getEntityByName(String name) {
         return entities.stream().filter(e -> e.name.equals(name)).findFirst().orElseGet(() -> {
             EcsLogger.logger.severe("Trying to get an entity by name that is not present.\n\tEntity name: " + name);
@@ -155,7 +164,7 @@ public class World {
             entitiesOfFamilies.entrySet().stream()
                     // filter groups that match the new entity
                     .filter(group -> newEntityGroup.contains(group.getKey()))
-                    // add the new wntity to the relevant groups
+                    // add the new entity to the relevant groups
                     .forEach(existingEntityGroup -> existingEntityGroup.getValue().add(entity));
 
             // add entity to the list of all entities

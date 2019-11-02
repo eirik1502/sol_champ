@@ -36,6 +36,10 @@ public class Entity {
         return this;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public boolean hasComponent(Class<? extends Component> compType) {
         return comps.containsKey(compType);
     }

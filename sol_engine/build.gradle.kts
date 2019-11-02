@@ -33,7 +33,7 @@ dependencies {
     val uno_version = "3275c3ce3045be19c84288609d9f1631d631a743"
     val kotlin_version = "1.3.50"
     val glm_version = "3d3aea6d420bace96ced057cddeca023129d7c41"
-    val imgui_version = "-SNAPSHOT"
+    val imgui_version = "-SNAPSHOT" //"e1fbe03a0a"
 
     api("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
 
@@ -70,5 +70,6 @@ dependencies {
                 }
             }
 
-    testCompile("junit:junit:4.12")
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.hamcrest:hamcrest:2.2")
 }

@@ -1,64 +1,23 @@
 package sol_engine.ecs;
 
+import org.junit.After;
 import org.junit.Assert;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.Before;
 import org.junit.Test;
+import sol_engine.utils.Repeat;
+import sol_engine.utils.math.MathF;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+//import static org.hamcrest.CoreMatchers.*;
+
 public class WorldTest {
-
-    private class PosComp extends Component {
-        public int x, y;
-    }
-    private class TextComp extends Component {
-        public String text;
-    }
-
-    public static class MoveRightSys extends SystemBase {
-        public void onStart() {
-            super.usingComponents(PosComp.class);
-        }
-        public void onUpdate() {
-            super.entities.stream().forEach(e -> {
-                e.getComponent(PosComp.class).x += 1;
-            });
-        }
-        public void onEnd() {
-
-        }
-    }
-
-    public static class TextRenderSys extends SystemBase {
-        private String space = ".";
-
-        public String output = "";
-
-
-        public TextRenderSys() {
-        }
-
-        public void onStart() {
-            super.usingComponents(TextComp.class, PosComp.class);
-        }
-        public void onUpdate() {
-            output = "";
-            super.entities.stream().forEach(e -> {
-                final PosComp posComp = e.getComponent(PosComp.class);
-                final TextComp textComp = e.getComponent(TextComp.class);
-
-                output += ""+posComp.x + " " + posComp.y + " " + textComp.text + "\n";
-            });
-        }
-        public void onEnd() {
-
-        }
-    }
 
     private static class WorldState {
         private static Map<World, WorldState> retrievedWorldStates = new HashMap<>();
@@ -99,14 +58,98 @@ public class WorldTest {
         world = new World();
     }
 
-    private Entity createEntity() {
-        Entity e = world.createEntity("hello");
-        PosComp posComp = new PosComp();
-        TextComp textComp = new TextComp();
+    @After
+    public void tearDown() {
+        world.end();
+    }
 
-        e.addComponent(posComp);
-        e.addComponent(textComp);
+    private Entity createTextEntity(World world, String name) {
+        Entity e = world.createEntity(name);
+        e.addComponent(new TextComp("hei"));
         return e;
+    }
+
+    @Test
+    public void testAddEntity() {
+        Entity e = createTextEntity(world, "te");
+        world.addEntity(e);
+        world.update();
+        assertThat(world.getEntities(), containsInAnyOrder(e));
+
+        Set<Entity> createdEntities = new HashSet<>();
+        createdEntities.add(e);
+        Repeat.repeat(10, i -> {
+            Entity e2 = createTextEntity(world, "te" + i);
+            world.addEntity(e2);
+            createdEntities.add(e2);
+        });
+        world.update();
+
+        assertThat("entities in world match", world.getEntities(),
+                containsInAnyOrder(createdEntities.toArray(new Entity[0])));
+
+        assertThat("entity names match", world.getEntities().stream().map(Entity::getName).collect(Collectors.toSet()),
+                containsInAnyOrder("te", "te0", "te1", "te2", "te3", "te4", "te5", "te6", "te7", "te8", "te9"));
+    }
+
+    @Test
+    public void testRemoveEntity() {
+        Entity e1 = createTextEntity(world, "e1");
+        Entity e2 = createTextEntity(world, "e2");
+        Entity e3 = createTextEntity(world, "e3");
+
+        world.addEntity(e1);
+        world.addEntity(e2);
+        world.addEntity(e3);
+        world.update();
+
+        world.removeEntity(e2);
+        world.update();
+        assertThat("remove entity that is addedand world updated",
+                world.getEntities(), containsInAnyOrder(e1, e3));
+
+        world.removeEntityByName("e3");
+        world.update();
+        assertThat("remove entity by name", world.getEntities(), containsInAnyOrder(e1));
+
+        // remove entity without updating world after add
+        Entity e4 = createTextEntity(world, "e4");
+        world.addEntity(e4);
+        world.removeEntity(e4);
+        world.update();
+        assertThat("remove entity that is added and removed without world update between",
+                world.getEntities(), containsInAnyOrder(e1));
+
+        world.removeEntityByName("e1");
+        world.update();
+        assertThat(world.getEntities(), empty());
+
+        // stress test
+        int testWithEntitiesCount = 200;
+        Set<Entity> removedEntities = IntStream.range(0, testWithEntitiesCount)
+                .peek(i -> world.addEntity(createTextEntity(world, "e" + i)))
+                .peek(i -> {
+                    if (MathF.random() > 0.5) world.update();
+                })
+                .mapToObj(i -> {
+                    // remove an entity by chance
+                    if (MathF.random() > 0.5) {
+                        List<Entity> entities = new ArrayList<>(world.getEntities());
+                        if (!entities.isEmpty()) {
+                            Entity rande = entities.get(MathF.floori(MathF.random() * entities.size()));
+                            world.removeEntity(rande);
+                            return rande;
+                        }
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        world.update();
+
+        int removedEntitiesCount = removedEntities.size();
+        assertThat(world.getEntities(), hasSize(testWithEntitiesCount - removedEntitiesCount));
+        assertThat(world.getEntities(), not(hasItems(removedEntities.toArray(new Entity[0]))));
     }
 
 
@@ -143,60 +186,18 @@ public class WorldTest {
         targetSystems.forEach(s ->
                 targetEntityGroups.computeIfAbsent(s.compFamily, key -> new ArrayList<>())
                         .addAll(
-                            targetEntities.stream()
-                                    .filter(e -> e.getComponentTypeGroup().contains(s.compFamily))
-                                    .collect(Collectors.toList())
+                                targetEntities.stream()
+                                        .filter(e -> e.getComponentTypeGroup().contains(s.compFamily))
+                                        .collect(Collectors.toList())
                         )
-                );
+        );
 
         Assert.assertEquals(ws.entityGroups, targetEntityGroups);
         Assert.assertNotSame(targetEntityGroups, ws.entityGroups);  // make sure the collections are not the same
     }
 
-    @Test
-    public void testEntities() {
 
-        Entity e = createEntity();
-
-        e.getComponent(PosComp.class).x = 0;
-        e.getComponent(PosComp.class).y = 3;
-
-        e.getComponent(TextComp.class).text = "SomeText";
-
-
-        TextRenderSys textRenderSys = world.addSystem(TextRenderSys.class);
-        world.addEntity(e);
-
-        checkWorldState("first", world, Arrays.asList(e), Arrays.asList(textRenderSys));
-
-
-//        world.setup();
-        world.update();
-
-        MoveRightSys moveRightSys = world.addSystem(MoveRightSys.class);
-
-        checkWorldState("second", world, Arrays.asList(e), Arrays.asList(textRenderSys, moveRightSys));
-        checkWorldState("second", world, Arrays.asList(e), Arrays.asList(moveRightSys, textRenderSys));
-
-        IntStream.range(0, 5).forEach(i -> world.update());
-
-        // check that systems executed
-        Assert.assertEquals(e.getComponent(PosComp.class).x, 5);
-        Assert.assertEquals(e.getComponent(PosComp.class).y, 3);
-
-        assertThat(textRenderSys.output, is(equalTo("4 3 SomeText\n")));
-
-        Entity e2 = createEntity();
-        world.addEntity(e2);
-
-        checkWorldState("third", world, Arrays.asList(e, e2), Arrays.asList(textRenderSys, moveRightSys));
-
-        // TODO: check remove entities and remove systems. In checkWorld, need to account for componentTypeGroup keys with no systems
-
-        world.end();
-    }
 }
-
 
 
 //        // test entitiesOfCompType has not changed
