@@ -1,6 +1,7 @@
-package sol_engine.core;
+package sol_engine.game_utils;
 
 import org.joml.Vector2f;
+import sol_engine.core.ModuleSystemBase;
 import sol_engine.input_module.InputConsts;
 import sol_engine.input_module.InputModule;
 import sol_engine.physics_module.PhysicsBodyComp;
@@ -8,14 +9,14 @@ import sol_engine.physics_module.PhysicsBodyComp;
 /**
  * Changes an entities position in the direction of the arrow keys (or wasd) held.
  */
-public class SimpleKeyControlSystem extends ModuleSystemBase {
+public class UserInputMoveVelocitySystem extends ModuleSystemBase {
 
     private Vector2f moveDirection = new Vector2f();
 
     @Override
     public void onSetup() {
         usingModules(InputModule.class);
-        usingComponents(PhysicsBodyComp.class, SimpleKeyControlComp.class);
+        usingComponents(PhysicsBodyComp.class, UserInputMoveVelocityComp.class);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class SimpleKeyControlSystem extends ModuleSystemBase {
     @Override
     public void onUpdate() {
         entities.forEach(entity -> {
-            SimpleKeyControlComp keyCtrlComp = entity.getComponent(SimpleKeyControlComp.class);
+            UserInputMoveVelocityComp keyCtrlComp = entity.getComponent(UserInputMoveVelocityComp.class);
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
 
             InputModule inp = super.getModule(InputModule.class);
