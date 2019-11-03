@@ -1,4 +1,4 @@
-package sol_engine.editor;
+package sol_engine.creator;
 
 import glm_.vec2.Vec2;
 import imgui.*;
@@ -68,7 +68,7 @@ public class EditorSystem extends ModuleSystemBase {
 
                         entities.forEach(entity -> {
                             EditorEditableComp editComp = entity.getComponent(EditorEditableComp.class);
-                            
+
                             editComp.currentlyWatched = asMutable(editComp.currentlyWatched, mval ->
                                     imgui.menuItem(entity.name, "", mval, true));
                         });

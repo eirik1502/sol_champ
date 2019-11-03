@@ -2,11 +2,10 @@ package sol_examples.simple_shooter;
 
 import org.joml.Vector2f;
 import sol_engine.core.ModuleSystemBase;
-import sol_engine.core.SimpleKeyControlComp;
-import sol_engine.core.SimpleKeyControlSystem;
 import sol_engine.core.TransformComp;
+import sol_engine.creator.EditorEditableComp;
+import sol_engine.creator.WorldProfilerSystem;
 import sol_engine.ecs.EntityClass;
-import sol_engine.editor.EditorEditableComp;
 import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
 import sol_engine.game_utils.*;
@@ -49,7 +48,7 @@ public class SimpleShooter extends SolSimulation {
     protected void onSetupModules() {
         modulesHandler.addModule(new GraphicsModule(
                 new GraphicsModuleConfig(
-                        new WindowConfig(0.5f, 0.5f, "Hello SOL", false),
+                        new WindowConfig(0.9f, 0.9f, "Hello SOL", false),
 //                        new WindowConfig(0.7f, 0.7f, "Hello SOL", false),
                         new RenderConfig(worldWidth / 2, worldHeight / 2, worldWidth, worldHeight)
                 )
@@ -69,28 +68,36 @@ public class SimpleShooter extends SolSimulation {
         world.addSystem(NaturalCollisionResolutionSystem.class);
         world.addSystem(CollisionInteractionSystem.class);
         world.addSystemInstance(createDebugSystem());
-        world.addSystem(SimpleKeyControlSystem.class);
+        world.addSystem(UserInputMoveVelocitySystem.class);
         world.addSystem(ShootSystem.class);
 //        world.addSystem(TornadoWetherSystem.class);
         world.addSystem(FollowCursorSystem.class);
 //        world.addSystem(EditorSystem.class);
         world.addSystem(RenderSystem.class);
+        world.addSystem(EmitterTimedSystem.class);
+        world.addSystem(DestroySelfTimedSystem.class);
+        world.addSystem(WorldProfilerSystem.class);
 
 
         float pwidth = 32, pheight = 32;
         world.addEntityClass(new EntityClass("player").addBaseComponents(
                 new TransformComp(100, 100),
-                new RenderShapeComp(new RenderableShape.Circle(pwidth / 2, MattMaterial.RED())),
+                new RenderShapeComp(new RenderableShape.CirclePointing(pwidth / 2, MattMaterial.RED())),
                 new PhysicsBodyComp(1, 1, 0.9f),
                 new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
-                new SimpleKeyControlComp(10),
+                new UserInputMoveVelocityComp(10),
                 new ShootComp(InputConsts.MOUSE_BUTTON_LEFT, "bullet", 1000, 10),
                 new EditorEditableComp()
         ));
         world.addEntityClass(new EntityClass("marker").addBaseComponents(
-                new TransformComp(100, 100),
+                new TransformComp(500, 500),
                 new RenderShapeComp(new RenderableShape.Rectangle(pwidth / 2, pheight / 2, MattMaterial.RED()), -pwidth / 4, -pwidth / 4),
+                new PhysicsBodyComp(1, 1, 0.8f),
+                new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 4)),
+                new NaturalCollisionResolutionComp(),
+                new EmitterTimedComp(60, -1, "marker", "", -1, 100),
+                new DestroySelfTimedComp(120),
                 new EditorEditableComp()
         ));
 
@@ -106,7 +113,7 @@ public class SimpleShooter extends SolSimulation {
         world.addEntityClass(new EntityClass("circ").addBaseComponents(
                 new TransformComp(100, 100),
                 new RenderShapeComp(new RenderableShape.Rectangle(pwidth, pwidth, MattMaterial.GREEN()), -pwidth / 2, -pwidth / 2),
-                new PhysicsBodyComp(1, 1, 1.2f),
+                new PhysicsBodyComp(1, 1, 0.4f),
                 new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
                 new CollisionInteractionComp()
@@ -114,6 +121,8 @@ public class SimpleShooter extends SolSimulation {
                         .addInteraction("bullet",
                                 CollisionInteraction.Create("marker", "marker")
                         ),
+//                new EmitterTimedComp(60, -1, "marker", "", -1, 300),
+                new EmitterTimedComp(60, 1, "circ", "", -1, 300),
                 new EditorEditableComp()
 
         ));
@@ -171,6 +180,8 @@ public class SimpleShooter extends SolSimulation {
                     .modifyComponent(TransformComp.class, transComp -> transComp.setXY(startX, startY))
                     .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.set(startImpulse));
         });
+
+//        world.instanciateEntityClass("marker", "marker");
 
         world.instanciateEntityClass("player", "player")
                 .modifyComponent(TransformComp.class, transComp -> transComp.setXY(worldWidth / 2, worldHeight / 2))

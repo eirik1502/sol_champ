@@ -29,6 +29,7 @@ public class World {
 
     private Set<EntityClassInstanciateListener> entityClassInstanciateListeners = new HashSet<>();
     private Set<SystemAddedListener> systemAddedListeners = new HashSet<>();
+    private List<WorldUpdateListener> worldUpdateListeners = new ArrayList<>();
 
 
     public World() {
@@ -41,10 +42,20 @@ public class World {
     }
 
     public void update() {
+        worldUpdateListeners.forEach(listener -> listener.onUpdateStart(this));
+
+        worldUpdateListeners.forEach(listener -> listener.onInternalWorkStart(this));
         addScheduledEntities();
         removeScheduledEntities();
+        worldUpdateListeners.forEach(listener -> listener.onInternalWorkEnd(this));
 
-        systems.values().forEach(SystemBase::internalUpdate);
+        systems.values().forEach(system -> {
+            worldUpdateListeners.forEach(listener -> listener.onSystemUpdateStart(this, system));
+            system.internalUpdate();
+            worldUpdateListeners.forEach(listener -> listener.onSystemUpdateEnd(this, system));
+        });
+
+        worldUpdateListeners.forEach(listener -> listener.onUpdateEnd(this));
     }
 
     // LISTENERS
@@ -63,6 +74,14 @@ public class World {
 
     public void removeSystemAddedListener(SystemAddedListener listener) {
         systemAddedListeners.remove(listener);
+    }
+
+    public void addWorldUpdateListener(WorldUpdateListener listener) {
+        this.worldUpdateListeners.add(listener);
+    }
+
+    public boolean removeWorldUpdateListener(WorldUpdateListener listener) {
+        return this.worldUpdateListeners.remove(listener);
     }
 
     // SETUP

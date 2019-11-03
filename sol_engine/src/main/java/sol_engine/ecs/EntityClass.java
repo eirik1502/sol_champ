@@ -53,29 +53,6 @@ public class EntityClass {
     public Entity instanciate(World world, String entityName) {
         Entity e = world.createEntity(entityName);
 
-//        Method cloneMethod;
-//        try {
-//            cloneMethod = Object.class.getDeclaredMethod("clone");
-//            cloneMethod.setAccessible(true);
-//
-//        } catch (NoSuchMethodException e1) {
-//            e1.printStackTrace();
-//            System.exit(-1);
-//            return null;
-//        }
-//
-//        baseComponents.stream()
-//                .map(baseComp -> {
-//                    try {
-//                        return baseComp.getClass().cast(cloneMethod.invoke(baseComp));
-//                    } catch (IllegalAccessException | InvocationTargetException e1) {
-//                        e1.printStackTrace();
-//                        return null;
-//                    }
-//                })
-//                .filter(Objects::nonNull)
-//                .forEach(comp -> e.addComponent(comp));
-
         baseComponents.stream()
                 .map(baseComp -> baseComp.clone())
                 .filter(Objects::nonNull)  // may be null if clone failes, should not happen
