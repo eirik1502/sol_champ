@@ -26,4 +26,15 @@ public class RenderableShape {
             this(16, MattMaterial.STANDARD());
         }
     }
+
+    public static class CirclePointing extends Renderable {
+
+        public CirclePointing(float radius, Material material) {
+            super(radius * 2, radius * 2, Renderer.UNIT_CENTERED_CIRCLE_POINTING_MESH, material);
+        }
+
+        public CirclePointing() {
+            this(16, MattMaterial.STANDARD());
+        }
+    }
 }

@@ -34,6 +34,7 @@ public class Renderer {
     public static final String NULL_MESH = MeshManager.NULL_MESH;
     public static final String UNIT_CORNERED_RECTANGLE_MESH = "UNIT_CORNERED_RECTANGLE_MESH";
     public static final String UNIT_CENTERED_CIRCLE_MESH = "UNIT_CENTERED_CIRCLE_MESH";
+    public static final String UNIT_CENTERED_CIRCLE_POINTING_MESH = "UNIT_CENTERED_CIRCLE_POINTING_MESH";
 
 
     private RenderConfig config;
@@ -60,6 +61,7 @@ public class Renderer {
         meshManager = new MeshManager();
         meshManager.addMesh(UNIT_CORNERED_RECTANGLE_MESH, MeshUtils.createUnitCorneredRectangleMesh());
         meshManager.addMesh(UNIT_CENTERED_CIRCLE_MESH, MeshUtils.createUnitCenteredCircleMesh(16));
+        meshManager.addMesh(UNIT_CENTERED_CIRCLE_POINTING_MESH, MeshUtils.createUnitCenteredCirclePointingMesh(16));
     }
 
     public void terminate() {
