@@ -31,6 +31,7 @@ public class Entity {
     }
 
 
+    // TODO: This will not work after the entity is added
     public Entity addComponent(Component comp) {
         this.comps.put(comp.getClass(), comp);
         return this;

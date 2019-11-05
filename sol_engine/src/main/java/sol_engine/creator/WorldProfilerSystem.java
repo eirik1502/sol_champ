@@ -43,12 +43,12 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
 
     @Override
     protected void onStart() {
-        world.addWorldUpdateListener(this);
+        world.listeners.addWorldUpdateListener(this);
     }
 
     @Override
     protected void onEnd() {
-        world.removeWorldUpdateListener(this);
+        world.listeners.removeWorldUpdateListener(this);
     }
 
     @Override
@@ -87,9 +87,9 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
                     imgui.endMenuBar();
                 }
                 if (imgui.collapsingHeader("Stats", 0)) {
-                    int entitiesCount = world.getEntities().size();
-                    int systemsCount = world.getSystems().size();
-                    Map<Class<? extends Component>, Integer> compTypesCount = world.getEntities().stream()
+                    int entitiesCount = world.insight.getEntities().size();
+                    int systemsCount = world.insight.getSystems().size();
+                    Map<Class<? extends Component>, Integer> compTypesCount = world.insight.getEntities().stream()
                             .flatMap(e -> e.getComponentTypeGroup().stream())
                             .collect(Collectors.groupingBy(Function.identity()))
                             .entrySet().stream()

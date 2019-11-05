@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public abstract class SystemBase {
 
     protected World world;
-    protected ComponentFamily compFamily = new ComponentFamily();
+    ComponentFamily compFamily = new ComponentFamily();
     protected ImmutableListView<Entity> entities;
 
     abstract protected void onSetup();
@@ -63,27 +63,23 @@ public abstract class SystemBase {
 
     // INTERNALS
 
-    private void retrieveFamilyEntities() {
-        entities = world.getEntitiesOfFamily(compFamily);
-    }
-
-    protected void internalSetup() {
+    void internalSetup() {
         onSetup();
     }
 
-    public void internalStart(World world) {
+    // must be protected as of now, as ModuleSystemBase uses this
+    protected void internalStart(World world, ImmutableListView<Entity> entitiesOfFamily) {
         this.world = world;
-        retrieveFamilyEntities();
+        this.entities = entitiesOfFamily;
         onStart();
     }
 
-    public void internalUpdate() {
+    void internalUpdate() {
         this.onUpdate();
     }
 
-    public void internalEnd() {
+    void internalEnd() {
         this.onEnd();
-
     }
 
     public ComponentFamily getCompFamily() {

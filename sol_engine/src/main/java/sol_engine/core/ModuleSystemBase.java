@@ -1,10 +1,12 @@
 package sol_engine.core;
 
 import com.google.common.collect.Sets;
+import sol_engine.ecs.Entity;
 import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
 import sol_engine.module.Module;
 import sol_engine.module.ModulesHandler;
+import sol_engine.utils.collections.ImmutableListView;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +38,7 @@ public abstract class ModuleSystemBase extends SystemBase {
     }
 
     @Override
-    public void internalStart(World world) {
+    public void internalStart(World world, ImmutableListView<Entity> entitiesOfFamily) {
         // check if the modules handler is present, else remove the system
         if (modulesHandler == null) {
             world.removeSystem(this.getClass());
@@ -61,7 +63,7 @@ public abstract class ModuleSystemBase extends SystemBase {
             return;
         }
 
-        super.internalStart(world);
+        super.internalStart(world, entitiesOfFamily);
     }
 
 }
