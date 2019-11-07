@@ -32,7 +32,8 @@ public class NaturalCollisionResolutionSystem extends SystemBase {
             TransformComp transComp = entity.getComponent(TransformComp.class);
 
             collComp.collidingEntities.forEach((collidingEntity, collisionData) -> {
-                if (!resolvedEntities.contains(collidingEntity)) {
+                if (collidingEntity.hasComponent(NaturalCollisionResolutionComp.class)
+                        && !resolvedEntities.contains(collidingEntity)) {
                     PhysicsBodyComp otherPhysComp = collidingEntity.getComponent(PhysicsBodyComp.class);
                     TransformComp otherTransComp = collidingEntity.getComponent(TransformComp.class);
 

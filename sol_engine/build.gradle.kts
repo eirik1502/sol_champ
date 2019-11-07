@@ -35,7 +35,7 @@ dependencies {
     val glm_version = "3d3aea6d420bace96ced057cddeca023129d7c41"
     val imgui_version = "-SNAPSHOT" //"e1fbe03a0a"
 
-    api("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
 
     //implementation("com.github.kotlin-graphics:imgui:1.73-SNAPSHOT")
     listOf("gl", "glfw", "core").forEach {

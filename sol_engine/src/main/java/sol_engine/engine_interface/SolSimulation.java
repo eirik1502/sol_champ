@@ -49,6 +49,7 @@ public abstract class SolSimulation {
         world.listeners.addSystemAddedListener(systemAddedListener);
 
         onSetupWorld();
+        onStart();
     }
 
     public final void terminate() {

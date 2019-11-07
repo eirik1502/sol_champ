@@ -20,6 +20,8 @@ public class UserInputComp extends Component {
     public Map<String, Boolean> inputMouseButtonsPressed = new HashMap<>();
     public Vector2f cursorPosition = new Vector2f();
 
+    public UserInputComp() {
+    }
 
     public UserInputComp(Map<String, Integer> inputKeysLabels,
                          Map<String, Integer> inputMouseButtonsLabels,

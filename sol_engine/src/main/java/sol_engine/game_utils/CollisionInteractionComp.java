@@ -7,11 +7,10 @@ import java.util.*;
 public class CollisionInteractionComp extends Component {
 
     public Set<String> tags = new HashSet<>();
-    public Map<String, CollisionInteraction> interactionByTag;
+    public Map<String, CollisionInteraction> interactionByTag = new HashMap<>();
 
 
     public CollisionInteractionComp() {
-        interactionByTag = new HashMap<>();
     }
 
     public CollisionInteractionComp(String... tags) {
@@ -37,7 +36,8 @@ public class CollisionInteractionComp extends Component {
 
     @Override
     public Component clone() {
-        CollisionInteractionComp newComp = super.cloneAs(CollisionInteractionComp.class);
+        CollisionInteractionComp newComp = (CollisionInteractionComp) super.clone();
+        newComp.tags = new HashSet<>(this.tags);
         newComp.interactionByTag = new HashMap<>(this.interactionByTag);
         return newComp;
     }

@@ -30,6 +30,14 @@ public class WorldInsight {
         return world.entities;
     }
 
+    public Set<Entity> getEntitiesScheduledForAdd() {
+        return world.entitiesScheduledForAdd;
+    }
+
+    public Set<Entity> getEntitiesScheduledForRemove() {
+        return world.entitiesScheduledForRemove;
+    }
+
     public Map<String, EntityClass> getEntityClasses() {
         return world.entityClasses;
     }

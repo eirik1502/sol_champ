@@ -68,7 +68,7 @@ public class SimpleShooter extends SolSimulation {
         world.addSystem(NaturalCollisionResolutionSystem.class);
         world.addSystem(CollisionInteractionSystem.class);
         world.addSystemInstance(createDebugSystem());
-        world.addSystem(UserInputMoveVelocitySystem.class);
+        world.addSystem(MoveByVelocitySystem.class);
         world.addSystem(ShootSystem.class);
 //        world.addSystem(TornadoWetherSystem.class);
         world.addSystem(FollowCursorSystem.class);
@@ -86,7 +86,7 @@ public class SimpleShooter extends SolSimulation {
                 new PhysicsBodyComp(1, 1, 0.9f),
                 new CollisionComp(new PhysicsBodyShape.Circ(pwidth / 2)),
                 new NaturalCollisionResolutionComp(),
-                new UserInputMoveVelocityComp(10),
+                new MoveByVelocityComp(10),
                 new ShootComp(InputConsts.MOUSE_BUTTON_LEFT, "bullet", 1000, 10),
                 new EditorEditableComp()
         ));

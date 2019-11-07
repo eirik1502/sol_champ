@@ -37,8 +37,6 @@ public class EmitterTimedComp extends Component {
         this.emitEntityName = emitEntityName;
         this.emitDirection = emitDirection;
         this.emitSpeed = emitSpeed;
-        this.counter = counter;
-        this.emitCount = emitCount;
     }
 
 
