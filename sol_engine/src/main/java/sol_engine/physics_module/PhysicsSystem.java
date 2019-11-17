@@ -27,8 +27,7 @@ public class PhysicsSystem extends SystemBase {
             physComp.velocity.add(physComp.impulse);
 
             physComp.velocity.mul(PhysicsConstants.FIXED_UPDATE_TIME, tempVec);
-            transComp.x += tempVec.x;
-            transComp.y += tempVec.y;
+            transComp.position.add(tempVec);
 
             physComp.acceleration.zero();
             physComp.impulse.zero();

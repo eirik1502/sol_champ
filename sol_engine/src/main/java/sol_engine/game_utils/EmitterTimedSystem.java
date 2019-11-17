@@ -34,7 +34,7 @@ public class EmitterTimedSystem extends SystemBase {
                         float speed = emitterTimedComp.emitSpeed;
 
                         world.instanciateEntityClass(emitterTimedComp.emitEntityClass, entityName)
-                                .modifyComponent(TransformComp.class, comp -> comp.setXY(transComp.x, transComp.y))
+                                .modifyComponent(TransformComp.class, comp -> comp.setPosition(transComp.position))
                                 .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.add(
                                         MathF.lengthdirX(speed, direction),
                                         MathF.lengthdirY(speed, direction)

@@ -5,7 +5,7 @@ package sol_game
 import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.creator.EditorEditableComp
-import sol_engine.creator.EditorSystem
+import sol_engine.creator.WorldProfilerSystem
 import sol_engine.ecs.EntityClass
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.engine_interface.SolSimulation
@@ -34,27 +34,32 @@ public class SolGame : SolSimulation() {
     }
 
     override fun onSetupWorld() {
-        world.addSystem(UserInputSystem::class.java)
-        world.addSystem(PlayerSystem::class.java)
-        world.addSystem(AbilitySystem::class.java)
-        world.addSystem(EmitterTimedSystem::class.java)
-        world.addSystem(DestroySelfTimedSystem::class.java)
-        world.addSystem(CollisionSystem::class.java)
-        world.addSystem(CollisionInteractionSystem::class.java)
-        world.addSystem(DamageSystem::class.java)
-        world.addSystem(MoveByVelocitySystem::class.java)
-        world.addSystem(NaturalCollisionResolutionSystem::class.java)
-        world.addSystem(PhysicsSystem::class.java)
-        world.addSystem(RenderSystem::class.java)
+        world.addSystems(
+                UserInputSystem::class.java,
+                MoveByVelocitySystem::class.java,
 
+                FaceCursorSystem::class.java,
+                PlayerSystem::class.java,
+                CharacterSystem::class.java,
+                AbilitySystem::class.java,
+                EmitterTimedSystem::class.java,
+                DestroySelfTimedSystem::class.java,
 
-//        world.addSystem(WorldProfilerSystem::class.java)
-        world.addSystem(EditorSystem::class.java)
+                CollisionSystem::class.java,
+                CollisionInteractionSystem::class.java,
+                DamageSystem::class.java,
+                KnockbackSystem::class.java,
+                NaturalCollisionResolutionSystem::class.java,
 
-        val damageCollisionInteraction = CollisionInteraction.Custom() { world, self, other ->
-            other.getComponent(TakeDamageComp::class.java).currDamageTaken +=
-                    self.getComponent(DealDamageComp::class.java).damage
-        }
+                SceneChildSystem::class.java,
+                PhysicsSystem::class.java,
+
+                RenderSystem::class.java,
+
+                WorldProfilerSystem::class.java
+        )
+//        world.addSystem(EditorSystem::class.java)
+
 
         world.addEntityClass(
                 EntityClass("ab1").addBaseComponents(
@@ -82,17 +87,66 @@ public class SolGame : SolSimulation() {
                 )
         )
 
+        createCharacterClass()
+        createMeleeAbClass()
+
+        instanciatePlayer();
+
+        world.instanciateEntityClass("character", "opponent")
+                .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(500f, 500f) }
+                .modifyComponent(CollisionInteractionComp::class.java) { comp -> comp.addTag("team2") }
+
+        createWalls()
+    }
+
+    private fun createWalls() {
+        world.addEntityClass(EntityClass("wall").addBaseComponents(
+                TransformComp(),
+                RenderShapeComp(RenderableShape.Rectangle(100f, 100f, MattMaterial.BLUE())),
+                PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
+                CollisionComp(PhysicsBodyShape.Rect(0f, 0f)),
+                NaturalCollisionResolutionComp()
+        ))
+
+        val createWall = { name: String, x: Float, y: Float, width: Float, height: Float ->
+            world.instanciateEntityClass("wall", name)
+                    .modifyComponent(TransformComp::class.java) { transComp -> transComp.setPosition(x + width / 2, y + height / 2) }
+                    .modifyComponent(RenderShapeComp::class.java) { comp ->
+                        comp.renderable.width = width
+                        comp.renderable.height = height
+                        comp.offsetX = (-width) / 2
+                        comp.offsetY = (-height) / 2
+                    }
+                    .modifyComponent(CollisionComp::class.java) { c -> c.bodyShape = PhysicsBodyShape.Rect(width, height) }
+        }
+
+        val wallThickness = 128f
+        val worldHeight = 900f
+        val worldWidth = 1600f
+        createWall("wall1", 0f, 0f, wallThickness, worldHeight)
+        createWall("wall2", 0f, 0f, worldWidth, wallThickness)
+        createWall("wall3", worldWidth - wallThickness, 0f, wallThickness, worldHeight)
+        createWall("wall4", 0f, worldHeight - wallThickness, worldWidth, wallThickness)
+    }
+
+    fun createCharacterClass() {
         world.addEntityClass(EntityClass("character")
                 .addBaseComponents(
                         TransformComp(100f, 100f),
-                        RenderShapeComp(RenderableShape.Circle(32f, MattMaterial.RED())),
+                        RenderShapeComp(RenderableShape.CirclePointing(32f, MattMaterial.RED())),
                         PhysicsBodyComp(10f, 0.9f, 0.5f),
-                        AbilityComp("ab1", 60),
+                        AbilityComp(),
                         CollisionComp(PhysicsBodyShape.Circ(32f)),
                         CollisionInteractionComp("character"),
-                        NaturalCollisionResolutionComp()
+                        NaturalCollisionResolutionComp(),
+                        CharacterComp(),
+                        FaceCursorComp(),
+                        HurtboxComp()
                 )
         )
+    }
+
+    fun instanciatePlayer() {
         world.instanciateEntityClass("character", "player")
                 .addComponent(UserInputComp(
                         mapOf(
@@ -111,43 +165,30 @@ public class SolGame : SolSimulation() {
                 .addComponent(MoveByVelocityComp(10f, "mvLeft", "mvRight", "mvUp", "mvDown"))
                 .addComponent(PlayerComp())
                 .modifyComponent(CollisionInteractionComp::class.java) { comp -> comp.addTag("team1") }
-                .modifyComponent(TransformComp::class.java) { comp -> comp.setXY(200f, 200f) }
-
-        world.instanciateEntityClass("character", "opponent")
-                .modifyComponent(TransformComp::class.java) { comp -> comp.setXY(500f, 500f) }
-                .modifyComponent(CollisionInteractionComp::class.java) { comp -> comp.addTag("team2") }
-
-        createWalls()
+                .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(200f, 200f) }
+                .modifyComponent(AbilityComp::class.java) { ab ->
+                    ab.abilities.addAll(
+                            listOf(
+                                    Ability("meleeAb", 60, 48f * 5, "action1",
+                                            executeTime = 0,
+                                            startupDelay = 0),
+                                    Ability("ab1", 60, 48f, "action2", 3f)
+                            )
+                    )
+                }
     }
 
-    private fun createWalls() {
-        world.addEntityClass(EntityClass("wall").addBaseComponents(
-                TransformComp(),
-                RenderShapeComp(RenderableShape.Rectangle(100f, 100f, MattMaterial.BLUE())),
-                PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
-                CollisionComp(PhysicsBodyShape.Rect(0f, 0f)),
-                NaturalCollisionResolutionComp()
-        ))
-
-        val createWall = { name: String, x: Float, y: Float, width: Float, height: Float ->
-            world.instanciateEntityClass("wall", name)
-                    .modifyComponent(TransformComp::class.java) { transComp -> transComp.setXY(x + width / 2, y + height / 2) }
-                    .modifyComponent(RenderShapeComp::class.java) { comp ->
-                        comp.renderable.width = width
-                        comp.renderable.height = height
-                        comp.offsetX = (-width) / 2
-                        comp.offsetY = (-height) / 2
-                    }
-                    .modifyComponent(CollisionComp::class.java) { c -> c.bodyShape = PhysicsBodyShape.Rect(width, height) }
-        }
-
-        val wallThickness = 128f
-        val worldHeight = 900f
-        val worldWidth = 1600f
-        createWall("wall1", 0f, 0f, wallThickness, worldHeight)
-        createWall("wall2", 0f, 0f, worldWidth, wallThickness)
-        createWall("wall3", worldWidth - wallThickness, 0f, wallThickness, worldHeight)
-        createWall("wall4", 0f, worldHeight - wallThickness, worldWidth, wallThickness)
+    fun createMeleeAbClass() {
+        world.addEntityClass(
+                EntityClass("meleeAb").addBaseComponents(
+                        TransformComp(),
+                        RenderShapeComp(RenderableShape.CirclePointing(64f, MattMaterial.BLUE())),
+                        DestroySelfTimedComp(60),
+                        CollisionComp(PhysicsBodyShape.Circ(64f)),
+                        HitboxComp(100f),
+                        SceneChildComp()
+                )
+        )
     }
 
     override fun onStart() {

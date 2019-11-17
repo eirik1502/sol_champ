@@ -1,6 +1,5 @@
 package sol_engine.physics_module;
 
-import org.joml.Vector2f;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.SystemBase;
 
@@ -33,8 +32,8 @@ public class CollisionSystem extends SystemBase {
                         CollisionData collData = new CollisionData();
 
                         boolean isCollision = PhysicsBodyCollisionFunctions.collision(
-                                new Vector2f(transComp.x, transComp.y), collComp.bodyShape,
-                                new Vector2f(otherTransComp.x, otherTransComp.y), otherCollComp.bodyShape,
+                                transComp.position, collComp.bodyShape,
+                                otherTransComp.position, otherCollComp.bodyShape,
                                 collData);
 
                         if (isCollision) {

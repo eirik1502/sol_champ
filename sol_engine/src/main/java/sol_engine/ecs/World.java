@@ -60,7 +60,7 @@ public class World {
 
 
     @SuppressWarnings("unchecked")
-    public <T extends SystemBase> Class<T> addSystem(Class<T> systemType) {
+    public <T extends SystemBase> T addSystem(Class<T> systemType) {
         try {
             Constructor<T> constructor = systemType.getConstructor();
             T sys = constructor.newInstance();
@@ -76,13 +76,17 @@ public class World {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SystemBase> Class<T> addSystemInstance(T sys) {
+    public <T extends SystemBase> T addSystemInstance(T sys) {
         Class<T> systemType = (Class<T>) sys.getClass();
         systems.put(systemType, sys);
         listeners.systemAddedListeners.forEach(l -> l.onSystemAdded(sys.getClass(), sys));
         sys.internalSetup(); // component families must be set here
         sys.internalStart(this, familyHandler.getEntitiesOfFamily(sys.compFamily));
-        return systemType;
+        return sys;
+    }
+
+    public void addSystems(Class<? extends SystemBase>... systemTypes) {
+        Arrays.stream(systemTypes).forEach(this::addSystem);
     }
 
     // TODO: handle removing of systems in familyManager. It works, but system families are never removed

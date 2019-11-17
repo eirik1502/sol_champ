@@ -24,10 +24,12 @@ public class Renderer {
     private static class RenderData {
         public Renderable renderable;
         public Vector3f position;
+        float rotationZ;
 
-        public RenderData(Renderable renderable, Vector3f position) {
+        public RenderData(Renderable renderable, Vector3f position, float rotationZ) {
             this.renderable = renderable;
             this.position = position;
+            this.rotationZ = rotationZ;
         }
     }
 
@@ -73,7 +75,11 @@ public class Renderer {
     }
 
     public void renderObject(Renderable renderable, Vector3f position) {
-        toBeRendered.add(new RenderData(renderable, position));
+        renderObject(renderable, position, 0f);
+    }
+
+    public void renderObject(Renderable renderable, Vector3f position, float rotationZ) {
+        toBeRendered.add(new RenderData(renderable, position, rotationZ));
     }
 
     public Imgui getImgui() {
@@ -103,7 +109,8 @@ public class Renderer {
 
                 Matrix4f modTrans = new Matrix4f()
                         .translate(renderData.position)
-                        .scale(renderable.width, renderable.height, 1);//.rotate(time/10, 0, 1, 0 );
+                        .scale(renderable.width, renderable.height, 1)
+                        .rotate(renderData.rotationZ, 0, 0, 1);
 
                 Material material = renderable.material;
                 Class<? extends MVPShader> shaderType = material.getShaderType();

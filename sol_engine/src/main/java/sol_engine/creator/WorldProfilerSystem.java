@@ -130,6 +130,7 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
                 }
 
                 if (watchingTotalTime.get()) {
+
                     drawRawFrameTimings(imgui, "Total update time", totalWorkTime);
                 }
                 if (watchingInternalTime.get()) {

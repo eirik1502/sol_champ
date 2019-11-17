@@ -42,7 +42,7 @@ public class ShootSystem extends ModuleSystemBase {
 
                     world.instanciateEntityClass(shootComp.bulletEntityClass, "bullet")
                             .modifyComponent(TransformComp.class, comp ->
-                                    comp.setXY(initialBulletPosition.x, initialBulletPosition.y))
+                                    comp.setPosition(initialBulletPosition.x, initialBulletPosition.y))
                             .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.add(initialBulletSpeed));
 
                     shootComp.framesSinceLastShot = 0;

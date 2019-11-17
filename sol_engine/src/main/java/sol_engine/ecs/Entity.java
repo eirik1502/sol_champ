@@ -1,5 +1,7 @@
 package sol_engine.ecs;
 
+import sol_engine.utils.Function;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -52,6 +54,21 @@ public class Entity {
 
     public <T extends Component> Entity modifyComponent(Class<T> compType, Consumer<T> apply) {
         apply.accept(getComponent(compType));
+        return this;
+    }
+
+    public <T extends Component> Entity modifyComponent(Class<T> compType, Function.TwoArg<T, Entity> apply) {
+        apply.invoke(getComponent(compType), this);
+        return this;
+    }
+
+    public <T extends Component> Entity modifyIfHasComponent(Class<T> compType, Consumer<T> apply) {
+        if (hasComponent(compType)) modifyComponent(compType, apply);
+        return this;
+    }
+
+    public <T extends Component> Entity modifyIfHasComponent(Class<T> compType, Function.TwoArg<T, Entity> apply) {
+        if (hasComponent(compType)) modifyComponent(compType, apply);
         return this;
     }
 

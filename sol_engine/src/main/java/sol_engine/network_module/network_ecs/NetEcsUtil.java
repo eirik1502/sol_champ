@@ -8,18 +8,18 @@ public class NetEcsUtil {
 
     public static NetOutPacket transformToPacket(TransformComp transComp) {
         return new NetOutPacket()
-                .writeFloat(transComp.x)
-                .writeFloat(transComp.y)
-                .writeFloat(transComp.rotZ)
-                .writeFloat(transComp.scaleX)
-                .writeFloat(transComp.scaleY);
+                .writeFloat(transComp.position.x)
+                .writeFloat(transComp.position.y)
+                .writeFloat(transComp.rotationZ)
+                .writeFloat(transComp.scale.x)
+                .writeFloat(transComp.scale.y);
     }
 
     public static void packetToTransform(NetInPacket packet, TransformComp transformComp) {
-        transformComp.x = packet.readFloat();
-        transformComp.y = packet.readFloat();
-        transformComp.rotZ = packet.readFloat();
-        transformComp.scaleX = packet.readFloat();
-        transformComp.scaleY = packet.readFloat();
+        transformComp.position.x = packet.readFloat();
+        transformComp.position.y = packet.readFloat();
+        transformComp.rotationZ = packet.readFloat();
+        transformComp.scale.x = packet.readFloat();
+        transformComp.scale.y = packet.readFloat();
     }
 }
