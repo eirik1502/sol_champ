@@ -17,6 +17,8 @@ class FaceCursorSystem : SystemBase() {
 
     override fun onUpdate() {
         forEachWithComponents(FaceCursorComp::class.java, UserInputComp::class.java, TransformComp::class.java) { entity, faceCursorComp, userInpComp, transComp ->
+            if (faceCursorComp.disabled) return@forEachWithComponents
+            
             cursorPosBuf.set(userInpComp.cursorPosition);
             transPosBuf.set(transComp.x, transComp.y)
             transComp.rotationZ = MathF.pointDirection(transPosBuf, cursorPosBuf)

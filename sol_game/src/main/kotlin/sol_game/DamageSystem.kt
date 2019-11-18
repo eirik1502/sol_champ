@@ -4,6 +4,7 @@ import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.ecs.SystemBase
 import sol_engine.physics_module.CollisionComp
+import sol_engine.utils.math.MathF
 
 class DamageSystem : SystemBase() {
 
@@ -30,10 +31,12 @@ class DamageSystem : SystemBase() {
                     .forEach() { otherEntity ->
                         val otherHurtboxComp = otherEntity.getComponent(HurtboxComp::class.java)
                         val otherTransComp = otherEntity.getComponent(TransformComp::class.java)
-                        val damageToDealVec = otherTransComp.position.sub(transComp.position, Vector2f())
-                                .normalize().mul(damageToDeal)
-                        otherHurtboxComp.currDamageTakenVecs.add(damageToDealVec)
+                        val interactionVec = otherTransComp.position.sub(transComp.position, Vector2f())
+                        otherHurtboxComp.currHitsTaken.add(
+                                HurtboxComp.Hit(interactionVec, damageToDeal,
+                                        hitboxComp.baseKnockback, hitboxComp.knockbackRatio))
                         otherHurtboxComp.totalDamageTaken += damageToDeal
+                        otherHurtboxComp.totalDamageTaken = MathF.min(otherHurtboxComp.totalDamageTaken, 9999f)
                         hitboxComp.currDamageDealt += damageToDeal
                     }
         }

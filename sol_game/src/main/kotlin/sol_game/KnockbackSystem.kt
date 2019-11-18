@@ -12,10 +12,18 @@ class KnockbackSystem : SystemBase() {
     override fun onUpdate() {
         forEachWithComponents(HurtboxComp::class.java, PhysicsBodyComp::class.java)
         { _, hurtboxComp, physicsComp ->
-            val impulse = hurtboxComp.currDamageTakenVecs.fold(Vector2f()) { acc, curr -> acc.add(curr) }
-//            if (impulse.length() > 0.000001f) println(impulse)
+            val impulse = hurtboxComp.currHitsTaken.fold(Vector2f())
+            { acc, hit ->
+                val knockback = calculateKnockback(hurtboxComp.totalDamageTaken, hit.baseKnockback, hit.knockbackRatio)
+                acc.add(hit.direction.normalize().mul(knockback))
+            }
+
             physicsComp.impulse.add(impulse)
-            hurtboxComp.currDamageTakenVecs.clear()
+            hurtboxComp.currHitsTaken.clear()
         }
+    }
+
+    private fun calculateKnockback(totalDamge: Float, baseKnockback: Float, knockbackRatio: Float): Float {
+        return totalDamge * knockbackRatio + baseKnockback
     }
 }

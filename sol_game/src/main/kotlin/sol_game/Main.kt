@@ -54,9 +54,10 @@ public class SolGame : SolSimulation() {
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
-                RenderSystem::class.java,
+                WorldProfilerSystem::class.java,
+                SolGuiSystem::class.java,
 
-                WorldProfilerSystem::class.java
+                RenderSystem::class.java
         )
 //        world.addSystem(EditorSystem::class.java)
 
@@ -88,7 +89,6 @@ public class SolGame : SolSimulation() {
         )
 
         createCharacterClass()
-        createMeleeAbClass()
 
         instanciatePlayer();
 
@@ -134,12 +134,13 @@ public class SolGame : SolSimulation() {
                 .addBaseComponents(
                         TransformComp(100f, 100f),
                         RenderShapeComp(RenderableShape.CirclePointing(32f, MattMaterial.RED())),
-                        PhysicsBodyComp(10f, 0.9f, 0.5f),
+                        PhysicsBodyComp(10f, 0.05f, 0.5f),
+                        MoveByVelocityComp(30f, "mvLeft", "mvRight", "mvUp", "mvDown"),
                         AbilityComp(),
                         CollisionComp(PhysicsBodyShape.Circ(32f)),
                         CollisionInteractionComp("character"),
                         NaturalCollisionResolutionComp(),
-                        CharacterComp(),
+                        CharacterComp("action1", "action2", "action3"),
                         FaceCursorComp(),
                         HurtboxComp()
                 )
@@ -162,33 +163,41 @@ public class SolGame : SolSimulation() {
                         ),
                         true
                 ))
-                .addComponent(MoveByVelocityComp(10f, "mvLeft", "mvRight", "mvUp", "mvDown"))
                 .addComponent(PlayerComp())
                 .modifyComponent(CollisionInteractionComp::class.java) { comp -> comp.addTag("team1") }
                 .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(200f, 200f) }
                 .modifyComponent(AbilityComp::class.java) { ab ->
                     ab.abilities.addAll(
                             listOf(
-                                    Ability("meleeAb", 60, 48f * 5, "action1",
-                                            executeTime = 0,
-                                            startupDelay = 0),
+                                    createMeleeAbility("meleeAb", "",
+                                            64f, 48f,
+                                            15, 5, 1, 60,
+                                            100f, 200f, 0.6f),
+                                    createMeleeAbility("haha", "",
+                                            256f, 0f,
+                                            15, 5, 1, 60,
+                                            1000f, 200f, 0.05f),
                                     Ability("ab1", 60, 48f, "action2", 3f)
                             )
                     )
                 }
     }
 
-    fun createMeleeAbClass() {
+    fun createMeleeAbility(name: String, inputAction: String, radius: Float, initialOffset: Float,
+                           executionTime: Int, startupDelay: Int, persistTime: Int, cooldown: Int,
+                           damage: Float, baseKnockback: Float, knockbackRatio: Float): Ability {
         world.addEntityClass(
-                EntityClass("meleeAb").addBaseComponents(
+                EntityClass(name).addBaseComponents(
                         TransformComp(),
-                        RenderShapeComp(RenderableShape.CirclePointing(64f, MattMaterial.BLUE())),
-                        DestroySelfTimedComp(60),
-                        CollisionComp(PhysicsBodyShape.Circ(64f)),
-                        HitboxComp(100f),
+                        RenderShapeComp(RenderableShape.CirclePointing(radius, MattMaterial.BLUE())),
+                        DestroySelfTimedComp(persistTime),
+                        CollisionComp(PhysicsBodyShape.Circ(radius)),
+                        HitboxComp(damage, baseKnockback, knockbackRatio),
                         SceneChildComp()
                 )
         )
+        return Ability(name, cooldown, initialOffset, inputAction,
+                0f, executionTime, startupDelay)
     }
 
     override fun onStart() {

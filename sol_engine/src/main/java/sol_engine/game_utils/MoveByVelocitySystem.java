@@ -31,6 +31,8 @@ public class MoveByVelocitySystem extends SystemBase {
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
             UserInputComp uInpComp = entity.getComponent(UserInputComp.class);
 
+            if (moveVelComp.disabled) return;
+
             List<Float> directionalSpeed = moveVelComp.directionalInput.stream()
                     .map(inp -> uInpComp.checkPressed(inp) ? 1f : 0f)
                     .collect(Collectors.toList());

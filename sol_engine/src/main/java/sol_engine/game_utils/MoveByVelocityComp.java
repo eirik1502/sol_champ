@@ -8,6 +8,7 @@ import java.util.List;
 
 public class MoveByVelocityComp extends Component {
 
+    public boolean disabled = false;
     public float velocity = 60;
 
     // in the order: left - right - up - down

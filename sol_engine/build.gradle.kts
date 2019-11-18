@@ -43,7 +43,7 @@ dependencies {
     }
 
     implementation("com.github.kotlin-graphics:uno-sdk:$uno_version")
-    implementation("com.github.kotlin-graphics.glm:glm:$glm_version")
+    api("com.github.kotlin-graphics.glm:glm:$glm_version")
 
     listOf("", "-glfw", "-opengl", "-stb").forEach {
         implementation("org.lwjgl:lwjgl$it:$lwjgl_version")
