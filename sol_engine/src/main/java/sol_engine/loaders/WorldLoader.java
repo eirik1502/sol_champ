@@ -12,11 +12,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import sol_engine.ecs.*;
 
 import java.io.IOException;
@@ -98,12 +94,14 @@ public class WorldLoader {
         withFieldIfExists(configNode, ROOT_PACKAGE_FIELD, rootPackageNode -> {
             compSysPackages.addAll(getDescendingPackages(rootPackageNode.asText()));
         });
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(.addAll(ClasspathHelper.forPackage("sol_engine")))
-                .setScanners(new ResourcesScanner(), new SubTypesScanner()));
-        Set<Class<? extends Component>> subClasses = reflections.getSubTypesOf(Component.class);
-        System.out.println("Sub classes:");
-        subClasses.stream().map(c -> c.getName()).forEach(cn -> System.out.println(cn));
+
+        System.out.println(compSysPackages);
+//        Reflections reflections = new Reflections(new ConfigurationBuilder()
+//                .setUrls(.addAll(ClasspathHelper.forPackage("sol_engine")))
+//                .setScanners(new ResourcesScanner(), new SubTypesScanner()));
+//        Set<Class<? extends Component>> subClasses = reflections.getSubTypesOf(Component.class);
+//        System.out.println("Sub classes:");
+//        subClasses.stream().map(c -> c.getName()).forEach(cn -> System.out.println(cn));
 //        Set<String> transformCompPaths = reflections.getResources(Pattern.compile(".*\\.TransformComp.java"));
 //        System.out.println(transformCompPaths);
 
@@ -449,6 +447,8 @@ public class WorldLoader {
     }
 
     private Set<String> getDescendingPackages(String... rootPackages) {
+        List<String> packages = new ArrayList<>();
+
         return Arrays.stream(getClass().getClassLoader().getDefinedPackages())
                 .map(Package::getName)
                 .filter(name -> Arrays.stream(rootPackages).anyMatch(name::startsWith))
