@@ -24,16 +24,19 @@ public class Renderer {
     private static class RenderData {
         public Renderable renderable;
         public Vector3f position;
+        float rotationZ;
 
-        public RenderData(Renderable renderable, Vector3f position) {
+        public RenderData(Renderable renderable, Vector3f position, float rotationZ) {
             this.renderable = renderable;
             this.position = position;
+            this.rotationZ = rotationZ;
         }
     }
 
     public static final String NULL_MESH = MeshManager.NULL_MESH;
     public static final String UNIT_CORNERED_RECTANGLE_MESH = "UNIT_CORNERED_RECTANGLE_MESH";
     public static final String UNIT_CENTERED_CIRCLE_MESH = "UNIT_CENTERED_CIRCLE_MESH";
+    public static final String UNIT_CENTERED_CIRCLE_POINTING_MESH = "UNIT_CENTERED_CIRCLE_POINTING_MESH";
 
 
     private RenderConfig config;
@@ -60,6 +63,7 @@ public class Renderer {
         meshManager = new MeshManager();
         meshManager.addMesh(UNIT_CORNERED_RECTANGLE_MESH, MeshUtils.createUnitCorneredRectangleMesh());
         meshManager.addMesh(UNIT_CENTERED_CIRCLE_MESH, MeshUtils.createUnitCenteredCircleMesh(16));
+        meshManager.addMesh(UNIT_CENTERED_CIRCLE_POINTING_MESH, MeshUtils.createUnitCenteredCirclePointingMesh(16));
     }
 
     public void terminate() {
@@ -71,7 +75,11 @@ public class Renderer {
     }
 
     public void renderObject(Renderable renderable, Vector3f position) {
-        toBeRendered.add(new RenderData(renderable, position));
+        renderObject(renderable, position, 0f);
+    }
+
+    public void renderObject(Renderable renderable, Vector3f position, float rotationZ) {
+        toBeRendered.add(new RenderData(renderable, position, rotationZ));
     }
 
     public Imgui getImgui() {
@@ -101,7 +109,8 @@ public class Renderer {
 
                 Matrix4f modTrans = new Matrix4f()
                         .translate(renderData.position)
-                        .scale(renderable.width, renderable.height, 1);//.rotate(time/10, 0, 1, 0 );
+                        .scale(renderable.width, renderable.height, 1)
+                        .rotate(renderData.rotationZ, 0, 0, 1);
 
                 Material material = renderable.material;
                 Class<? extends MVPShader> shaderType = material.getShaderType();

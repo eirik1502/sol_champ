@@ -1,4 +1,4 @@
-package sol_engine.editor;
+package sol_engine.creator;
 
 import sol_engine.ecs.World;
 

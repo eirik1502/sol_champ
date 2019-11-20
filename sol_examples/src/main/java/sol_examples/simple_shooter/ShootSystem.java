@@ -35,14 +35,14 @@ public class ShootSystem extends ModuleSystemBase {
             if (shootComp.framesSinceLastShot >= shootComp.reloadFrames) {
                 boolean shootRequested = inp.mouseButtonHeld(shootComp.shootMouseButton);
                 if (shootRequested) {
-                    position.set(transComp.x, transComp.y);
+                    position.set(transComp.position);
                     inp.cursorPosition().sub(position, initialDirectionVec).normalize();
                     initialDirectionVec.mul(shootComp.initialBulletSpeed, initialBulletSpeed);
                     position.add(initialDirectionVec.mul(40, tempVec), initialBulletPosition);
 
                     world.instanciateEntityClass(shootComp.bulletEntityClass, "bullet")
                             .modifyComponent(TransformComp.class, comp ->
-                                    comp.setXY(initialBulletPosition.x, initialBulletPosition.y))
+                                    comp.setPosition(initialBulletPosition.x, initialBulletPosition.y))
                             .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.add(initialBulletSpeed));
 
                     shootComp.framesSinceLastShot = 0;

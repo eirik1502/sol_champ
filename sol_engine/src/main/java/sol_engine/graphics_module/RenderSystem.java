@@ -34,11 +34,11 @@ public class RenderSystem extends ModuleSystemBase {
                 TransformComp.class,
                 (entity, renderComp, transComp) -> {
                     Vector3f position = new Vector3f(
-                            transComp.x + renderComp.offsetX,
-                            transComp.y + renderComp.offsetY,
+                            transComp.getX() + renderComp.offsetX,
+                            transComp.getY() + renderComp.offsetY,
                             0
                     );
-                    graphics.getRenderer().renderObject(renderComp.renderable, position);
+                    graphics.getRenderer().renderObject(renderComp.renderable, position, transComp.rotationZ);
                 }
         );
     }

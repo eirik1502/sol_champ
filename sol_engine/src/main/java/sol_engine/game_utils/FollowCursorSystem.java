@@ -23,7 +23,7 @@ public class FollowCursorSystem extends ModuleSystemBase {
 
         forEachWithComponents(TransformComp.class,
                 (entity, transComp) -> {
-                    transComp.setXY(inpMod.cursorPosition().x, inpMod.cursorPosition().y);
+                    transComp.setPosition(inpMod.cursorPosition().x, inpMod.cursorPosition().y);
                 }
         );
     }

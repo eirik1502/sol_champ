@@ -1,6 +1,7 @@
 package sol_engine.utils;
 
 public interface Function {
+
     interface NoArgReturn<RETURN> extends Function {
         RETURN invoke();
     }

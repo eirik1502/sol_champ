@@ -17,13 +17,13 @@ sourceSets {
 dependencies {
     // https://mvnrepository.com/artifact/org.reflections/reflections
     implementation(group = "org.reflections", name = "reflections", version = "0.9.11")
-    
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.github.java-json-tools:json-schema-validator:2.2.10")
+
+
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.0")
-    //implementation 'com.google.code.gson:gson:2.8.5'
-    implementation("com.google.code.gson:gson:2.8.5")
 
-    implementation("com.github.java-json-tools:json-schema-validator:2.2.10")
 
     // https://mvnrepository.com/artifact/org.joml/joml
     api("org.joml:joml:1.9.14")

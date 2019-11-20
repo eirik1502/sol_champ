@@ -46,9 +46,10 @@ public abstract class SolSimulation {
                 ((ModuleSystemBase) sys).setModulesHandler(modulesHandler);
             }
         };
-        world.addSystemAddedListener(systemAddedListener);
+        world.listeners.addSystemAddedListener(systemAddedListener);
 
         onSetupWorld();
+        onStart();
     }
 
     public final void terminate() {

@@ -32,7 +32,8 @@ public class NaturalCollisionResolutionSystem extends SystemBase {
             TransformComp transComp = entity.getComponent(TransformComp.class);
 
             collComp.collidingEntities.forEach((collidingEntity, collisionData) -> {
-                if (!resolvedEntities.contains(collidingEntity)) {
+                if (collidingEntity.hasComponent(NaturalCollisionResolutionComp.class)
+                        && !resolvedEntities.contains(collidingEntity)) {
                     PhysicsBodyComp otherPhysComp = collidingEntity.getComponent(PhysicsBodyComp.class);
                     TransformComp otherTransComp = collidingEntity.getComponent(TransformComp.class);
 
@@ -106,12 +107,10 @@ public class NaturalCollisionResolutionSystem extends SystemBase {
 
         data.collisionVector.mul(correctionMagnitude, correctionVec);
         correctionVec.mul(invMass1, addPosVec).negate();
-        transComp.x += addPosVec.x;
-        transComp.y += addPosVec.y;
+        transComp.position.add(addPosVec);
 
         correctionVec.mul(invMass2, addPosVec);
-        otherTransComp.x += addPosVec.x;
-        otherTransComp.y += addPosVec.y;
+        otherTransComp.position.add(addPosVec);
     }
 
     private float inverseMass(float mass) {

@@ -20,7 +20,7 @@ public class TornadoWetherSystem extends SystemBase {
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);
             if (physComp.mass != PhysicsBodyComp.INF_MASS) {
-                Vector2f position = new Vector2f(transComp.x, transComp.y);
+                Vector2f position = new Vector2f(transComp.position);
                 Vector2f windAcceleration = new Vector2f();
                 worldCenter.sub(position, windAcceleration)
                         .normalize()

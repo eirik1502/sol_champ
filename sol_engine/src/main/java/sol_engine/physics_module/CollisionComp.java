@@ -9,6 +9,9 @@ import java.util.Map;
 public class CollisionComp extends Component {
 
     public PhysicsBodyShape bodyShape;
+
+
+    //    public Map<String, >
     public Map<Entity, CollisionData> collidingEntities = new HashMap<>();
 
 
