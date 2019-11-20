@@ -10,10 +10,10 @@ import sol_engine.graphics_module.Window;
 import uno.glfw.GlfwWindow;
 
 
-public class Imgui {
+public class Gui {
 
     public static interface DrawFunc {
-        void draw(ImGui imgui);
+        void draw(GuiCommands cmds);
     }
 
     public ImGui imgui = ImGui.INSTANCE;
@@ -21,8 +21,9 @@ public class Imgui {
     private ImplGlfw implGlfw;
     private ImplGL3 implGl3;
     private IO io;
+    private GuiCommands guiCommands;
 
-    public Imgui(Window window) {
+    public Gui(Window window) {
         ctx = new Context();
         imgui.styleColorsDark();
         long a = 1;
@@ -30,6 +31,7 @@ public class Imgui {
         implGlfw = new ImplGlfw(unoWindow);
         implGl3 = new ImplGL3();
         io = imgui.getIo();
+        guiCommands = new GuiCommands(imgui);
     }
 
     public void terminate() {
@@ -45,7 +47,7 @@ public class Imgui {
     }
 
     public void draw(DrawFunc func) {
-        func.draw(imgui);
+        func.draw(guiCommands);
     }
 
     public void render() {

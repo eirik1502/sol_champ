@@ -6,7 +6,7 @@ import sol_engine.graphics_module.FrameBuffer;
 import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.RenderingContext;
 import sol_engine.graphics_module.graphical_objects.Renderable;
-import sol_engine.graphics_module.imgui.Imgui;
+import sol_engine.graphics_module.imgui.Gui;
 import sol_engine.graphics_module.materials.Material;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
@@ -43,7 +43,7 @@ public class Renderer {
 
     private RenderingContext context;
     private FrameBuffer frameBuffer;
-    private Imgui imgui;
+    private Gui gui;
     private ShaderManager shaderManager;
     private MeshManager meshManager;
 
@@ -56,8 +56,8 @@ public class Renderer {
         this.config = config;
         this.context = context;
 
-        imgui = new Imgui(context.getWindow());
-        imgui.startFrame();
+        gui = new Gui(context.getWindow());
+        gui.startFrame();
 
         shaderManager = new ShaderManager();
         meshManager = new MeshManager();
@@ -67,7 +67,7 @@ public class Renderer {
     }
 
     public void terminate() {
-        imgui.terminate();
+        gui.terminate();
     }
 
     public RenderingContext getContext() {
@@ -82,8 +82,8 @@ public class Renderer {
         toBeRendered.add(new RenderData(renderable, position, rotationZ));
     }
 
-    public Imgui getImgui() {
-        return imgui;
+    public Gui getGui() {
+        return gui;
     }
 
     public void render() {
@@ -134,13 +134,13 @@ public class Renderer {
 //        imgui.imgui.text("Hello, world!");
 //        imgui.imgui.checkbox("Demo Window", b);
 //        imgui.imgui.showDemoWindow(b);
-        imgui.render();
+        gui.render();
         context.swapBuffers();
 
         toBeRendered.clear();
         time++;
 
 
-        imgui.startFrame();
+        gui.startFrame();
     }
 }

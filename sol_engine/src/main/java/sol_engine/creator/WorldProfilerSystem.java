@@ -56,37 +56,37 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
         GraphicsModule graphicsModule = getModule(GraphicsModule.class);
 
         boolean[] pOpen = {true};
-        graphicsModule.getRenderer().getImgui().draw(imgui -> {
-            if (imgui.begin("Profiler", pOpen, WindowFlag.AlwaysAutoResize.i | WindowFlag.MenuBar.i)) {
+        graphicsModule.getRenderer().getGui().draw(cmds -> {
+            if (cmds.getNative().begin("Profiler", pOpen, WindowFlag.AlwaysAutoResize.i | WindowFlag.MenuBar.i)) {
 
                 //menu
-                if (imgui.beginMenuBar()) {
-//                    if (imgui.beginMenu("Stats", true)) {
-//                        imgui.menuItem("World stats", "", watchingStats, true);
-//                        imgui.endMenu();
+                if (cmds.getNative().beginMenuBar()) {
+//                    if (cmds.beginMenu("Stats", true)) {
+//                        cmds.menuItem("World stats", "", watchingStats, true);
+//                        cmds.endMenu();
 //                    }
-                    if (imgui.beginMenu("General", true)) {
-                        imgui.menuItem("Total update time", "", watchingTotalTime, true);
-                        imgui.menuItem("Internal world time", "", watchingInternalTime, true);
-                        imgui.endMenu();
+                    if (cmds.getNative().beginMenu("General", true)) {
+                        cmds.getNative().menuItem("Total update time", "", watchingTotalTime, true);
+                        cmds.getNative().menuItem("Internal world time", "", watchingInternalTime, true);
+                        cmds.getNative().endMenu();
                     }
 
                     //systems
-                    if (imgui.beginMenu("Systems", true)) {
+                    if (cmds.getNative().beginMenu("Systems", true)) {
                         systemsWorkTime.keySet().forEach(system -> {
                             boolean[] selected = {watchingSystems.contains(system)};
-                            imgui.menuItem(system.getClass().getSimpleName(), "", selected, true);
+                            cmds.getNative().menuItem(system.getClass().getSimpleName(), "", selected, true);
                             if (selected[0]) {
                                 watchingSystems.add(system);
                             } else {
                                 watchingSystems.remove(system);
                             }
                         });
-                        imgui.endMenu();
+                        cmds.endMenu();
                     }
-                    imgui.endMenuBar();
+                    cmds.endMenuBar();
                 }
-                if (imgui.collapsingHeader("Stats", 0)) {
+                if (cmds.getNative().collapsingHeader("Stats", 0)) {
                     int entitiesCount = world.insight.getEntities().size();
                     int systemsCount = world.insight.getSystems().size();
                     Map<Class<? extends Component>, Integer> compTypesCount = world.insight.getEntities().stream()
@@ -96,11 +96,11 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
                             .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().size()));
                     int compsCount = compTypesCount.values().stream().mapToInt(i -> i).sum();
 
-                    imgui.text("Entities count: %d", entitiesCount);
-                    imgui.text("Systems count: %d", systemsCount);
-                    imgui.text("Components count: %d", compsCount);
+                    cmds.getNative().text("Entities count: %d", entitiesCount);
+                    cmds.getNative().text("Systems count: %d", systemsCount);
+                    cmds.getNative().text("Components count: %d", compsCount);
 
-                    if (imgui.collapsingHeader("Components details", 0)) {
+                    if (cmds.getNative().collapsingHeader("Components details", 0)) {
                         int maxCompTypeCount = compTypesCount.values().stream().mapToInt(i -> i).max().orElse(0);
                         List<Class<? extends Component>> mostOccurringCompTypes = compTypesCount.entrySet().stream()
                                 .sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue())
@@ -114,13 +114,13 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
                                         String.format("%d - (%.0f) %s", cti.i, compTypeCountValues[cti.i], cti.value.getSimpleName()))
                                 .collect(Collectors.toList());
                         String barLabelsCombined = String.join("\n", barLabels);
-                        float compTypeHistogramHeight = imgui.getTextLineHeight() * barLabels.size();
+                        float compTypeHistogramHeight = cmds.getNative().getTextLineHeight() * barLabels.size();
 
-                        imgui.text("Most occurring: %s", mostOccurringCompTypes.stream()
+                        cmds.text("Most occurring: %s", mostOccurringCompTypes.stream()
                                 .map(compType -> String.format("(%d) %s", compTypesCount.get(compType), compType.getSimpleName()))
                                 .collect(Collectors.joining(", "))
                         );
-                        imgui.plotHistogram(barLabelsCombined + "##Component types count",
+                        cmds.getNative().plotHistogram(barLabelsCombined + "##Component types count",
                                 compTypeCountValues, 0,
                                 "Component types count",
                                 1, maxCompTypeCount,
@@ -131,26 +131,26 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
 
                 if (watchingTotalTime.get()) {
 
-                    drawRawFrameTimings(imgui, "Total update time", totalWorkTime);
+                    drawRawFrameTimings(cmds.getNative(), "Total update time", totalWorkTime);
                 }
                 if (watchingInternalTime.get()) {
-                    drawRawFrameTimings(imgui, "Internal update time", internalWorkTime);
+                    drawRawFrameTimings(cmds.getNative(), "Internal update time", internalWorkTime);
                 }
 
                 watchingSystems.forEach(system ->
-                        drawRawFrameTimings(imgui, system.getClass().getSimpleName(), systemsWorkTime.get(system))
+                        drawRawFrameTimings(cmds.getNative(), system.getClass().getSimpleName(), systemsWorkTime.get(system))
                 );
-                imgui.end();
+                cmds.end();
             }
         });
     }
 
-    private void drawRawFrameTimings(ImGui imgui, String label, Queue<Float> timings) {
+    private void drawRawFrameTimings(ImGui cmds, String label, Queue<Float> timings) {
         float[] times = timings.stream()
                 .map(t -> t * 1000)
                 .collect(CollectorsUtils.toFloatArray());
         float lastTime = times.length != 0 ? times[times.length - 1] : 0;
-        imgui.plotLines(
+        cmds.plotLines(
                 String.format(" (%3.2f) " + label, lastTime),
                 times, 0, "", 1f, 16.6f,
                 new Vec2(500, 30), 1);

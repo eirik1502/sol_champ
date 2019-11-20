@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class EditorSystem extends ModuleSystemBase {
+public class CreatorSystem extends ModuleSystemBase {
 
     private static class WatchData {
         Map<Class<? extends Component>, boolean[]> selectedCompTypes = new HashMap<>();
@@ -51,10 +51,10 @@ public class EditorSystem extends ModuleSystemBase {
         float leftMenuWidth = windowSize.x * menuSizePercent;
         float topMenuHeight = windowSize.y * menuSizePercent;
 
-        graphics.getRenderer().getImgui().draw(imgui -> {
-            imgui.setNextWindowPos(new Vec2(0, 0), Cond.Always, new Vec2());
-            imgui.setNextWindowSize(new Vec2(leftMenuWidth, windowSize.y), Cond.Once);
-            if (imgui.begin("World", TRUE_BOOL_ARR,
+        graphics.getRenderer().getGui().draw(imgui -> {
+            imgui.getNative().setNextWindowPos(new Vec2(0, 0), Cond.Always, new Vec2());
+            imgui.getNative().setNextWindowSize(new Vec2(leftMenuWidth, windowSize.y), Cond.Once);
+            if (imgui.getNative().begin("World", TRUE_BOOL_ARR,
                     WindowFlag.NoMove.i |
                             WindowFlag.NoResize.i |
                             WindowFlag.NoCollapse.i |
@@ -63,19 +63,19 @@ public class EditorSystem extends ModuleSystemBase {
                             WindowFlag.NoBringToFrontOnFocus.i |
                             WindowFlag.HorizontalScrollbar.i
             )) {
-                if (imgui.beginMenuBar()) {
-                    if (imgui.beginMenu("entities", true)) {
+                if (imgui.getNative().beginMenuBar()) {
+                    if (imgui.getNative().beginMenu("entities", true)) {
 
                         entities.forEach(entity -> {
                             EditorEditableComp editComp = entity.getComponent(EditorEditableComp.class);
 
                             editComp.currentlyWatched = asMutable(editComp.currentlyWatched, mval ->
-                                    imgui.menuItem(entity.name, "", mval, true));
+                                    imgui.getNative().menuItem(entity.name, "", mval, true));
                         });
 
-                        imgui.endMenu();
+                        imgui.getNative().endMenu();
                     }
-                    imgui.endMenuBar();
+                    imgui.getNative().endMenuBar();
                 }
                 entities.stream()
                         .filter(entity -> entity.getComponent(EditorEditableComp.class).currentlyWatched)
@@ -83,9 +83,9 @@ public class EditorSystem extends ModuleSystemBase {
                             imgui.text(entity.name);
 
                             final Set<Class<? extends Component>> compTypes = entity.getComponentTypeGroup().stream().collect(Collectors.toSet());
-                            compTypes.stream().forEach(compType -> drawComponent(imgui, entity, compType));
+                            compTypes.stream().forEach(compType -> drawComponent(imgui.getNative(), entity, compType));
                         });
-                imgui.end();
+                imgui.getNative().end();
             }
         });
     }

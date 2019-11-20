@@ -25,18 +25,18 @@ class SolGuiSystem : ModuleSystemBase() {
         val i = MInt(0)
         forEachWithComponents(HurtboxComp::class.java, TransformComp::class.java)
         { entity, hurtboxComp, transComp ->
-            graphicsMod.renderer.imgui.draw { imgui ->
+            graphicsMod.renderer.gui.draw { imgui ->
                 val posWindowSpace = posToWindowSize(transComp.position)
                 val x: Float =
                         if (i.value++ % 2 == 0) 3f
                         else windowSize.x - boxSize.x - 3f
-                imgui.setNextWindowPos(Vec2(x, posWindowSpace.y))
-                imgui.setNextWindowSize(Vec2(boxSize.x, boxSize.y))
-                imgui.setNextWindowBgAlpha(0.2f)
-                if (imgui.begin(entity.name, booleanArrayOf(true), WindowFlag.NoDecoration.i or WindowFlag.AlwaysAutoResize.i)) {
-                    imgui.setWindowFontScale(3f)
-                    imgui.textColored(Vec4(1f, 0f, 0f, 1f), "%.0f", hurtboxComp.totalDamageTaken)
-                    imgui.end()
+                imgui.getNative().setNextWindowPos(Vec2(x, posWindowSpace.y))
+                imgui.getNative().setNextWindowSize(Vec2(boxSize.x, boxSize.y))
+                imgui.getNative().setNextWindowBgAlpha(0.2f)
+                if (imgui.getNative().begin(entity.name, booleanArrayOf(true), WindowFlag.NoDecoration.i or WindowFlag.AlwaysAutoResize.i)) {
+                    imgui.getNative().setWindowFontScale(3f)
+                    imgui.getNative().textColored(Vec4(1f, 0f, 0f, 1f), "%.0f", hurtboxComp.totalDamageTaken)
+                    imgui.getNative().end()
                 }
             }
         }
