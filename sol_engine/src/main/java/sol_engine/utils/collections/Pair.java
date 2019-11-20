@@ -17,4 +17,9 @@ public class Pair<T, K> {
     public K getLast() {
         return elem2;
     }
+
+    @Override
+    public String toString() {
+        return elem1.toString() + ", " + elem2.toString();
+    }
 }

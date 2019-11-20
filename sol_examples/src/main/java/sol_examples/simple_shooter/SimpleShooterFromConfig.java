@@ -9,7 +9,7 @@ import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.WindowConfig;
 import sol_engine.input_module.InputModule;
 import sol_engine.input_module.InputModuleConfig;
-import sol_engine.loaders.WorldLoader;
+import sol_engine.loaders.world_loader.WorldLoader;
 
 public class SimpleShooterFromConfig extends SolSimulation {
 

@@ -17,8 +17,7 @@ sourceSets {
 dependencies {
     // https://mvnrepository.com/artifact/org.reflections/reflections
     implementation(group = "org.reflections", name = "reflections", version = "0.9.11")
-
-
+    
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.0")
     //implementation 'com.google.code.gson:gson:2.8.5'
@@ -33,22 +32,23 @@ dependencies {
     implementation("com.esotericsoftware:kryonet:2.22.0-RC1")
 
 //    // IMGUI + LWJGL
-    val lwjgl_version = "3.2.2"
-    val uno_version = "3f32007ffe"
-    val kotlin_version = "1.3.41"
-    val glm_version = "6048c31425ae6110258e4b42165f1e636f8b5603"
+    val lwjgl_version = "3.2.3"
+    val uno_version = "3275c3ce3045be19c84288609d9f1631d631a743"
+    val kotlin_version = "1.3.50"
+    val glm_version = "3d3aea6d420bace96ced057cddeca023129d7c41"
+    val imgui_version = "-SNAPSHOT" //"e1fbe03a0a"
 
-    api("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
 
-//    compile 'com.github.kotlin-graphics:imgui:1.73-SNAPSHOT'
+    //implementation("com.github.kotlin-graphics:imgui:1.73-SNAPSHOT")
     listOf("gl", "glfw", "core").forEach {
-        api("com.github.kotlin-graphics.imgui:imgui-$it:-SNAPSHOT")
+        api("com.github.kotlin-graphics.imgui:imgui-$it:$imgui_version")
     }
 
     implementation("com.github.kotlin-graphics:uno-sdk:$uno_version")
-    implementation("com.github.kotlin-graphics.glm:glm:$glm_version")
+    api("com.github.kotlin-graphics.glm:glm:$glm_version")
 
-    listOf("", "-glfw", "-opengl").forEach {
+    listOf("", "-glfw", "-opengl", "-stb").forEach {
         implementation("org.lwjgl:lwjgl$it:$lwjgl_version")
     }
 
@@ -61,7 +61,7 @@ dependencies {
 
     // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
     val excludeLwjglLibs = listOf("lwjgl-jawt", "lwjgl-vulkan")
-    configurations.compileClasspath.resolvedConfiguration.getResolvedArtifacts()
+    configurations["compileClasspath"].resolvedConfiguration.getResolvedArtifacts()
             .stream()
             .filter {
                 !((it.moduleVersion.id.group == "org.lwjgl") && (excludeLwjglLibs.contains(it.moduleVersion.id.name)))
@@ -73,5 +73,6 @@ dependencies {
                 }
             }
 
-    testCompile("junit:junit:4.12")
+    testImplementation("junit:junit:4.12")
+    testImplementation("org.hamcrest:hamcrest:2.2")
 }

@@ -1,6 +1,10 @@
 package sol_engine.utils;
 
 public interface Function {
+    interface NoArgReturn<RETURN> extends Function {
+        RETURN invoke();
+    }
+
     interface OneArgReturn<A, RETURN> extends Function {
         RETURN invoke(A arg1);
     }
@@ -25,12 +29,16 @@ public interface Function {
         RETURN invoke(A arg1, B arg2, C arg3, D arg4, E arg5, F arg6);
     }
 
+    interface NoArg extends Function {
+        void invoke();
+    }
+
     interface OneArg<A> extends Function {
         void invoke(A arg1);
     }
 
     interface TwoArg<A, B> extends Function {
-         void invoke(A arg1, B arg2);
+        void invoke(A arg1, B arg2);
     }
 
     interface ThreeArg<A, B, C> extends Function {

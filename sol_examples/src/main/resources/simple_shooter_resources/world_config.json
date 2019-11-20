@@ -1,5 +1,5 @@
 {
-  "rootPackage": "sol_examples.simple_shooter",
+  "rootPackage": "sol_examples",
   "componentSystems": [
     "CollisionSystem",
     "NaturalCollisionResolutionSystem",
@@ -8,16 +8,35 @@
     "ShootSystem",
     "TornadoWetherSystem",
     "FollowCursorSystem",
-    "RenderSystem"
+    "PhysicsSystem",
+    "RenderSystem",
+    "EditorSystem"
   ],
   "entityClasses": [
     {
-      "className": "player",
+      "className": "Player",
       "components": [
+        {
+          "type": "EditorEditableComp"
+        },
+        {
+          "type": "PhysicsBodyComp"
+        },
+        {
+          "type": "NaturalCollisionResolutionComp"
+        },
+        {
+          "type": "ShootComp",
+          "values": {
+            "shootMouseButton": 0,
+            "initialBulletSpeed": 0,
+            "bulletEntityClass": "Player"
+          }
+        },
         {
           "type": "TransformComp",
           "values": {
-            "x": 100,
+            "x": 500,
             "y": 100
           }
         },
@@ -50,8 +69,8 @@
   ],
   "initialEntities": [
     {
-      "useClass": "player",
-      "name": "Player",
+      "useClass": "Player",
+      "name": "player",
       "overrideComponents": []
     }
   ]

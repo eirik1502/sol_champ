@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
 import sol_engine.ecs.*;
+import sol_engine.loaders.world_loader.WorldLoader;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -5,12 +5,13 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 
-public class WorldConfig {
+public class WorldConfigOld {
 
     public class EntityClassConfig {
         public List<String> extendsClass;
         public Map<String, Map<String, JsonObject>> components;
     }
+
     public class InitialEntityConfig {
         public String useClass;
         public String name;
