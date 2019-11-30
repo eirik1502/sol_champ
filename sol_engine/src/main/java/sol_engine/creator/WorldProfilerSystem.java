@@ -1,17 +1,16 @@
 package sol_engine.creator;
 
 import com.google.common.collect.EvictingQueue;
-import glm_.vec2.Vec2;
-import imgui.ImGui;
-import imgui.MutableProperty0;
-import imgui.WindowFlag;
+import org.joml.Vector2f;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
 import sol_engine.ecs.WorldUpdateListener;
 import sol_engine.graphics_module.GraphicsModule;
-import sol_engine.utils.stream.CollectorsUtils;
+import sol_engine.graphics_module.imgui.GuiCommands;
+import sol_engine.graphics_module.imgui.GuiWindowFlags;
+import sol_engine.utils.mutable_primitives.MBoolean;
 import sol_engine.utils.stream.WithIndex;
 import sol_engine.utils.tickers.DeltaTimer;
 
@@ -30,9 +29,10 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
     private DeltaTimer totalWorkTimer = new DeltaTimer();
     private DeltaTimer partialWorkTimer = new DeltaTimer();
 
-    private MutableProperty0<Boolean> watchingStats = new MutableProperty0<>(true);
-    private MutableProperty0<Boolean> watchingTotalTime = new MutableProperty0<>(true);
-    private MutableProperty0<Boolean> watchingInternalTime = new MutableProperty0<>(false);
+    private MBoolean watchingStats = new MBoolean(true);
+    private MBoolean watchingTotalTime = new MBoolean(true);
+    private MBoolean watchingInternalTime = new MBoolean(false);
+
     private Set<SystemBase> watchingSystems = new LinkedHashSet<>();
 
     @Override
@@ -55,107 +55,105 @@ public class WorldProfilerSystem extends ModuleSystemBase implements WorldUpdate
     protected void onUpdate() {
         GraphicsModule graphicsModule = getModule(GraphicsModule.class);
 
-        boolean[] pOpen = {true};
         graphicsModule.getRenderer().getGui().draw(cmds -> {
-            if (cmds.getNative().begin("Profiler", pOpen, WindowFlag.AlwaysAutoResize.i | WindowFlag.MenuBar.i)) {
+            if (cmds.begin("Profiler", true,
+                    GuiWindowFlags.AlwaysAutoResize, GuiWindowFlags.MenuBar)) {
 
                 //menu
-                if (cmds.getNative().beginMenuBar()) {
-//                    if (cmds.beginMenu("Stats", true)) {
-//                        cmds.menuItem("World stats", "", watchingStats, true);
-//                        cmds.endMenu();
-//                    }
-                    if (cmds.getNative().beginMenu("General", true)) {
-                        cmds.getNative().menuItem("Total update time", "", watchingTotalTime, true);
-                        cmds.getNative().menuItem("Internal world time", "", watchingInternalTime, true);
-                        cmds.getNative().endMenu();
+                if (cmds.menu.beginMenuBar()) {
+                    if (cmds.menu.beginMenu("General", true)) {
+                        cmds.menu.menuItem("Total update time", "", watchingTotalTime, true);
+                        cmds.menu.menuItem("Internal world time", "", watchingInternalTime, true);
+                        cmds.menu.endMenu();
                     }
 
                     //systems
-                    if (cmds.getNative().beginMenu("Systems", true)) {
+                    if (cmds.menu.beginMenu("Systems", true)) {
                         systemsWorkTime.keySet().forEach(system -> {
-                            boolean[] selected = {watchingSystems.contains(system)};
-                            cmds.getNative().menuItem(system.getClass().getSimpleName(), "", selected, true);
-                            if (selected[0]) {
+                            boolean selected = watchingSystems.contains(system);
+                            if (cmds.menu.menuItem(system.getClass().getSimpleName(), "", selected, true)) {
                                 watchingSystems.add(system);
                             } else {
                                 watchingSystems.remove(system);
                             }
                         });
-                        cmds.endMenu();
+                        cmds.menu.endMenu();
                     }
-                    cmds.endMenuBar();
+                    cmds.menu.endMenuBar();
                 }
-                if (cmds.getNative().collapsingHeader("Stats", 0)) {
-                    int entitiesCount = world.insight.getEntities().size();
-                    int systemsCount = world.insight.getSystems().size();
-                    Map<Class<? extends Component>, Integer> compTypesCount = world.insight.getEntities().stream()
-                            .flatMap(e -> e.getComponentTypeGroup().stream())
-                            .collect(Collectors.groupingBy(Function.identity()))
-                            .entrySet().stream()
-                            .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().size()));
-                    int compsCount = compTypesCount.values().stream().mapToInt(i -> i).sum();
-
-                    cmds.getNative().text("Entities count: %d", entitiesCount);
-                    cmds.getNative().text("Systems count: %d", systemsCount);
-                    cmds.getNative().text("Components count: %d", compsCount);
-
-                    if (cmds.getNative().collapsingHeader("Components details", 0)) {
-                        int maxCompTypeCount = compTypesCount.values().stream().mapToInt(i -> i).max().orElse(0);
-                        List<Class<? extends Component>> mostOccurringCompTypes = compTypesCount.entrySet().stream()
-                                .sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue())
-                                .limit(3).map(Map.Entry::getKey).collect(Collectors.toList());
-
-
-                        float[] compTypeCountValues = compTypesCount.values().stream().map(v -> (float) v).collect(CollectorsUtils.toFloatArray());
-                        List<String> barLabels = compTypesCount.keySet().stream()
-                                .map(WithIndex.map())
-                                .map(cti ->
-                                        String.format("%d - (%.0f) %s", cti.i, compTypeCountValues[cti.i], cti.value.getSimpleName()))
-                                .collect(Collectors.toList());
-                        String barLabelsCombined = String.join("\n", barLabels);
-                        float compTypeHistogramHeight = cmds.getNative().getTextLineHeight() * barLabels.size();
-
-                        cmds.text("Most occurring: %s", mostOccurringCompTypes.stream()
-                                .map(compType -> String.format("(%d) %s", compTypesCount.get(compType), compType.getSimpleName()))
-                                .collect(Collectors.joining(", "))
-                        );
-                        cmds.getNative().plotHistogram(barLabelsCombined + "##Component types count",
-                                compTypeCountValues, 0,
-                                "Component types count",
-                                1, maxCompTypeCount,
-                                new Vec2(500, compTypeHistogramHeight), 1);
-                    }
-
+                if (cmds.container.collapsingHeader("Stats")) {
+                    drawStats(cmds);
                 }
 
-                if (watchingTotalTime.get()) {
+                if (watchingTotalTime.value) {
 
-                    drawRawFrameTimings(cmds.getNative(), "Total update time", totalWorkTime);
+                    drawRawFrameTimings(cmds, "Total update time", totalWorkTime);
                 }
-                if (watchingInternalTime.get()) {
-                    drawRawFrameTimings(cmds.getNative(), "Internal update time", internalWorkTime);
+                if (watchingInternalTime.value) {
+                    drawRawFrameTimings(cmds, "Internal update time", internalWorkTime);
                 }
 
                 watchingSystems.forEach(system ->
-                        drawRawFrameTimings(cmds.getNative(), system.getClass().getSimpleName(), systemsWorkTime.get(system))
+                        drawRawFrameTimings(cmds, system.getClass().getSimpleName(), systemsWorkTime.get(system))
                 );
                 cmds.end();
             }
         });
     }
 
-    private void drawRawFrameTimings(ImGui cmds, String label, Queue<Float> timings) {
-        float[] times = timings.stream()
+    private void drawRawFrameTimings(GuiCommands cmds, String label, Queue<Float> timings) {
+        List<Float> times = timings.stream()
                 .map(t -> t * 1000)
-                .collect(CollectorsUtils.toFloatArray());
-        float lastTime = times.length != 0 ? times[times.length - 1] : 0;
-        cmds.plotLines(
+                .collect(Collectors.toList());
+        float lastTime = times.isEmpty() ? 0 : times.get(times.size() - 1);
+        cmds.chart.plotLines(
                 String.format(" (%3.2f) " + label, lastTime),
-                times, 0, "", 1f, 16.6f,
-                new Vec2(500, 30), 1);
+                times, 1f, 16.6f,
+                new Vector2f(500, 30), "");
     }
 
+    private void drawStats(GuiCommands cmds) {
+        int entitiesCount = world.insight.getEntities().size();
+        int systemsCount = world.insight.getSystems().size();
+        Map<Class<? extends Component>, Integer> compTypesCount = world.insight.getEntities().stream()
+                .flatMap(e -> e.getComponentTypeGroup().stream())
+                .collect(Collectors.groupingBy(Function.identity()))
+                .entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().size()));
+        int compsCount = compTypesCount.values().stream().mapToInt(i -> i).sum();
+
+        cmds.core.text("Entities count: %d", entitiesCount);
+        cmds.core.text("Systems count: %d", systemsCount);
+        cmds.core.text("Components count: %d", compsCount);
+
+        if (cmds.container.collapsingHeader("Components details")) {
+            int maxCompTypeCount = compTypesCount.values().stream().mapToInt(i -> i).max().orElse(0);
+            List<Class<? extends Component>> mostOccurringCompTypes = compTypesCount.entrySet().stream()
+                    .sorted((entry1, entry2) -> entry2.getValue() - entry1.getValue())
+                    .limit(3).map(Map.Entry::getKey).collect(Collectors.toList());
+
+
+            List<Float> compTypeCountValues = compTypesCount.values().stream().map(v -> (float) v).collect(Collectors.toList());
+            List<String> barLabels = compTypesCount.keySet().stream()
+                    .map(WithIndex.map())
+                    .map(cti ->
+                            String.format("%d - (%.0f) %s", cti.i, compTypeCountValues.get(cti.i), cti.value.getSimpleName()))
+                    .collect(Collectors.toList());
+            String barLabelsCombined = String.join("\n", barLabels);
+            float compTypeHistogramHeight = cmds.getNative().getTextLineHeight() * barLabels.size();
+
+            cmds.core.text("Most occurring: %s", mostOccurringCompTypes.stream()
+                    .map(compType -> String.format("(%d) %s", compTypesCount.get(compType), compType.getSimpleName()))
+                    .collect(Collectors.joining(", "))
+            );
+            cmds.chart.plotHistogram(barLabelsCombined + "##Component types count",
+                    compTypeCountValues,
+                    1, maxCompTypeCount,
+                    new Vector2f(500, compTypeHistogramHeight),
+                    "Component types count");
+        }
+
+    }
 
     @Override
     public void onUpdateStart(World world) {

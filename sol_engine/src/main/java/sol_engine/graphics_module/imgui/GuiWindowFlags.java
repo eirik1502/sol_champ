@@ -107,7 +107,7 @@ public enum GuiWindowFlags implements GuiFlags {
     }
 
     @Override
-    public int getValue() {
+    public int getI() {
         return value;
     }
 }

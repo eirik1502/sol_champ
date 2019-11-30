@@ -13,7 +13,7 @@ import uno.glfw.GlfwWindow;
 public class Gui {
 
     public static interface DrawFunc {
-        void draw(GuiCommands cmds);
+        void draw(GuiCommands gui);
     }
 
     public ImGui imgui = ImGui.INSTANCE;
@@ -26,7 +26,6 @@ public class Gui {
     public Gui(Window window) {
         ctx = new Context();
         imgui.styleColorsDark();
-        long a = 1;
         GlfwWindow unoWindow = GlfwWindow.from(window.getNativeWindowId());
         implGlfw = new ImplGlfw(unoWindow);
         implGl3 = new ImplGL3();

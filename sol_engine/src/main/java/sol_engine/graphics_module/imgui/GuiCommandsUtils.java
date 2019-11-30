@@ -17,6 +17,7 @@ public class GuiCommandsUtils {
 
     private static final MutableProperty0<Integer> imguiMPropInt = new MutableProperty0<>();
     private static final MutableProperty0<Boolean> imguiMPropBoolean = new MutableProperty0<>();
+    private static final boolean[] imguiMPropBooleanArray = {false};
     private static final MutableProperty0<Float> imguiMPropFloat = new MutableProperty0<>();
     //    private static final MutableProperty0<String> imguiMPropString = new MutableProperty0<>();
     private static final MutableProperty0<?> imguiMPropObject = new MutableProperty0<>();
@@ -49,6 +50,13 @@ public class GuiCommandsUtils {
         return ret;
     }
 
+    static boolean withConvertedMBooleanArray(MBoolean value, Function.OneArgReturn<boolean[], Boolean> withConvertedValue) {
+        imguiMPropBooleanArray[0] = value.value;
+        boolean ret = withConvertedValue.invoke(imguiMPropBooleanArray);
+        value.value = imguiMPropBooleanArray[0];
+        return ret;
+    }
+
     static boolean withConvertedMString(MString value, Function.OneArgReturn<char[], Boolean> withConvertedValue) {
         char[] valueChars = value.value.toCharArray();
         System.arraycopy(valueChars, 0, imguiMPropString, 0, valueChars.length);
@@ -73,6 +81,12 @@ public class GuiCommandsUtils {
         imguiMPropBoolean.set(value);
         withConvertedValue.invoke(imguiMPropBoolean);
         return imguiMPropBoolean.get();
+    }
+
+    static boolean withConvertedBooleanArray(boolean value, Function.OneArgReturn<boolean[], Boolean> withConvertedValue) {
+        imguiMPropBooleanArray[0] = value;
+        withConvertedValue.invoke(imguiMPropBooleanArray);
+        return imguiMPropBooleanArray[0];
     }
 
     static String withConvertedMString(String value, Function.OneArgReturn<char[], Boolean> withConvertedValue) {
@@ -121,7 +135,7 @@ public class GuiCommandsUtils {
 
     static int combineGuiFlags(GuiFlags... flags) {
         return Arrays.stream(flags)
-                .map(GuiFlags::getValue)
+                .map(GuiFlags::getI)
                 .reduce(0, (acc, curr) -> acc | curr);
     }
 
