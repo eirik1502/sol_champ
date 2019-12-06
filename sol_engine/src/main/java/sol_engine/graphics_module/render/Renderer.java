@@ -130,10 +130,6 @@ public class Renderer {
             });
         });
 
-        //        boolean[] b = {true};
-//        imgui.imgui.text("Hello, world!");
-//        imgui.imgui.checkbox("Demo Window", b);
-//        imgui.imgui.showDemoWindow(b);
         gui.render();
         context.swapBuffers();
 

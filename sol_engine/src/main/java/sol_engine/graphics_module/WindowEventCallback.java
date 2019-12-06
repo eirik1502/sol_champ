@@ -12,4 +12,8 @@ public interface WindowEventCallback {
     interface OnCursorPos {
         void invoke(Window window, float xpos, float ypos);
     }
+
+    interface OnScroll {
+        void invoke(Window window, float offsetX, float offsetY);
+    }
 }

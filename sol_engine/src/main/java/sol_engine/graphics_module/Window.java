@@ -152,6 +152,12 @@ public class Window {
         );
     }
 
+    public void setMouseScrollCallback(WindowEventCallback.OnScroll callback) {
+        glfwSetScrollCallback(windowId, (long window, double xoffset, double yoffset) ->
+                callback.invoke(this, (float) xoffset, (float) yoffset)
+        );
+    }
+
     public void terminate() {
         glfwDestroyWindow(windowId);
         glfwTerminate();

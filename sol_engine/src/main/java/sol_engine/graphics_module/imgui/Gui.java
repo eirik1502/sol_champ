@@ -20,14 +20,16 @@ public class Gui {
     private Context ctx;
     private ImplGlfw implGlfw;
     private ImplGL3 implGl3;
-    private IO io;
+    public IO io;
     private GuiCommands guiCommands;
+
+    public float scroll = 0;
 
     public Gui(Window window) {
         ctx = new Context();
         imgui.styleColorsDark();
         GlfwWindow unoWindow = GlfwWindow.from(window.getNativeWindowId());
-        implGlfw = new ImplGlfw(unoWindow);
+        implGlfw = new ImplGlfw(unoWindow, false);
         implGl3 = new ImplGL3();
         io = imgui.getIo();
         guiCommands = new GuiCommands(imgui);
@@ -40,8 +42,11 @@ public class Gui {
     }
 
     public void startFrame() {
+
         implGl3.newFrame();
         implGlfw.newFrame();
+        io.setMouseWheel(scroll);
+        scroll = 0;
         imgui.newFrame();
     }
 
