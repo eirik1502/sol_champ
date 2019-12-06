@@ -3,6 +3,7 @@ package sol_engine.input_module;
 import org.joml.Vector2f;
 import sol_engine.graphics_module.GraphicsModule;
 import sol_engine.graphics_module.Window;
+import sol_engine.graphics_module.render.Renderer;
 import sol_engine.module.Module;
 
 public class InputModule extends Module {
@@ -10,6 +11,7 @@ public class InputModule extends Module {
     private InputModuleConfig config;
 
     private Window window;
+    private Renderer renderer;
 
     private final Vector2f cursorPosScale = new Vector2f();
 
@@ -56,6 +58,7 @@ public class InputModule extends Module {
     @Override
     public void onStart() {
         window = getModule(GraphicsModule.class).getWindow();
+        renderer = getModule(GraphicsModule.class).getRenderer();
 
         if (config.cursorPosScaleToSize == null || config.cursorPosScaleToSize.equals(new Vector2f())) {
             cursorPosScale.set(1, 1);
@@ -73,6 +76,10 @@ public class InputModule extends Module {
             } else if (action == InputConsts.ACTION_RELEASE) {
                 this.keysHeld[key] = false;
             }
+
+            if (renderer.getGui().io.getWantCaptureKeyboard()) {
+                this.keysHeld[key] = false;
+            }
         });
 
         window.setMouseButtonCallback((window1, button, action) -> {
@@ -81,10 +88,20 @@ public class InputModule extends Module {
             } else if (action == InputConsts.ACTION_RELEASE) {
                 this.mouseButtonsHeld[button] = false;
             }
+
+            if (renderer.getGui().io.getWantCaptureMouse()) {
+                this.mouseButtonsHeld[button] = false;
+            }
         });
 
         window.setCursorPosCallback((window1, xpos, ypos) -> {
-            this.cursorPosition.set(xpos, ypos).mul(cursorPosScale);
+            if (!renderer.getGui().io.getWantCaptureMouse()) {
+                this.cursorPosition.set(xpos, ypos).mul(cursorPosScale);
+            }
+        });
+
+        window.setMouseScrollCallback((window1, offsetX, offsetY) -> {
+            renderer.getGui().scroll = offsetY;
         });
     }
 

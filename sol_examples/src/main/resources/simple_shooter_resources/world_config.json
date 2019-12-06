@@ -10,7 +10,7 @@
     "FollowCursorSystem",
     "PhysicsSystem",
     "RenderSystem",
-    "EditorSystem"
+    "CreatorSystem"
   ],
   "entityClasses": [
     {
@@ -20,7 +20,10 @@
           "type": "EditorEditableComp"
         },
         {
-          "type": "PhysicsBodyComp"
+          "type": "PhysicsBodyComp",
+          "values": {
+            "frictionConst": 0.9
+          }
         },
         {
           "type": "NaturalCollisionResolutionComp"

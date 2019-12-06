@@ -3,8 +3,8 @@ package sol_examples.simple_shooter;
 import org.joml.Vector2f;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
+import sol_engine.creator.CreatorSystem;
 import sol_engine.creator.EditorEditableComp;
-import sol_engine.creator.WorldProfilerSystem;
 import sol_engine.ecs.EntityClass;
 import sol_engine.engine_interface.SimulationLoop;
 import sol_engine.engine_interface.SolSimulation;
@@ -71,12 +71,10 @@ public class SimpleShooter extends SolSimulation {
         world.addSystem(ShootSystem.class);
 //        world.addSystem(TornadoWetherSystem.class);
         world.addSystem(FollowCursorSystem.class);
-//        world.addSystem(EditorSystem.class);
+        world.addSystem(CreatorSystem.class);
         world.addSystem(RenderSystem.class);
         world.addSystem(EmitterTimedSystem.class);
         world.addSystem(DestroySelfTimedSystem.class);
-        world.addSystem(WorldProfilerSystem.class);
-
 
         float pwidth = 32, pheight = 32;
         world.addEntityClass(new EntityClass("player").addBaseComponents(

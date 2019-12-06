@@ -16,7 +16,7 @@ public class MoveByVelocitySystem extends SystemBase {
 
     @Override
     public void onSetup() {
-        usingComponents(PhysicsBodyComp.class, MoveByVelocityComp.class, UserInputComp.class);
+        usingComponents(PhysicsBodyComp.class, MoveByVelocityComp.class, InputComp.class);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MoveByVelocitySystem extends SystemBase {
         entities.forEach(entity -> {
             MoveByVelocityComp moveVelComp = entity.getComponent(MoveByVelocityComp.class);
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
-            UserInputComp uInpComp = entity.getComponent(UserInputComp.class);
+            InputComp uInpComp = entity.getComponent(InputComp.class);
 
             if (moveVelComp.disabled) return;
 

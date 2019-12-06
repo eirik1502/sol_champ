@@ -7,7 +7,7 @@ public class UserInputSystem extends ModuleSystemBase {
     @Override
     protected void onSetup() {
         usingModules(InputModule.class);
-        usingComponents(UserInputComp.class);
+        usingComponents(InputComp.class);
     }
 
     @Override
@@ -15,7 +15,7 @@ public class UserInputSystem extends ModuleSystemBase {
         InputModule inpModule = getModule(InputModule.class);
 
         forEachWithComponents(
-                UserInputComp.class,
+                InputComp.class,
                 (entity, userInpComp) -> {
                     userInpComp.inputKeysLabels.forEach((label, keyCode) -> {
                         userInpComp.inputKeysPressed.put(label, inpModule.keyHeld(keyCode));

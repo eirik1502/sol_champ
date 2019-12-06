@@ -4,8 +4,8 @@ package sol_game
 
 import org.joml.Vector2f
 import sol_engine.core.TransformComp
+import sol_engine.creator.CreatorSystem
 import sol_engine.creator.EditorEditableComp
-import sol_engine.creator.WorldProfilerSystem
 import sol_engine.ecs.EntityClass
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.engine_interface.SolSimulation
@@ -54,7 +54,7 @@ public class SolGame : SolSimulation() {
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
-                WorldProfilerSystem::class.java,
+                CreatorSystem::class.java,
                 SolGuiSystem::class.java,
 
                 RenderSystem::class.java
@@ -149,7 +149,7 @@ public class SolGame : SolSimulation() {
 
     fun instanciatePlayer() {
         world.instanciateEntityClass("character", "player")
-                .addComponent(UserInputComp(
+                .addComponent(InputComp(
                         mapOf(
                                 "mvLeft" to InputConsts.KEY_A,
                                 "mvRight" to InputConsts.KEY_D,
