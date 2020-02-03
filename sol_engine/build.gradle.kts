@@ -33,16 +33,11 @@ dependencies {
 
     // IMGUI + LWJGL
     val lwjgl_version = "3.2.3"
-    val uno_version = "45be476e2cd87bec2ed0a9bf279b3cddc73ffcb9"
-    val kotlin_version = "1.3.50"
-    val glm_version = "3d3aea6d420bace96ced057cddeca023129d7c41"
-    val imgui_version = "1.74-SNAPSHOT" //"e1fbe03a0a"
-
-//    val lwjgl_version = "3.2.3"
-//    val uno_version = "3275c3ce3045be19c84288609d9f1631d631a743"
-//    val kotlin_version = "1.3.50"
-//    val glm_version = "3d3aea6d420bace96ced057cddeca023129d7c41"
-//    val imgui_version = "-SNAPSHOT" //"e1fbe03a0a"
+    val uno_version = "f528113bf45e43406953d6881915467d85a20881"
+    val kotlin_version = "1.3.61"
+    val glm_version = "1b4ac18dd1a3c23440d3f33596688aac60bc0141"
+    val imgui_version = "1.74"
+    
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
 

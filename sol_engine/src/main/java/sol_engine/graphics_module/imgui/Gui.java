@@ -1,11 +1,11 @@
 package sol_engine.graphics_module.imgui;
 
-import imgui.DrawData;
-import imgui.IO;
 import imgui.ImGui;
-import imgui.imgui.Context;
+import imgui.classes.Context;
+import imgui.classes.IO;
 import imgui.impl.gl.ImplGL3;
 import imgui.impl.glfw.ImplGlfw;
+import imgui.internal.DrawData;
 import sol_engine.graphics_module.Window;
 import uno.glfw.GlfwWindow;
 
@@ -27,7 +27,7 @@ public class Gui {
 
     public Gui(Window window) {
         ctx = new Context();
-        imgui.styleColorsDark();
+        imgui.styleColorsDark(null);
         GlfwWindow unoWindow = GlfwWindow.from(window.getNativeWindowId());
         implGlfw = new ImplGlfw(unoWindow, false);
         implGl3 = new ImplGL3();

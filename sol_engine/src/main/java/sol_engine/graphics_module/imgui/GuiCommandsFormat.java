@@ -15,11 +15,11 @@ public class GuiCommandsFormat {
 
 
     public void sameLine() {
-        imgui.sameLine();
+        this.sameLine(0, 0);
     }
 
     public void sameLine(int offsetFromStartX) {
-        imgui.sameLine(offsetFromStartX);
+        this.sameLine(offsetFromStartX, 0);
     }
 
     public void sameLine(int offsetFromStartX, int spacing) {
