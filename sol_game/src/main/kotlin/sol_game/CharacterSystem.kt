@@ -1,8 +1,8 @@
 package sol_game
 
 import sol_engine.ecs.SystemBase
-import sol_engine.game_utils.InputComp
 import sol_engine.game_utils.MoveByVelocityComp
+import sol_engine.input_module.InputComp
 import sol_engine.physics_module.PhysicsBodyComp
 import sol_engine.utils.stream.WithIndex
 
@@ -13,12 +13,12 @@ class CharacterSystem : SystemBase() {
 
     override fun onUpdate() {
         forEachWithComponents(CharacterComp::class.java, InputComp::class.java, AbilityComp::class.java)
-        { entity, charComp, userInputComp, abComp ->
+        { entity, charComp, inputComp, abComp ->
 
             // trigger abilities
             charComp.abilityInputActions.stream()
                     .map(WithIndex.map())
-                    .filter { inputI -> userInputComp.checkPressed(inputI.value) }
+                    .filter { inputI -> inputComp.checkAction(inputI.value) }
                     .filter { inputI -> inputI.i < abComp.abilities.size }
                     .map { inputI -> abComp.abilities[inputI.i] }
                     .forEach { ab -> ab.trigger = true }

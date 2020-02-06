@@ -2,14 +2,12 @@ import org.gradle.internal.os.OperatingSystem
 
 plugins {
     `java-library`
-//	id 'application'
-
 }
 
 sourceSets {
     main {
         java {
-            exclude("sol_engine/network_module/trash/**")
+            exclude("sol_engine/network_module/trash/**", "sol_engine/archive/**")
         }
     }
 }
@@ -37,7 +35,7 @@ dependencies {
     val kotlin_version = "1.3.61"
     val glm_version = "1b4ac18dd1a3c23440d3f33596688aac60bc0141"
     val imgui_version = "1.74"
-    
+
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
 

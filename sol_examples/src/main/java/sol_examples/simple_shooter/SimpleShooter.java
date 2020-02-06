@@ -13,8 +13,8 @@ import sol_engine.graphics_module.*;
 import sol_engine.graphics_module.graphical_objects.RenderableShape;
 import sol_engine.graphics_module.materials.MattMaterial;
 import sol_engine.input_module.InputConsts;
-import sol_engine.input_module.InputModule;
-import sol_engine.input_module.InputModuleConfig;
+import sol_engine.input_module.InputGuiSourceModule;
+import sol_engine.input_module.InputGuiSourceModuleConfig;
 import sol_engine.physics_module.*;
 import sol_engine.utils.Function;
 import sol_engine.utils.math.MathF;
@@ -54,7 +54,7 @@ public class SimpleShooter extends SolSimulation {
                 )
         ));
 
-        modulesHandler.addModule(new InputModule(new InputModuleConfig(
+        modulesHandler.addModule(new InputGuiSourceModule(new InputGuiSourceModuleConfig(
                 new Vector2f(worldWidth, worldHeight)
         )));
     }

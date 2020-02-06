@@ -2,7 +2,7 @@ package sol_game
 
 import sol_engine.core.TransformComp
 import sol_engine.ecs.SystemBase
-import sol_engine.game_utils.InputComp
+import sol_engine.input_module.InputComp
 
 class PlayerSystem : SystemBase() {
     override fun onSetup() {

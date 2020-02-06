@@ -1,4 +1,4 @@
-package sol_engine.game_utils;
+package sol_engine.archive;
 
 import org.joml.Vector2f;
 import sol_engine.ecs.Component;

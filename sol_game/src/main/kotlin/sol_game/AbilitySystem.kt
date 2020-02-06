@@ -4,7 +4,7 @@ import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.ecs.Entity
 import sol_engine.ecs.SystemBase
-import sol_engine.game_utils.InputComp
+import sol_engine.input_module.InputComp
 import sol_engine.physics_module.PhysicsBodyComp
 
 class AbilitySystem : SystemBase() {
@@ -39,7 +39,7 @@ class AbilitySystem : SystemBase() {
     private fun handleExecutingAbility(entity: Entity, abilityComp: AbilityComp, transformComp: TransformComp, inputComp: InputComp) {
         val ability = abilityComp.executingAbility!!
         if (abilityComp.executingAbilityStartupDelayTimer-- == 0) {
-            instanciateAbilityEntity(ability, entity, transformComp.position, inputComp.cursorPosition)
+            instanciateAbilityEntity(ability, entity, transformComp.position, inputComp.vectorInput("aimXY"))
         }
         if (abilityComp.executingAbilityExecutionTimer-- == 0) {
             resetExecutingAbility(abilityComp)

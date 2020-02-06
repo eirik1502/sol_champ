@@ -2,6 +2,7 @@ package sol_engine.game_utils;
 
 import org.joml.Vector2f;
 import sol_engine.ecs.SystemBase;
+import sol_engine.input_module.InputComp;
 import sol_engine.physics_module.PhysicsBodyComp;
 
 import java.util.List;
@@ -29,12 +30,12 @@ public class MoveByVelocitySystem extends SystemBase {
         entities.forEach(entity -> {
             MoveByVelocityComp moveVelComp = entity.getComponent(MoveByVelocityComp.class);
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
-            InputComp uInpComp = entity.getComponent(InputComp.class);
+            InputComp inpComp = entity.getComponent(InputComp.class);
 
             if (moveVelComp.disabled) return;
 
             List<Float> directionalSpeed = moveVelComp.directionalInput.stream()
-                    .map(inp -> uInpComp.checkPressed(inp) ? 1f : 0f)
+                    .map(inp -> inpComp.checkAction(inp) ? 1f : 0f)
                     .collect(Collectors.toList());
 
             if (directionalSpeed.size() < 4)

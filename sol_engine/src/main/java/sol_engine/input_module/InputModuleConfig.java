@@ -1,15 +1,9 @@
 package sol_engine.input_module;
 
-import org.joml.Vector2f;
-
 public class InputModuleConfig {
+    public Class<? extends InputSourceModule> inputSource;
 
-    public Vector2f cursorPosScaleToSize = null;
-
-    public InputModuleConfig() {
-    }
-
-    public InputModuleConfig(Vector2f cursorPosScaleToSize) {
-        this.cursorPosScaleToSize = cursorPosScaleToSize;
+    public InputModuleConfig(Class<? extends InputSourceModule> inputSource) {
+        this.inputSource = inputSource;
     }
 }

@@ -3,7 +3,7 @@ package sol_examples.simple_shooter;
 import org.joml.Vector2f;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
-import sol_engine.input_module.InputModule;
+import sol_engine.input_module.InputGuiSourceModule;
 import sol_engine.physics_module.PhysicsBodyComp;
 
 public class ShootSystem extends ModuleSystemBase {
@@ -15,7 +15,7 @@ public class ShootSystem extends ModuleSystemBase {
 
     @Override
     public void onSetup() {
-        usingModules(InputModule.class);
+        usingModules(InputGuiSourceModule.class);
         usingComponents(ShootComp.class, TransformComp.class);
     }
 
@@ -26,7 +26,7 @@ public class ShootSystem extends ModuleSystemBase {
 
     @Override
     public void onUpdate() {
-        InputModule inp = super.getModule(InputModule.class);
+        InputGuiSourceModule inp = super.getModule(InputGuiSourceModule.class);
 
         entities.forEach(entity -> {
             ShootComp shootComp = entity.getComponent(ShootComp.class);

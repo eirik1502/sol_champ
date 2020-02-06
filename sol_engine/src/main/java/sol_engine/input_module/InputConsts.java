@@ -30,14 +30,26 @@ public class InputConsts {
     public static int KEY_LAST = GLFW_KEY_LAST;
 
 
-    public static final int MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT;
-    public static final int MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
-    public static final int MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
-    public static final int MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST;
+    public static final int MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT + KEY_LAST + 1;
+    public static final int MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT + KEY_LAST + 1;
+    public static final int MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE + KEY_LAST + 1;
+    public static final int MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST + KEY_LAST + 1;
+
+    public static final int
+            CURSOR_VEC = MOUSE_BUTTON_LAST + 1,
+            CURSOR_X = MOUSE_BUTTON_LAST + 2,
+            CURSOR_Y = MOUSE_BUTTON_LAST + 3;
 
     public static final int
             ACTION_RELEASE = GLFW_RELEASE,
             ACTION_PRESS = GLFW_PRESS,
             ACTION_REPEAT = GLFW_REPEAT;
 
+
+    public static int inputConstToGlfw(int inputConst) {
+        if (inputConst > KEY_LAST) {
+            return inputConst - KEY_LAST - 1;
+        }
+        return inputConst;
+    }
 }

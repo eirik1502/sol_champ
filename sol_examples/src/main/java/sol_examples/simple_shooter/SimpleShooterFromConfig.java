@@ -7,8 +7,8 @@ import sol_engine.graphics_module.GraphicsModule;
 import sol_engine.graphics_module.GraphicsModuleConfig;
 import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.WindowConfig;
-import sol_engine.input_module.InputModule;
-import sol_engine.input_module.InputModuleConfig;
+import sol_engine.input_module.InputGuiSourceModule;
+import sol_engine.input_module.InputGuiSourceModuleConfig;
 import sol_engine.loaders.world_loader.WorldLoader;
 
 public class SimpleShooterFromConfig extends SolSimulation {
@@ -33,7 +33,7 @@ public class SimpleShooterFromConfig extends SolSimulation {
                 )
         ));
 
-        modulesHandler.addModule(new InputModule(new InputModuleConfig(
+        modulesHandler.addModule(new InputGuiSourceModule(new InputGuiSourceModuleConfig(
                 new Vector2f(worldWidth, worldHeight)
         )));
     }

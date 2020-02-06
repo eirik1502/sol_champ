@@ -86,7 +86,7 @@ public class World {
     }
 
     public void addSystems(Class<? extends SystemBase>... systemTypes) {
-        Arrays.stream(systemTypes).forEach(this::addSystem);
+        Arrays.stream(systemTypes).filter(Objects::nonNull).forEach(this::addSystem);
     }
 
     // TODO: handle removing of systems in familyManager. It works, but system families are never removed
