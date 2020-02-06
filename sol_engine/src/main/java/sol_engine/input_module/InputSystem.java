@@ -18,17 +18,14 @@ public class InputSystem extends ModuleSystemBase {
             String inputGroup = inputComp.inputGroup;
             String inputLabelPrefix = inputGroup.isEmpty() ? "" : inputGroup + INPUT_GROUP_DELIMITER;
 
-            inputComp.triggers.keySet().stream()
-                    .map(label -> inputLabelPrefix + label)
-                    .forEach(label -> inputComp.triggers.replace(label, inpModule.checkAction(label)));
+            inputComp.triggers.keySet()
+                    .forEach(label -> inputComp.triggers.replace(label, inpModule.checkAction(inputLabelPrefix + label)));
 
-            inputComp.floatInputs.keySet().stream()
-                    .map(label -> inputLabelPrefix + label)
-                    .forEach(label -> inputComp.floatInputs.replace(label, inpModule.floatInput(label)));
+            inputComp.floatInputs.keySet()
+                    .forEach(label -> inputComp.floatInputs.replace(label, inpModule.floatInput(inputLabelPrefix + label)));
 
-            inputComp.vectorInputs.keySet().stream()
-                    .map(label -> inputLabelPrefix + label)
-                    .forEach(label -> inputComp.vectorInputs.replace(label, inpModule.vectorInput(label)));
+            inputComp.vectorInputs.keySet()
+                    .forEach(label -> inputComp.vectorInputs.replace(label, inpModule.vectorInput(inputLabelPrefix + label)));
         });
     }
 }

@@ -54,14 +54,16 @@ class SolGameNetworked {
 
     fun start() {
         server.start()
-//        server.waitForPlayerConnections()
-
-        game = SolGameExternalIO(
-                server::pollPlayersInput,
-                server::pushGameState
-        )
-        gameLoop = SimulationLoop(game)
-        gameLoop.start() // blocking until game ends
+        if (server.waitForPlayerConnections()) {
+            game = SolGameExternalIO(
+                    server::pollPlayersInput,
+                    server::pushGameState
+            )
+            gameLoop = SimulationLoop(game)
+            gameLoop.start() // blocking until game ends
+        } else {
+            println("ERROR, server timed out without getting player connections")
+        }
 
         server.stop()
     }

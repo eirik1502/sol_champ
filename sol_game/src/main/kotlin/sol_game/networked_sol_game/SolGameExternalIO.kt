@@ -17,11 +17,8 @@ class SolGameExternalIO(
         val inputSourceModule = modulesHandler.getModule(ExternalInputSourceModule::class.java);
         val playersInput = pollPlayersInput()
 
-        println(playersInput)
         playersInput.playersInput.forEachIndexed() { i, playerInput ->
-            if (i == 1) return
-            println(playerInput)
-            val groupPrefix = "" //""player${i}:"
+            val groupPrefix = "player${i}:"
             inputSourceModule.updateTriggerInputs(mapOf(
                     "${groupPrefix}moveLeft" to playerInput.moveLeft,
                     "${groupPrefix}moveRight" to playerInput.moveRight,

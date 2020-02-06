@@ -4,8 +4,6 @@ import org.joml.Vector2f;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ExternalInputSourceModule extends InputSourceModule {
     private static final Vector2f ZERO_VECTOR = new Vector2f();
@@ -16,16 +14,13 @@ public class ExternalInputSourceModule extends InputSourceModule {
 
 
     public ExternalInputSourceModule(ExternalInputSourceModuleConfig config) {
-        this.triggerInputs.putAll(config.triggerInputLabels.stream().collect(Collectors.toMap(Function.identity(), x -> false)));
-        this.floatInputs.putAll(config.floatInputLabels.stream().collect(Collectors.toMap(Function.identity(), x -> 0f)));
-        this.vectorInputs.putAll(config.vectorInputLabels.stream().collect(Collectors.toMap(Function.identity(), x -> new Vector2f())));
     }
 
     public ExternalInputSourceModule() {
     }
 
     public void updateTriggerInput(String label, boolean value) {
-        triggerInputs.replace(label, value);
+        triggerInputs.put(label, value);
     }
 
     public void updateTriggerInputs(Map<String, Boolean> inputs) {
@@ -33,7 +28,7 @@ public class ExternalInputSourceModule extends InputSourceModule {
     }
 
     public void updateFloatInput(String label, float value) {
-        floatInputs.replace(label, value);
+        floatInputs.put(label, value);
     }
 
     public void updateFloatInputs(Map<String, Float> inputs) {
@@ -41,7 +36,7 @@ public class ExternalInputSourceModule extends InputSourceModule {
     }
 
     public void updateVectorInput(String label, Vector2f value) {
-        vectorInputs.replace(label, value);
+        vectorInputs.put(label, value);
     }
 
     public void updateVectorInputs(Map<String, Vector2f> inputs) {

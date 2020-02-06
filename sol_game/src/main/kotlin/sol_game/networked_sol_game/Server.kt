@@ -21,6 +21,8 @@ data class ConnectedPlayer(
         val name: String = ""
 )
 
+val EMPTY_INPUT_QUEUE = ArrayDeque<PlayerInput>()
+
 class Server(
         port: Int,
         private val gameId: String,
@@ -36,17 +38,32 @@ class Server(
         playersInputQueue.put("2", ArrayDeque())
     }
 
+    /**
+     * Blocking until each playerKey is used to connect
+     */
+    fun waitForPlayerConnections(timeout: Int = Int.MAX_VALUE): Boolean {
+        val checkInterval = 500L
+        var timePassed = 0L
+        while (connectedPlayers.size < playersKey.size) {
+            Thread.sleep(checkInterval)
+            timePassed += checkInterval
+            if (timePassed >= timeout) {
+                return false
+            }
+        }
+        return true
+    }
+
     fun pushGameState(gameState: StateOutput) {
         val gameStateStr = jsonMapper.writeValueAsString(gameState)
         this.broadcast(gameStateStr)
     }
 
     fun pollPlayersInput(): PlayersInput {
-        return PlayersInput(
-                playersInputQueue.map { (_, playerQueue) ->
-                    if (playerQueue.isEmpty()) PlayerInput() else playerQueue.poll()
-                }
-        )
+        val playersInput = playersKey
+                .map { playerKey -> playersInputQueue.getOrDefault(playerKey, EMPTY_INPUT_QUEUE) }
+                .map { inputQueue -> if (inputQueue.isEmpty()) PlayerInput() else inputQueue.poll() }
+        return PlayersInput(playersInput)
     }
 
     override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
@@ -63,16 +80,12 @@ class Server(
     }
 
     override fun onMessage(conn: WebSocket, message: String) {
-        println("received message: $message");
+//        println("received message: $message");
         val player = connectedPlayers[conn]
         if (player != null) {
             val playerInput = jsonMapper.readValue(message, PlayerInput::class.java)
             playersInputQueue["1"]?.add(playerInput)
-//            playersInputQueue[player.playerId]?.push(playerInput)
 
-//            println(playersInputQueue)
-//            val packet = StateOutput(listOf(PlayerStateOutput(128f), PlayerStateOutput(posY = 654f)))
-//            broadcast(jsonMapper.writeValueAsString(packet))
         } else {
             println("A non-connected player sendt a message")
         }
@@ -99,7 +112,6 @@ class Server(
         println("Connection handshake")
         val builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request)
         val queryParams = QueryParamsParser("http://lok.com" + request.resourceDescriptor)
-        println("query params " + queryParams.queryParamsMap)
 
         if (!queryParams.hasAll("gameId", "playerKey")) {
             println("gameId and/or playerKey not present")
@@ -109,19 +121,19 @@ class Server(
         val gameId = queryParams.get("gameId")
         val playerKey = queryParams.get("playerKey")
 
-//        if (!this.gameId.equals(gameId)) {
-//            println("gameId invalid")
-//            throw InvalidDataException(CloseFrame.POLICY_VALIDATION, "gameId invalid")
-//        }
-//        if (!this.playersKey.contains(playerKey)) {
-//            println("playerKey invalid")
-//            throw InvalidDataException(CloseFrame.POLICY_VALIDATION, "playerKey invalid")
-//
-//        }
-//        if (this.connectedPlayers.any() { (_, p) -> p.playerId.equals(playerKey) }) {
-//            println("playerKey already used")
-//            throw InvalidDataException(CloseFrame.POLICY_VALIDATION, "playerKey already used")
-//        }
+        if (!this.gameId.equals(gameId)) {
+            println("gameId invalid")
+            throw InvalidDataException(CloseFrame.POLICY_VALIDATION, "gameId invalid")
+        }
+        if (!this.playersKey.contains(playerKey)) {
+            println("playerKey invalid")
+            throw InvalidDataException(CloseFrame.POLICY_VALIDATION, "playerKey invalid")
+
+        }
+        if (this.connectedPlayers.any() { (_, p) -> p.playerId.equals(playerKey) }) {
+            println("playerKey already used")
+            throw InvalidDataException(CloseFrame.POLICY_VALIDATION, "playerKey already used")
+        }
         println("connection passed checks")
         conn.setAttachment(playerKey)
         return builder

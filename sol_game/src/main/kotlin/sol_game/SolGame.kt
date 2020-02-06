@@ -52,11 +52,7 @@ open class SolGame(
                             )
                     ))
                 else
-                    ExternalInputSourceModule(ExternalInputSourceModuleConfig(
-                            setOf("moveLeft", "moveRight", "moveUp", "moveDown", "ability1", "ability2", "ability3"),
-                            setOf("aimX", "aimY"),
-                            setOf("aimXY")
-                    ))
+                    ExternalInputSourceModule(ExternalInputSourceModuleConfig())
 
         addModule(inputSourceModule)
         addModule(InputModule(InputModuleConfig(inputSourceModule::class.java)))
@@ -98,26 +94,10 @@ open class SolGame(
                         DestroySelfTimedComp(60)
                 )
         )
-        world.addEntityClass(
-                EntityClass("ab1-particle").addBaseComponents(
-                        TransformComp(),
-                        RenderShapeComp(RenderableShape.Circle(8f, MattMaterial.BLUE())),
-                        PhysicsBodyComp(),
-                        DestroySelfTimedComp(20),
-                        CollisionComp(PhysicsBodyShape.Circ(8f)),
-                        CollisionInteractionComp("ab", "team1", "team-member1")
-                                .addInteraction("team2",
-                                        CollisionInteraction.Custom { world, self, other ->
-                                            //                                    val impulse = self.
-                                            other.getComponent(PhysicsBodyComp::class.java).impulse.add(Vector2f(200f, 200f))
-                                        }.destroySelf()
-                                )
-                )
-        )
 
         createCharacterClass()
 
-        instanciatePlayer();
+        instanciatePlayer(0);
 
         world.instanciateEntityClass("character", "opponent")
                 .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(500f, 500f) }
@@ -174,34 +154,36 @@ open class SolGame(
         )
     }
 
-    fun instanciatePlayer() {
-        world.instanciateEntityClass("character", "player")
+    fun instanciatePlayer(playerIndex: Int) {
+        val playerName = "player$playerIndex"
+        val inputGroup = playerName
+        world.instanciateEntityClass("character", playerName)
                 .addComponent(InputComp(
+                        inputGroup,
                         setOf("moveLeft", "moveRight", "moveUp", "moveDown", "ability1", "ability2", "ability3"),
                         setOf("aimX", "aimY"),
                         setOf("aimXY")
                 ))
                 .addComponent(PlayerComp())
-                .modifyComponent(CollisionInteractionComp::class.java) { comp -> comp.addTag("team1") }
                 .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(200f, 200f) }
                 .modifyComponent(AbilityComp::class.java) { ab ->
                     ab.abilities.addAll(
                             listOf(
-                                    createMeleeAbility("meleeAb", "",
+                                    createMeleeAbility("meleeAb",
                                             64f, 48f,
                                             15, 5, 1, 60,
                                             100f, 200f, 0.6f),
-                                    createMeleeAbility("haha", "",
+                                    createMeleeAbility("haha",
                                             256f, 0f,
                                             15, 5, 1, 60,
                                             1000f, 200f, 0.05f),
-                                    Ability("ab1", 60, 48f, "action2", 3f)
+                                    Ability("ab1", 60, 48f, 3f)
                             )
                     )
                 }
     }
 
-    fun createMeleeAbility(name: String, inputAction: String, radius: Float, initialOffset: Float,
+    fun createMeleeAbility(name: String, radius: Float, initialOffset: Float,
                            executionTime: Int, startupDelay: Int, persistTime: Int, cooldown: Int,
                            damage: Float, baseKnockback: Float, knockbackRatio: Float): Ability {
         world.addEntityClass(
@@ -214,7 +196,7 @@ open class SolGame(
                         SceneChildComp()
                 )
         )
-        return Ability(name, cooldown, initialOffset, inputAction,
+        return Ability(name, cooldown, initialOffset,
                 0f, executionTime, startupDelay)
     }
 
