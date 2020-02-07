@@ -19,6 +19,7 @@ import sol_engine.physics_module.*;
 import sol_engine.utils.Function;
 import sol_engine.utils.math.MathF;
 
+import java.util.HashMap;
 import java.util.stream.IntStream;
 
 public class SimpleShooter extends SolSimulation {
@@ -55,7 +56,8 @@ public class SimpleShooter extends SolSimulation {
         ));
 
         modulesHandler.addModule(new InputGuiSourceModule(new InputGuiSourceModuleConfig(
-                new Vector2f(worldWidth, worldHeight)
+                new Vector2f(worldWidth, worldHeight),
+                new HashMap<>()
         )));
     }
 

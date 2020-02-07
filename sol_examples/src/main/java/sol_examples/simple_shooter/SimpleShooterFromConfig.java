@@ -11,6 +11,8 @@ import sol_engine.input_module.InputGuiSourceModule;
 import sol_engine.input_module.InputGuiSourceModuleConfig;
 import sol_engine.loaders.world_loader.WorldLoader;
 
+import java.util.HashMap;
+
 public class SimpleShooterFromConfig extends SolSimulation {
 
     public static void main(String... args) {
@@ -34,7 +36,8 @@ public class SimpleShooterFromConfig extends SolSimulation {
         ));
 
         modulesHandler.addModule(new InputGuiSourceModule(new InputGuiSourceModuleConfig(
-                new Vector2f(worldWidth, worldHeight)
+                new Vector2f(worldWidth, worldHeight),
+                new HashMap<>()
         )));
     }
 

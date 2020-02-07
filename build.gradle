@@ -1,3 +1,6 @@
+group = "org.solai"
+version = "1.0"
+
 allprojects {
     repositories {
 //        jcenter()
@@ -9,6 +12,5 @@ allprojects {
 
 subprojects {
     version = '1.0'
-
-
+    group = "org.solai"
 }

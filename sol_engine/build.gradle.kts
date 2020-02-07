@@ -1,13 +1,17 @@
-import org.gradle.internal.os.OperatingSystem
-
 plugins {
     `java-library`
+    maven
 }
 
 sourceSets {
     main {
         java {
             exclude("sol_engine/network_module/trash/**", "sol_engine/archive/**")
+        }
+    }
+    test {
+        java {
+            exclude("**")
         }
     }
 }
@@ -51,12 +55,13 @@ dependencies {
         implementation("org.lwjgl:lwjgl$it:$lwjgl_version")
     }
 
-    val lwjglNatives = when (OperatingSystem.current()) {
-        OperatingSystem.WINDOWS -> "natives-windows"
-        OperatingSystem.LINUX -> "natives-linux"
-        OperatingSystem.MAC_OS -> "natives-macos"
-        else -> ""
-    }
+    val lwjglNatives = "natives-windows"
+//    val lwjglNatives = when (OperatingSystem.current()) {
+//        OperatingSystem.WINDOWS -> "natives-windows"
+//        OperatingSystem.LINUX -> "natives-linux"
+//        OperatingSystem.MAC_OS -> "natives-macos"
+//        else -> ""
+//    }
 
     // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
     val excludeLwjglLibs = listOf("lwjgl-jawt", "lwjgl-vulkan")
