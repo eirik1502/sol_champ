@@ -24,6 +24,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.github.java-json-tools:json-schema-validator:2.2.10")
 
+    implementation("org.java-websocket:Java-WebSocket:1.4.0")
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.0")
@@ -33,7 +34,7 @@ dependencies {
     api("org.joml:joml:1.9.14")
 
     //kryonet
-    implementation("com.esotericsoftware:kryonet:2.22.0-RC1")
+//    implementation("com.esotericsoftware:kryonet:2.22.0-RC1")
 
     // IMGUI + LWJGL
     val lwjgl_version = "3.2.3"
@@ -52,6 +53,7 @@ dependencies {
 
     implementation("com.github.kotlin-graphics:uno-sdk:$uno_version")
     api("com.github.kotlin-graphics.glm:glm:$glm_version")
+
 
     listOf("", "-glfw", "-opengl", "-stb").forEach {
         implementation("org.lwjgl:lwjgl$it:$lwjgl_version")

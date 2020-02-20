@@ -12,7 +12,7 @@ import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.*
 import sol_engine.physics_module.*
 
-open class SolGame(
+open class SolGameSimulation(
         private val headless: Boolean = false,
         private val useGraphicsInput: Boolean = !headless,
         private val controlPlayerIndex: Int = 0,

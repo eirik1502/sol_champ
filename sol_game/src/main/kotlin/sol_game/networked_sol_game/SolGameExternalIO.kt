@@ -3,14 +3,14 @@ package sol_game.core_game_wrappers
 import sol_engine.core.TransformComp
 import sol_engine.input_module.ExternalInputSourceModule
 import sol_game.core_game.CharacterComp
-import sol_game.core_game.SolGame
+import sol_game.core_game.SolGameSimulation
 
 class SolGameExternalIO(
         val pollPlayersInput: () -> PlayersInput,
         val pushGameState: (gameState: GameState) -> Unit,
         private val headless: Boolean = false,
         private val debugMode: Boolean = false
-) : SolGame(headless, false, debugMode = debugMode) {
+) : SolGameSimulation(headless, false, debugMode = debugMode) {
 
 
     override fun onStepStart() {

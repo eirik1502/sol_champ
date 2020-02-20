@@ -2,9 +2,7 @@
 
 package sol_game
 
-import sol_engine.engine_interface.SimulationLoop
 import sol_engine.engine_interface.ThreadedSimulationLoop
-import sol_game.core_game.SolGame
 import sol_game.sol_game_client.SolGameGuiClient
 import sol_game.sol_game_server.SolGameServer
 import sol_game.sol_game_server.SolGameServerConfig
