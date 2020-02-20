@@ -1,16 +1,16 @@
-package sol_game.networked_sol_game
+package sol_game.core_game_wrappers
 
 import sol_engine.core.TransformComp
 import sol_engine.input_module.ExternalInputSourceModule
-import sol_game.CharacterComp
-import sol_game.SolGame
+import sol_game.core_game.CharacterComp
+import sol_game.core_game.SolGame
 
 class SolGameExternalIO(
         val pollPlayersInput: () -> PlayersInput,
-        val pushGameState: (gameState: StateOutput) -> Unit,
+        val pushGameState: (gameState: GameState) -> Unit,
         private val headless: Boolean = false,
         private val debugMode: Boolean = false
-) : SolGame(headless, false, debugMode) {
+) : SolGame(headless, false, debugMode = debugMode) {
 
 
     override fun onStepStart() {
@@ -43,7 +43,7 @@ class SolGameExternalIO(
                     PlayerStateOutput(transformComp.x, transformComp.y, transformComp.rotationZ)
                 }
                 .toList()
-        val gameState = StateOutput(playersState)
+        val gameState = GameState(playersState)
         pushGameState(gameState)
     }
 

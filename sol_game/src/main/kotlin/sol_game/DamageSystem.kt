@@ -1,4 +1,4 @@
-package sol_game
+package sol_game.core_game
 
 import org.joml.Vector2f
 import sol_engine.core.TransformComp

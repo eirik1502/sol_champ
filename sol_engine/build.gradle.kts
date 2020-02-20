@@ -1,7 +1,9 @@
 plugins {
     `java-library`
-    maven
+    `maven-publish`
 }
+
+project.extra.set("nativesDir", "$buildDir/libs/natives")
 
 sourceSets {
     main {
@@ -63,6 +65,8 @@ dependencies {
 //        else -> ""
 //    }
 
+    val natives by configurations.creating
+
     // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
     val excludeLwjglLibs = listOf("lwjgl-jawt", "lwjgl-vulkan")
     configurations["compileClasspath"].resolvedConfiguration.getResolvedArtifacts()
@@ -73,10 +77,33 @@ dependencies {
             .forEach {
                 if (it.moduleVersion.id.group == "org.lwjgl") {
                     println("Loading $lwjglNatives for lib: $it")
-                    runtime("org.lwjgl:${it.moduleVersion.id.name}:${it.moduleVersion.id.version}:$lwjglNatives")
+                    natives("org.lwjgl:${it.moduleVersion.id.name}:${it.moduleVersion.id.version}:$lwjglNatives")
                 }
             }
+    configurations["runtimeOnly"].extendsFrom(natives)
 
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest:2.2")
 }
+
+tasks.register<Sync>("extractNatives") {
+    from(configurations["natives"].map { zipTree(it) })
+    into(file(project.extra.get("nativesDir") as String))
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("myLibrary") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "myRepo"
+            url = uri("file://${projectDir}/../../solai_maven_repo")
+        }
+    }
+}
+
+tasks.get("build").dependsOn("extractNatives")

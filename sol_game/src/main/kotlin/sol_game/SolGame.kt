@@ -1,4 +1,4 @@
-package sol_game
+package sol_game.core_game
 
 import org.joml.Vector2f
 import sol_engine.core.TransformComp
@@ -15,6 +15,7 @@ import sol_engine.physics_module.*
 open class SolGame(
         private val headless: Boolean = false,
         private val useGraphicsInput: Boolean = !headless,
+        private val controlPlayerIndex: Int = 0,
         private val debugMode: Boolean = false
 ) : SolSimulation() {
 
@@ -39,16 +40,16 @@ open class SolGame(
                     InputGuiSourceModule(InputGuiSourceModuleConfig(
                             Vector2f(1600f, 900f),
                             mapOf(
-                                    "moveLeft" to InputConsts.KEY_A,
-                                    "moveRight" to InputConsts.KEY_D,
-                                    "moveUp" to InputConsts.KEY_W,
-                                    "moveDown" to InputConsts.KEY_S,
-                                    "ability1" to InputConsts.MOUSE_BUTTON_LEFT,
-                                    "ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
-                                    "ability3" to InputConsts.KEY_SPACE,
-                                    "aimX" to InputConsts.CURSOR_X,
-                                    "aimY" to InputConsts.CURSOR_Y,
-                                    "aimXY" to InputConsts.CURSOR_VEC
+                                    "player${controlPlayerIndex}:moveLeft" to InputConsts.KEY_A,
+                                    "player${controlPlayerIndex}:moveRight" to InputConsts.KEY_D,
+                                    "player${controlPlayerIndex}:moveUp" to InputConsts.KEY_W,
+                                    "player${controlPlayerIndex}:moveDown" to InputConsts.KEY_S,
+                                    "player${controlPlayerIndex}:ability1" to InputConsts.MOUSE_BUTTON_LEFT,
+                                    "player${controlPlayerIndex}:ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
+                                    "player${controlPlayerIndex}:ability3" to InputConsts.KEY_SPACE,
+                                    "player${controlPlayerIndex}:aimX" to InputConsts.CURSOR_X,
+                                    "player${controlPlayerIndex}:aimY" to InputConsts.CURSOR_Y,
+                                    "player${controlPlayerIndex}:aimXY" to InputConsts.CURSOR_VEC
                             )
                     ))
                 else

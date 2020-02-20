@@ -1,4 +1,4 @@
-package sol_game
+package sol_game.core_game
 
 import sol_engine.ecs.Component
 import sol_engine.ecs.Entity

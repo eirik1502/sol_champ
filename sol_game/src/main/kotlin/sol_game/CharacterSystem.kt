@@ -1,4 +1,4 @@
-package sol_game
+package sol_game.core_game
 
 import sol_engine.ecs.SystemBase
 import sol_engine.game_utils.MoveByVelocityComp

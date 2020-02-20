@@ -1,4 +1,4 @@
-package sol_game.networked_sol_game
+package sol_game.sol_game_server
 
 data class NetworkedSolGameInfo(
         val error: Boolean,

@@ -1,4 +1,4 @@
-package sol_game
+package sol_game.core_game
 
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4

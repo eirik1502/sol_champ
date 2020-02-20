@@ -1,4 +1,4 @@
-package sol_game.networked_sol_game
+package sol_game.core_game_wrappers
 
 data class PlayerInput(
         val moveLeft: Boolean = false,
@@ -22,6 +22,6 @@ data class PlayerStateOutput(
         val rotation: Float = 0f
 )
 
-data class StateOutput(
+data class GameState(
         val playersState: List<PlayerStateOutput> = listOf()
 )

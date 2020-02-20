@@ -1,4 +1,4 @@
-package sol_game
+package sol_game.core_game
 
 class Ability(
         var abilityEntityClass: String = "",

@@ -1,11 +1,11 @@
-package sol_game.networked_sol_game
+package sol_game.sol_game_server
 
 import java.io.IOException
 import java.net.ServerSocket
 import java.net.URL
 
 
-fun findFreeNetPort(): Int {
+fun findFreeSocketPort(): Int {
     var socket: ServerSocket? = null
     try {
         socket = ServerSocket(0)

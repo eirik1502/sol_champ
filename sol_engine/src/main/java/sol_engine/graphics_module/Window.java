@@ -89,7 +89,7 @@ public class Window {
         context = new RenderingContext(this, vsync);
     }
 
-    private void initGLFW() {
+    private static synchronized void initGLFW() {
         if (GLFW_intied) return;
 
         // inits GLFW and GL
