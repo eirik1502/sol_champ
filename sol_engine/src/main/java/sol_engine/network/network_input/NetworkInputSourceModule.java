@@ -3,9 +3,9 @@ package sol_engine.network.network_input;
 import org.joml.Vector2f;
 import sol_engine.input_module.InputSourceModule;
 import sol_engine.network.NetworkModule;
+import sol_engine.network.packet_handling.NetworkPacket;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -67,9 +67,9 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     @Override
     public void onUpdate() {
-        Deque<NetInputPacket> packets = getModule(NetworkModule.class).getPackets(packetType);
-        while (!packets.isEmpty()) {
-            NetInputPacket currPacket = packets.pollLast();
+        List<NetworkPacket> packets = getModule(NetworkModule.class).peekPackets(packetType);
+        for (NetworkPacket packet : packets) {
+            NetInputPacket currPacket = (NetInputPacket) packet;
             if (currPacket.getClass() != packetType) {
                 // log
                 continue;

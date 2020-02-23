@@ -1,4 +1,4 @@
-package sol_engine.network;
+package sol_engine.network.packet_handling;
 
 import java.util.Deque;
 

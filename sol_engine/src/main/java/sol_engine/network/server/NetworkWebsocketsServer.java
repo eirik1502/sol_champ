@@ -8,7 +8,7 @@ import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
-import sol_engine.network.NetworkPacketRaw;
+import sol_engine.network.packet_handling.NetworkPacketRaw;
 
 import java.io.IOException;
 import java.util.*;

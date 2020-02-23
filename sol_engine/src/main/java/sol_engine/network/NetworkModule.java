@@ -2,9 +2,10 @@ package sol_engine.network;
 
 import sol_engine.module.Module;
 import sol_engine.network.client.NetworkClient;
+import sol_engine.network.packet_handling.NetworkClassPacketLayer;
+import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.server.NetworkServer;
 import sol_engine.network.server.NetworkWebsocketsServer;
-import sol_engine.network_module.network_modules.NetworkServerModuleConfig;
 
 import java.util.*;
 
@@ -20,10 +21,11 @@ public class NetworkModule extends Module {
         this.config = config;
     }
 
-    public void
+    public List<NetworkPacket> peekPackets(Class<? extends NetworkPacket> packetType) {
+        return new ArrayList<>();
+    }
 
     @Override
-
     public void onSetup() {
 
     }

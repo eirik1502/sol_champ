@@ -1,6 +1,6 @@
 package sol_engine.network.server;
 
-import sol_engine.network.NetworkRawPacketLayer;
+import sol_engine.network.packet_handling.NetworkRawPacketLayer;
 
 public interface NetworkServer extends NetworkRawPacketLayer {
 

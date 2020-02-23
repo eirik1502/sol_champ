@@ -1,8 +1,6 @@
 package sol_engine.network;
 
 import sol_engine.network.server.ConnectionAcceptanceCriteria;
-import sol_engine.network_module.network_modules.NetworkServerModule;
-import sol_engine.network_module.network_modules.NetworkServerModuleConfig;
 
 import java.util.ArrayList;
 import java.util.List;

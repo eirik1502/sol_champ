@@ -8,12 +8,12 @@ project.extra.set("nativesDir", "$buildDir/libs/natives")
 sourceSets {
     main {
         java {
-            exclude("sol_engine/network_module/trash/**", "sol_engine/archive/**")
+            exclude("sol_engine/network_module/**", "sol_engine/archive/**")
         }
     }
     test {
         java {
-            exclude("**")
+            exclude("sol_engine/network_module", "sol_engine/loaders", "sol_engine/ecs")
         }
     }
 }
@@ -29,6 +29,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation("org.apache.commons:commons-lang3:3.0")
 
+    // logging
+    implementation("org.slf4j:slf4j-api:1.7.26")
+    implementation("org.slf4j:slf4j-simple:1.7.26")
 
     // https://mvnrepository.com/artifact/org.joml/joml
     api("org.joml:joml:1.9.14")
