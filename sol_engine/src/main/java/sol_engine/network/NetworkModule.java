@@ -2,10 +2,13 @@ package sol_engine.network;
 
 import sol_engine.module.Module;
 import sol_engine.network.client.NetworkClient;
+import sol_engine.network.client.NetworkWebsocketsClient;
 import sol_engine.network.packet_handling.NetworkClassPacketLayer;
 import sol_engine.network.packet_handling.NetworkPacket;
+import sol_engine.network.packet_handling.NetworkRawPacketLayer;
 import sol_engine.network.server.NetworkServer;
 import sol_engine.network.server.NetworkWebsocketsServer;
+import sol_engine.utils.collections.ArrayUtils;
 
 import java.util.*;
 
@@ -15,14 +18,23 @@ public class NetworkModule extends Module {
 
     private NetworkServer server = null;
     private NetworkClient client = null;
+    private NetworkRawPacketLayer rawPacketLayer;
     private NetworkClassPacketLayer classPacketLayer;
 
     public NetworkModule(NetworkModuleConfig config) {
         this.config = config;
     }
 
-    public List<NetworkPacket> peekPackets(Class<? extends NetworkPacket> packetType) {
-        return new ArrayList<>();
+    public <T extends NetworkPacket> List<T> peekPackets(Class<T> packetType) {
+        return new ArrayList<>(classPacketLayer.peekPackets(packetType));
+    }
+
+    public void pushPacket(NetworkPacket packet) {
+        classPacketLayer.pushPacket(packet);
+    }
+
+    public boolean isConnected() {
+        return rawPacketLayer.isConnected();
     }
 
     @Override
@@ -34,24 +46,29 @@ public class NetworkModule extends Module {
     public void onStart() {
         if (config.isServer) {
             server = new NetworkWebsocketsServer();
+            rawPacketLayer = server;
             classPacketLayer = new NetworkClassPacketLayer(server);
 
             server.start(config.port);
         } else {
-            client = null;
+            client = new NetworkWebsocketsClient();
+            rawPacketLayer = client;
             classPacketLayer = new NetworkClassPacketLayer(client);
 
             client.connect(config.address, config.port);
         }
+
+        classPacketLayer.usePacketTypes(config.packetTypes);
     }
 
     @Override
     public void onEnd() {
-
+        rawPacketLayer.terminate();
     }
 
     @Override
     public void onUpdate() {
-
+        classPacketLayer.clearAllPackets();
+        classPacketLayer.pollAndParseRawPackets();
     }
 }

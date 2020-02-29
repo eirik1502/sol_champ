@@ -8,12 +8,16 @@ import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.network.packet_handling.NetworkPacketRaw;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.*;
 
 public class NetworkWebsocketsServer implements NetworkServer {
+    private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
 
     private List<ConnectionAcceptanceCriteria> connectionAcceptanceCriteria = new ArrayList<>();
     private ObjectMapper jsonMapper = new ObjectMapper();
@@ -31,20 +35,27 @@ public class NetworkWebsocketsServer implements NetworkServer {
 
     @Override
     public void start(int port) {
-        wsServer = createWsServer();
+        wsServer = createWsServer(port);
         wsServer.start();
     }
 
-    private WebSocketServer createWsServer() {
+    @Override
+    public boolean isConnected() {
+        return wsServer != null;
+    }
+
+    private WebSocketServer createWsServer(int port) {
+
         NetworkServer thisServer = this;
-        return new WebSocketServer() {
+        return new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onOpen(WebSocket conn, ClientHandshake handshake) {
                 if (!connectedHosts.containsKey(conn)) {
                     Host host = conn.getAttachment();
                     connectedHosts.put(conn, host);
+                    logger.info("Host connected: " + host);
                 } else {
-                    // log host already connected
+                    logger.warn("connecting host is already connected, after handshake");
                 }
 
             }
@@ -54,7 +65,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
                 if (connectedHosts.containsKey(conn)) {
                     connectedHosts.remove(conn);
                 } else {
-                    // log disconnecting host was not connected
+                    logger.warn("Disconnecting host was never connected");
                 }
             }
 
@@ -63,18 +74,18 @@ public class NetworkWebsocketsServer implements NetworkServer {
                 if (connectedHosts.containsKey(conn)) {
                     inputPacketQueue.add(new NetworkPacketRaw(connectedHosts.get(conn), message));
                 } else {
-                    // log
+                    logger.warn("Got message from a host that is not connected");
                 }
             }
 
             @Override
             public void onError(WebSocket conn, Exception ex) {
-                // log
+                logger.warn("An error occured: " + ex);
             }
 
             @Override
             public void onStart() {
-
+                logger.info("Websockets server listening at port: " + this.getPort());
             }
 
             @Override
@@ -116,8 +127,9 @@ public class NetworkWebsocketsServer implements NetworkServer {
         if (wsServer != null) {
             try {
                 wsServer.stop();
+                logger.info("WebsocketsServer stopped");
             } catch (IOException | InterruptedException e) {
-                // log
+                logger.warn("Exception occured while stopping WebSocket server: " + e);
             }
         }
     }

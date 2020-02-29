@@ -29,20 +29,39 @@ public class NetworkClassPacketLayer {
 
     @SafeVarargs
     public final void usePacketTypes(Class<? extends NetworkPacket>... packetTypes) {
-        Arrays.stream(packetTypes).forEach(packetType -> {
+        usePacketTypes(Arrays.asList(packetTypes));
+    }
+
+    public final void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
+        packetTypes.forEach(packetType -> {
             packetTypesByName.put(packetType.getSimpleName(), packetType);
             pendingPackets.put(packetType, new ArrayDeque<>());
         });
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends NetworkPacket> ArrayDeque<T> pollPackets(Class<T> packetType) {
-        pollAndParseRawPackets();
-
+    public <T extends NetworkPacket> ArrayDeque<T> peekPackets(Class<T> packetType) {
         ArrayDeque<NetworkPacket> pendingPacketsOfType = pendingPackets.get(packetType);
         ArrayDeque<T> packets = new ArrayDeque<>((ArrayDeque<T>) pendingPacketsOfType);
-        pendingPacketsOfType.clear();
         return packets;
+    }
+
+    public <T extends NetworkPacket> ArrayDeque<T> pollPackets(Class<T> packetType) {
+        ArrayDeque<T> packets = peekPackets(packetType);
+        pendingPackets.get(packetType).clear();
+        return packets;
+    }
+
+    public Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> peekAllPackets() {
+        return new HashMap<>(pendingPackets);
+    }
+
+    public void clearPackets(Class<? extends NetworkPacket> packetType) {
+        pendingPackets.get(packetType).clear();
+    }
+
+    public void clearAllPackets() {
+        pendingPackets.keySet().forEach(this::clearPackets);
     }
 
     public void pushPacket(NetworkPacket packet) {
@@ -69,7 +88,7 @@ public class NetworkClassPacketLayer {
         logger.debug("Packet pushed, raw: " + packet);
     }
 
-    private void pollAndParseRawPackets() {
+    public void pollAndParseRawPackets() {
         Deque<NetworkPacketRaw> pendingRawPackets = rawPacketLayer.pollPackets();
 
         for (NetworkPacketRaw rawPacket : pendingRawPackets) {
@@ -79,10 +98,10 @@ public class NetworkClassPacketLayer {
             try {
                 packetJsonRoot = (ObjectNode) objectMapper.readTree(rawPacket.data);
             } catch (JsonProcessingException e) {
-                logger.warn("raw packet could not be parsed as json, packet: " + rawPacket);
+                logger.warn("raw packet could not be parsed as json, packet data: " + rawPacket.data);
                 continue;
             } catch (IOException e) {
-                logger.error("IO exception when reading raw net packet: " + rawPacket);
+                logger.error("IO exception when reading raw packet: " + rawPacket);
                 continue;
             }
 
@@ -104,7 +123,7 @@ public class NetworkClassPacketLayer {
             try {
                 packet = objectMapper.treeToValue(packetJsonRoot, packetType);
             } catch (JsonProcessingException e) {
-                logger.error("Could not map json to the spesified object type: " + packetTypeName + " raw packet: " + rawPacket + " parsing exception: " + e);
+                logger.error("Could not map json to the spesified object type: " + packetTypeName + " packet_json: " + packetJsonRoot + " parsing exception: " + e);
                 continue;
             }
 

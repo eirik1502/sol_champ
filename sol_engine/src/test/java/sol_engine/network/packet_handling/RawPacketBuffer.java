@@ -22,4 +22,14 @@ public class RawPacketBuffer implements NetworkRawPacketLayer {
     public void pushPacket(String packet) {
         packetBuffer.add(new NetworkPacketRaw(new Host("", "", "", -1), packet));
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
+    public void terminate() {
+
+    }
 }

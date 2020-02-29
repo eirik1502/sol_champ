@@ -67,7 +67,7 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     @Override
     public void onUpdate() {
-        List<NetworkPacket> packets = getModule(NetworkModule.class).peekPackets(packetType);
+        List<? extends NetInputPacket> packets = getModule(NetworkModule.class).peekPackets(packetType);
         for (NetworkPacket packet : packets) {
             NetInputPacket currPacket = (NetInputPacket) packet;
             if (currPacket.getClass() != packetType) {

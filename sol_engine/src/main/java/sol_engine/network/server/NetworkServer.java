@@ -9,7 +9,4 @@ public interface NetworkServer extends NetworkRawPacketLayer {
     public void start(int port);
 
     public void waitForConnections(int count);
-
-    public void terminate();
-
 }
