@@ -2,7 +2,8 @@ package sol_engine.network.packet_handling;
 
 import org.junit.Before;
 import org.junit.Test;
-import sol_engine.network.TestPacketString;
+import sol_engine.network.test_utils.RawPacketBuffer;
+import sol_engine.network.test_utils.TestPacketString;
 
 import static org.junit.Assert.assertThat;
 

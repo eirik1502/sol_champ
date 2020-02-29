@@ -16,6 +16,9 @@ public class NetworkInputSourceModule extends InputSourceModule {
     private NetInputPacket inputPacket;
     private Map<String, Field> inputPacketFieldsByName;
 
+    public NetworkInputSourceModule(NetworkInputSourceModuleConfig config) {
+        this.packetType = config.inputPacketType;
+    }
 
     @Override
     public boolean checkAction(String label) {
@@ -68,6 +71,10 @@ public class NetworkInputSourceModule extends InputSourceModule {
     @Override
     public void onUpdate() {
         List<? extends NetInputPacket> packets = getModule(NetworkModule.class).peekPackets(packetType);
+        updateWithPackets(packets);
+    }
+
+    private void updateWithPackets(List<? extends NetInputPacket> packets) {
         for (NetworkPacket packet : packets) {
             NetInputPacket currPacket = (NetInputPacket) packet;
             if (currPacket.getClass() != packetType) {

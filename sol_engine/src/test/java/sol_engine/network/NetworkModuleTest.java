@@ -4,7 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sol_engine.module.ModulesHandler;
-import sol_engine.network.packet_handling.NetworkPacket;
+import sol_engine.network.test_utils.TestPacketInt;
+import sol_engine.network.test_utils.TestPacketString;
+import sol_engine.network.test_utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +22,6 @@ public class NetworkModuleTest {
     private NetworkModule clientModule;
     private ModulesHandler modulesHandler;
 
-    private final int shortTime = 50;
 
     @Before
     public void setUp() {
@@ -42,23 +43,22 @@ public class NetworkModuleTest {
         ));
 
         modulesHandler = new ModulesHandler(); // will not do anything
-
     }
 
     @After
     public void tearDown() {
         clientModule.internalEnd();
-        sleepShort();
+        TestUtils.sleepShort();
         serverModule.internalEnd();
-        sleepShort();
+        TestUtils.sleepShort();
     }
 
     @Test
     public void testServerClientConnection() {
         serverModule.internalStart(modulesHandler);
-        sleepShort();
+        TestUtils.sleepShort();
         clientModule.internalStart(modulesHandler);
-        sleepShort();
+        TestUtils.sleepShort();
         assertThat(serverModule.isConnected(), is(true));
         assertThat(clientModule.isConnected(), is(true));
     }
@@ -66,13 +66,13 @@ public class NetworkModuleTest {
     @Test
     public void testNetworkModulePackets() {
         serverModule.internalStart(modulesHandler);
-        sleep(100);
+        TestUtils.sleepShort();
         clientModule.internalStart(modulesHandler);
 
-        sleep(100);
+        TestUtils.sleepShort();
         TestPacketString packetFromClient = new TestPacketString("hei :)");
         clientModule.pushPacket(packetFromClient);
-        sleepShort();
+        TestUtils.sleepShort();
         serverModule.internalUpdate();
         clientModule.internalUpdate();
 
@@ -83,7 +83,7 @@ public class NetworkModuleTest {
         TestPacketInt packetFromServer = new TestPacketInt(10);
         serverModule.pushPacket(packetFromServer);
 
-        sleepShort();
+        TestUtils.sleepShort();
         serverModule.internalUpdate();
         clientModule.internalUpdate();
 
@@ -91,17 +91,5 @@ public class NetworkModuleTest {
         assertThat(packets.size(), is(1));
         assertThat(packets.get(0), both(equalTo(packetFromClient)).and(not(sameInstance(packetFromClient))));
 
-    }
-
-    private void sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sleepShort() {
-        sleep(shortTime);
     }
 }

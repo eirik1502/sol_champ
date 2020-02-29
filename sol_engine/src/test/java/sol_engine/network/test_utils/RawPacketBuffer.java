@@ -1,4 +1,4 @@
-package sol_engine.network.packet_handling;
+package sol_engine.network.test_utils;
 
 import sol_engine.network.packet_handling.NetworkPacketRaw;
 import sol_engine.network.packet_handling.NetworkRawPacketLayer;

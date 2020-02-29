@@ -145,6 +145,9 @@ public class NetworkWebsocketsServer implements NetworkServer {
     public void pushPacket(String packet) {
         if (wsServer != null) {
             wsServer.broadcast(packet);
+            logger.info("Packet pushed: " + packet);
+        } else {
+            logger.warn("WebsocketsServer not instanciated when pushing packet: " + packet);
         }
     }
 }

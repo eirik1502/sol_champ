@@ -1,4 +1,4 @@
-package sol_engine.network;
+package sol_engine.network.test_utils;
 
 import sol_engine.network.packet_handling.NetworkPacket;
 
