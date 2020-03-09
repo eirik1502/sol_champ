@@ -25,6 +25,17 @@ public class NetworkModule extends Module {
         this.config = config;
     }
 
+
+    @SafeVarargs
+    public final void usePacketTypes(Class<? extends NetworkPacket>... packetTypes) {
+        usePacketTypes(Arrays.asList(packetTypes));
+    }
+
+    public final void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
+        classPacketLayer.usePacketTypes(packetTypes);
+    }
+
+
     public <T extends NetworkPacket> List<T> peekPackets(Class<T> packetType) {
         return new ArrayList<>(classPacketLayer.peekPackets(packetType));
     }
@@ -58,7 +69,7 @@ public class NetworkModule extends Module {
             client.connect(config.address, config.port);
         }
 
-        classPacketLayer.usePacketTypes(config.packetTypes);
+        usePacketTypes(config.packetTypes);
     }
 
     @Override

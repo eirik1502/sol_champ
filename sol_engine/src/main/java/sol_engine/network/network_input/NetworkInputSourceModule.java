@@ -60,7 +60,8 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     @Override
     public void onStart() {
-
+        // setting network module to use the input packet type specified
+        getModule(NetworkModule.class).usePacketTypes(packetType);
     }
 
     @Override

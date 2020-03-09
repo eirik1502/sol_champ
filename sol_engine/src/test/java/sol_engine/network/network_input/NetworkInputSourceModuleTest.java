@@ -34,6 +34,6 @@ public class NetworkInputSourceModuleTest {
         assertThat(inputModule.checkAction("mvLeft"), is(true));
         assertThat(inputModule.checkAction("mvRight"), is(false));
         assertThat(inputModule.floatInput("aimX"), is(54.67f));
-        
+
     }
 }

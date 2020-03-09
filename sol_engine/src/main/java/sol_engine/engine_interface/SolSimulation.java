@@ -33,11 +33,12 @@ public abstract class SolSimulation {
     protected void onStepEnd() {
     }
 
-
-    public final void start() {
+    private void setup() {
         modulesHandler = new ModulesHandler();
         onSetupModules();
         modulesHandler.internalStart();
+        // TODO: Modules setup should be separate from start
+        // TODO: Output network module config
 
         world = new World();
 
@@ -49,6 +50,10 @@ public abstract class SolSimulation {
         world.listeners.addSystemAddedListener(systemAddedListener);
 
         onSetupWorld();
+    }
+
+    public final void start() {
+        setup();
         onStart();
     }
 
