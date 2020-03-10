@@ -1,5 +1,7 @@
 package sol_engine.module;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.utils.collections.ImmutableSetView;
 
 import java.util.Collection;
@@ -9,19 +11,22 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class ModulesHandler {
+    private final Logger logger = LoggerFactory.getLogger(ModulesHandler.class);
+
 
     private boolean simulationShouldTerminate = false;
 
     private Map<Class<? extends Module>, Module> modules = new HashMap<>();
 
-
-    public void internalStart() {
+    public void internalSetup() {
         stream().forEach(Module::internalSetup);
-
         new HashSet<>(modules.values()).stream()
                 .filter(module -> !modules.keySet().containsAll(module.usingModules))
+                .peek(module -> logger.warn("All required modules are not present for module: " + module.getClass()))
                 .forEach(this::removeModule);
+    }
 
+    public void internalStart() {
         stream().forEach(m -> m.internalStart(this));
     }
 
@@ -52,7 +57,11 @@ public class ModulesHandler {
 
     @SuppressWarnings("unchecked")
     public <T extends Module> T getModule(Class<T> moduleType) {
-        return (T) modules.get(moduleType);
+        Module module = modules.get(moduleType);
+        if (module == null) {
+            logger.error("Trying to get a module that is not present: " + moduleType);
+        }
+        return (T) module;
     }
 
     public boolean hasModule(Class<? extends Module> moduleType) {

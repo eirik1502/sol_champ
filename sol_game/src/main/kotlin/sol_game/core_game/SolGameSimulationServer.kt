@@ -9,20 +9,29 @@ import sol_engine.game_utils.*
 import sol_engine.graphics_module.*
 import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
+import sol_engine.input_module.InputComp
 import sol_engine.input_module.*
+import sol_engine.network.NetworkModule
+import sol_engine.network.NetworkModuleConfig
+import sol_engine.network.network_input.NetworkInputSourceModule
+import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.physics_module.*
+import sol_game.core_game.components.*
+import sol_game.core_game.systems.*
 
-open class SolGameSimulation(
+open class SolGameSimulationServer(
+        private val characterTeamsConfig: CharacterTeamsConfig,
+        private val port: Int = 7779,
+//        private val controlPlayerIndex: Int = 0,
         private val headless: Boolean = false,
-        private val useGraphicsInput: Boolean = !headless,
-        private val controlPlayerIndex: Int = 0,
+//        private val useGraphicsInput: Boolean = false,
         private val debugMode: Boolean = false
 ) : SolSimulation() {
 
     init {
-        if (useGraphicsInput && headless) {
-            throw IllegalStateException("Cannot use headless mode with graphical inputs")
-        }
+//        if (useGraphicsInput && headless) {
+//            throw IllegalStateException("Cannot use headless mode with graphical inputs")
+//        }
         if (debugMode && headless) {
             throw IllegalStateException("cannot run in debug mode while headless")
         }
@@ -35,28 +44,17 @@ open class SolGameSimulation(
                     RenderConfig(800f, 450f, 1600f, 900f)
             )))
         }
-        val inputSourceModule =
-                if (useGraphicsInput)
-                    InputGuiSourceModule(InputGuiSourceModuleConfig(
-                            Vector2f(1600f, 900f),
-                            mapOf(
-                                    "player${controlPlayerIndex}:moveLeft" to InputConsts.KEY_A,
-                                    "player${controlPlayerIndex}:moveRight" to InputConsts.KEY_D,
-                                    "player${controlPlayerIndex}:moveUp" to InputConsts.KEY_W,
-                                    "player${controlPlayerIndex}:moveDown" to InputConsts.KEY_S,
-                                    "player${controlPlayerIndex}:ability1" to InputConsts.MOUSE_BUTTON_LEFT,
-                                    "player${controlPlayerIndex}:ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
-                                    "player${controlPlayerIndex}:ability3" to InputConsts.KEY_SPACE,
-                                    "player${controlPlayerIndex}:aimX" to InputConsts.CURSOR_X,
-                                    "player${controlPlayerIndex}:aimY" to InputConsts.CURSOR_Y,
-                                    "player${controlPlayerIndex}:aimXY" to InputConsts.CURSOR_VEC
-                            )
-                    ))
-                else
-                    ExternalInputSourceModule(ExternalInputSourceModuleConfig())
-
-        addModule(inputSourceModule)
-        addModule(InputModule(InputModuleConfig(inputSourceModule::class.java)))
+        addModule(NetworkModule(NetworkModuleConfig(
+                true,
+                port,
+                "localhost",
+                listOf(),
+                listOf()
+        )))
+        addModule(NetworkInputSourceModule(NetworkInputSourceModuleConfig(
+                SolInputPacket::class.java
+        )))
+        addModule(InputModule(InputModuleConfig(NetworkInputSourceModule::class.java)))
     }
 
     override fun onSetupWorld() {

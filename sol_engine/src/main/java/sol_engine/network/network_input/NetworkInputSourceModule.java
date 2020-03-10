@@ -14,7 +14,7 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     private Class<? extends NetInputPacket> packetType;
     private NetInputPacket inputPacket;
-    private Map<String, Field> inputPacketFieldsByName;
+    private Map<String, Field> inputPacketFieldsByName = new HashMap<>();
 
     public NetworkInputSourceModule(NetworkInputSourceModuleConfig config) {
         this.packetType = config.inputPacketType;

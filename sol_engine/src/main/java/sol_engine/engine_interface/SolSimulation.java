@@ -1,5 +1,7 @@
 package sol_engine.engine_interface;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.SystemAddedListener;
 import sol_engine.ecs.World;
@@ -9,12 +11,13 @@ import sol_engine.module.ModulesHandler;
 import java.util.stream.Stream;
 
 public abstract class SolSimulation {
-
+    private final Logger logger = LoggerFactory.getLogger(SolSimulation.class);
 
     protected World world;
     protected ModulesHandler modulesHandler;
 
     private SystemAddedListener systemAddedListener;
+    private boolean isSetup = false;
     private boolean terminated = false;
 
     protected abstract void onSetupModules();
@@ -33,15 +36,16 @@ public abstract class SolSimulation {
     protected void onStepEnd() {
     }
 
-    private void setup() {
+    public void setup() {
+        if (isSetup) {
+            logger.warn("Should only call setup() once");
+            return;
+        }
         modulesHandler = new ModulesHandler();
         onSetupModules();
-        modulesHandler.internalStart();
-        // TODO: Modules setup should be separate from start
-        // TODO: Output network module config
+        modulesHandler.internalSetup();
 
         world = new World();
-
         systemAddedListener = (sysType, sys) -> {
             if (sys instanceof ModuleSystemBase) {
                 ((ModuleSystemBase) sys).setModulesHandler(modulesHandler);
@@ -50,10 +54,15 @@ public abstract class SolSimulation {
         world.listeners.addSystemAddedListener(systemAddedListener);
 
         onSetupWorld();
+        isSetup = true;
     }
 
     public final void start() {
-        setup();
+        if (!isSetup) {
+            logger.error("Must call setup() before start()");
+            return;
+        }
+        modulesHandler.internalStart();
         onStart();
     }
 

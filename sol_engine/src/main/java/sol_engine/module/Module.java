@@ -1,10 +1,14 @@
 package sol_engine.module;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Module {
+    private final Logger logger = LoggerFactory.getLogger(Module.class);
 
     private ModulesHandler modulesHandeler = null;
     Set<Class<? extends Module>> usingModules = new HashSet<>();

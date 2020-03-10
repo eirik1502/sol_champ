@@ -2,15 +2,16 @@ package sol_game.core_game_wrappers
 
 import sol_engine.core.TransformComp
 import sol_engine.input_module.ExternalInputSourceModule
-import sol_game.core_game.CharacterComp
-import sol_game.core_game.SolGameSimulation
+import sol_game.core_game.CharacterTeamsConfig
+import sol_game.core_game.SolGameSimulationServer
+import sol_game.core_game.components.CharacterComp
 
 class SolGameExternalIO(
         val pollPlayersInput: () -> PlayersInput,
         val pushGameState: (gameState: GameState) -> Unit,
         private val headless: Boolean = false,
         private val debugMode: Boolean = false
-) : SolGameSimulation(headless, false, debugMode = debugMode) {
+) : SolGameSimulationServer(CharacterTeamsConfig(), headless = false, debugMode = debugMode) {
 
 
     override fun onStepStart() {

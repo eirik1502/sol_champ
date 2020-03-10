@@ -50,11 +50,6 @@ public class NetworkModule extends Module {
 
     @Override
     public void onSetup() {
-
-    }
-
-    @Override
-    public void onStart() {
         if (config.isServer) {
             server = new NetworkWebsocketsServer();
             rawPacketLayer = server;
@@ -68,7 +63,10 @@ public class NetworkModule extends Module {
 
             client.connect(config.address, config.port);
         }
+    }
 
+    @Override
+    public void onStart() {
         usePacketTypes(config.packetTypes);
     }
 
