@@ -6,7 +6,7 @@ public interface NetworkServer extends NetworkRawPacketLayer {
 
     public void addConnectionAcceptanceCriteria(ConnectionAcceptanceCriteria criteria);
 
-    public void start(int port);
+    public ConnectionData start();
 
-    public void waitForConnections(int count);
+    public void waitForConnections();
 }

@@ -10,6 +10,7 @@ import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacketRaw;
 
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.util.*;
 
 public class NetworkWebsocketsServer implements NetworkServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
+
+    private ConnectionData connectionData;
 
     private List<ConnectionAcceptanceCriteria> connectionAcceptanceCriteria = new ArrayList<>();
     private ObjectMapper jsonMapper = new ObjectMapper();
@@ -34,9 +37,23 @@ public class NetworkWebsocketsServer implements NetworkServer {
     }
 
     @Override
-    public void start(int port) {
+    public ConnectionData start() {
+        int port = NetworkUtils.findFreeSocketPort();
+        ConnectionData connectionData = new ConnectionData(
+                NetworkUtils.uuid(),
+                "localhost",
+                port,
+                List.of(
+                        List.of(NetworkUtils.uuid()),
+                        List.of(NetworkUtils.uuid())
+                ),
+                true,
+                NetworkUtils.uuid()
+        );
+        addConnectionAcceptanceCriteria(new PlayersConnectionCriteria(connectionData));
         wsServer = createWsServer(port);
         wsServer.start();
+        return connectionData;
     }
 
     @Override
@@ -50,6 +67,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
         return new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onOpen(WebSocket conn, ClientHandshake handshake) {
+
                 if (!connectedHosts.containsKey(conn)) {
                     Host host = conn.getAttachment();
                     connectedHosts.put(conn, host);
@@ -118,7 +136,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
     }
 
     @Override
-    public void waitForConnections(int count) {
+    public void waitForConnections() {
 
     }
 

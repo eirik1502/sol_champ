@@ -18,7 +18,6 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
 public class WebsocketsServerClientTest {
-    final int port = 7774;
     NetworkWebsocketsServer server;
     NetworkWebsocketsClient client;
 
@@ -36,7 +35,7 @@ public class WebsocketsServerClientTest {
     }
 
     private boolean startServerClient() {
-        server.start(port);
+        int port = server.start().port;
         TestUtils.sleepShort();
         boolean connected = client.connect("localhost", port);
         TestUtils.sleepShort();
