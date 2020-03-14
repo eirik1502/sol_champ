@@ -1,7 +1,9 @@
 package sol_engine.network;
 
+import sol_engine.network.client.ClientConfig;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.server.ConnectionAcceptanceCriteria;
+import sol_engine.network.server.ServerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +11,25 @@ import java.util.List;
 public class NetworkModuleConfig {
 
     public boolean isServer;
-    public int port;
-    public String address;
-    public List<Class<? extends ConnectionAcceptanceCriteria>> connectionAcceptanceCriteria = new ArrayList<>();
+    public ServerConfig serverConfig = null;  // either server or client config must be present
+    public ClientConfig clientConfig = null;  // either server or client config must be present
     public List<Class<? extends NetworkPacket>> packetTypes = new ArrayList<>();
 
     public NetworkModuleConfig() {
     }
 
-    public NetworkModuleConfig(boolean isServer, int port, String address, List<Class<? extends ConnectionAcceptanceCriteria>> connectionAcceptanceCriteria, List<Class<? extends NetworkPacket>> packetTypes) {
+    public NetworkModuleConfig(ServerConfig serverConfig, List<Class<? extends NetworkPacket>> packetTypes) {
+        this(true, serverConfig, null, packetTypes);
+    }
+
+    public NetworkModuleConfig(ClientConfig clientConfig, List<Class<? extends NetworkPacket>> packetTypes) {
+        this(false, null, clientConfig, packetTypes);
+    }
+
+    public NetworkModuleConfig(boolean isServer, ServerConfig serverConfig, ClientConfig clientConfig, List<Class<? extends NetworkPacket>> packetTypes) {
         this.isServer = isServer;
-        this.port = port;
-        this.address = address;
-        this.connectionAcceptanceCriteria = connectionAcceptanceCriteria;
+        this.serverConfig = serverConfig;
+        this.clientConfig = clientConfig;
         this.packetTypes = packetTypes;
     }
 }

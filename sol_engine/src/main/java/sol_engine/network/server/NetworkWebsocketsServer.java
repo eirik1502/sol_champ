@@ -16,11 +16,13 @@ import sol_engine.network.packet_handling.NetworkPacketRaw;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NetworkWebsocketsServer implements NetworkServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
 
-    private ConnectionData connectionData;
+    private ServerConnectionData connectionData;
 
     private List<ConnectionAcceptanceCriteria> connectionAcceptanceCriteria = new ArrayList<>();
     private ObjectMapper jsonMapper = new ObjectMapper();
@@ -30,28 +32,34 @@ public class NetworkWebsocketsServer implements NetworkServer {
 
     private WebSocketServer wsServer;
 
-
-    @Override
-    public void addConnectionAcceptanceCriteria(ConnectionAcceptanceCriteria criteria) {
+    private void addConnectionAcceptanceCriteria(ConnectionAcceptanceCriteria criteria) {
         connectionAcceptanceCriteria.add(criteria);
     }
 
-    @Override
-    public ConnectionData start() {
-        int port = NetworkUtils.findFreeSocketPort();
-        ConnectionData connectionData = new ConnectionData(
+    private ServerConnectionData createConnectionData(ServerConfig config) {
+        return new ServerConnectionData(
                 NetworkUtils.uuid(),
                 "localhost",
-                port,
-                List.of(
-                        List.of(NetworkUtils.uuid()),
-                        List.of(NetworkUtils.uuid())
-                ),
-                true,
-                NetworkUtils.uuid()
+                config.port != -1 ? config.port : NetworkUtils.findFreeSocketPort(),
+                config.teamSizes.stream()
+                        .map(teamSize ->
+                                IntStream.range(0, teamSize)
+                                        .mapToObj(i -> NetworkUtils.uuid())
+                                        .collect(Collectors.toList())
+                        )
+                        .collect(Collectors.toList()),
+                config.allowObservers,
+                config.allowObservers ? NetworkUtils.uuid() : ""
         );
-        addConnectionAcceptanceCriteria(new PlayersConnectionCriteria(connectionData));
-        wsServer = createWsServer(port);
+    }
+
+    @Override
+    public ServerConnectionData start(ServerConfig config) {
+        ServerConnectionData connectionData = createConnectionData(config);
+        if (!config.acceptAllConnections) {
+            addConnectionAcceptanceCriteria(new PlayersConnectionCriteria(connectionData));
+        }
+        wsServer = createWsServer(connectionData.port);
         wsServer.start();
         return connectionData;
     }
@@ -62,7 +70,6 @@ public class NetworkWebsocketsServer implements NetworkServer {
     }
 
     private WebSocketServer createWsServer(int port) {
-
         NetworkServer thisServer = this;
         return new WebSocketServer(new InetSocketAddress(port)) {
             @Override

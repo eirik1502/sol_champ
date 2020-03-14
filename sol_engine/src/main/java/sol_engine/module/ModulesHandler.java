@@ -19,7 +19,10 @@ public class ModulesHandler {
     private Map<Class<? extends Module>, Module> modules = new HashMap<>();
 
     public void internalSetup() {
-        stream().forEach(Module::internalSetup);
+        stream().forEach(module -> {
+            logger.info("Setting up module: " + module.getClass().getSimpleName());
+            module.internalSetup(this);
+        });
         new HashSet<>(modules.values()).stream()
                 .filter(module -> !modules.keySet().containsAll(module.usingModules))
                 .peek(module -> logger.warn("All required modules are not present for module: " + module.getClass()))
@@ -27,7 +30,7 @@ public class ModulesHandler {
     }
 
     public void internalStart() {
-        stream().forEach(m -> m.internalStart(this));
+        stream().forEach(Module::internalStart);
     }
 
     public void internalUpdate() {
@@ -43,8 +46,12 @@ public class ModulesHandler {
         stream().forEach(m -> m.internalEnd());
     }
 
-    public void addModule(Module m) {
-        this.modules.put(m.getClass(), m);
+    public void addModule(Module module) {
+        Class<? extends Module> moduleType = module.getClass();
+        if (this.modules.containsKey(moduleType)) {
+            logger.warn("adding a module that overrides an existing module of type: " + moduleType.getSimpleName());
+        }
+        this.modules.put(moduleType, module);
     }
 
     public void removeModule(Module module) {

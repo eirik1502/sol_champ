@@ -4,9 +4,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import sol_engine.network.client.ClientConfig;
 import sol_engine.network.client.NetworkWebsocketsClient;
 import sol_engine.network.packet_handling.NetworkPacketRaw;
 import sol_engine.network.server.NetworkWebsocketsServer;
+import sol_engine.network.server.ServerConfig;
+import sol_engine.network.server.ServerConnectionData;
 import sol_engine.network.test_utils.TestPacketString;
 import sol_engine.network.test_utils.TestUtils;
 
@@ -34,19 +37,47 @@ public class WebsocketsServerClientTest {
         server.terminate();
     }
 
-    private boolean startServerClient() {
-        int port = server.start().port;
+    private boolean connectClient(NetworkWebsocketsClient client, ServerConnectionData connectionData, int teamIndex, int playerIndex) {
+        return client.connect(new ClientConfig(
+                "localhost",
+                connectionData.port,
+                connectionData.gameId,
+                connectionData.teamsPlayersKeys.get(teamIndex).get(playerIndex)  // connect as the first player on the first team
+        ));
+    }
+
+    private boolean connectObserver(NetworkWebsocketsClient client, ServerConnectionData connectionData) {
+        return connectObserver(client, connectionData, connectionData.observerKey);
+    }
+
+    private boolean connectObserver(NetworkWebsocketsClient client, ServerConnectionData connectionData, String useKey) {
+        return client.connect(new ClientConfig(
+                "localhost",
+                connectionData.port,
+                connectionData.gameId,
+                useKey,
+                true
+        ));
+    }
+
+    private ServerConnectionData startServerClient(ServerConfig config) {
+        ServerConnectionData connectionData = server.start(config);
         TestUtils.sleepShort();
-        boolean connected = client.connect("localhost", port);
+        connectClient(client, connectionData, 0, 0);
         TestUtils.sleepShort();
-        return connected;
+        return connectionData;
     }
 
     @Test
     public void testServerClientConnection() {
         try {
-            boolean clientConnected = startServerClient();
-            assertThat(clientConnected, is(true));
+            ServerConnectionData connectionData = startServerClient(new ServerConfig(
+                    -1,
+                    List.of(1, 1),
+                    true,
+                    true
+            ));
+            assertThat(client.isConnected(), is(true));
 
             assertThat(server.isConnected(), is(true));
             assertThat(client.isConnected(), is(true));
@@ -59,8 +90,41 @@ public class WebsocketsServerClientTest {
     }
 
     @Test
+    public void testConnectionKeys() {
+        ServerConnectionData connectionData = startServerClient(new ServerConfig(
+                List.of(1, 1),
+                true
+        ));
+
+        NetworkWebsocketsClient client2Fail = new NetworkWebsocketsClient();
+        boolean client2FailConnected = connectClient(client2Fail, connectionData, 0, 0);
+        assertThat("A second client could connect as player 1", client2FailConnected, is(false));
+        client2Fail.terminate();
+
+        NetworkWebsocketsClient client2 = new NetworkWebsocketsClient();
+        boolean client2Connected = connectClient(client2, connectionData, 1, 0);
+        assertThat("Client could not connect as player 2", client2Connected, is(true));
+        client2.terminate();
+
+        NetworkWebsocketsClient clientObserver = new NetworkWebsocketsClient();
+        boolean clientObserverConnected = connectObserver(clientObserver, connectionData);
+        assertThat("Client could not connect as observer with the observerKey", clientObserverConnected, is(true));
+        clientObserver.terminate();
+
+        NetworkWebsocketsClient clientObserverFail = new NetworkWebsocketsClient();
+        boolean clientObserverFailConnected = connectObserver(clientObserverFail, connectionData, "123abc");
+        assertThat("Client could connect as an observer with a random key", clientObserverFailConnected, is(false));
+        clientObserverFail.terminate();
+    }
+
+    @Test
     public void testServerClientPackets() {
-        startServerClient();
+        startServerClient(new ServerConfig(
+                -1,
+                List.of(1, 1),
+                false,
+                true
+        ));
 
         String p1 = "koko";
         String p2 = "knall";

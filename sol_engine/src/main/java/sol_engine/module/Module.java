@@ -27,12 +27,12 @@ public abstract class Module {
         usingModules.addAll(Arrays.asList(moduleTypes));
     }
 
-    final void internalSetup() {
+    public final void internalSetup(ModulesHandler modulesHandler) {
+        this.modulesHandeler = modulesHandler;
         onSetup();
     }
 
-    public final void internalStart(ModulesHandler modulesHandler) {
-        this.modulesHandeler = modulesHandler;
+    public final void internalStart() {
         onStart();
     }
 

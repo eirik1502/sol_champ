@@ -4,5 +4,7 @@ import sol_engine.network.packet_handling.NetworkRawPacketLayer;
 
 public interface NetworkClient extends NetworkRawPacketLayer {
 
-    boolean connect(String address, int port);
+    boolean connect(ClientConfig config);
+
+    boolean isConnected();
 }

@@ -2,7 +2,7 @@ package sol_engine.network.server;
 
 import java.util.List;
 
-public class ConnectionData {
+public class ServerConnectionData {
     public String gameId;
     public String address;
     public int port;
@@ -10,10 +10,10 @@ public class ConnectionData {
     public boolean allowObservers;
     public String observerKey;
 
-    public ConnectionData() {
+    public ServerConnectionData() {
     }
 
-    public ConnectionData(String gameId, String address, int port, List<List<String>> teamsPlayersKeys, boolean allowObservers, String observerKey) {
+    public ServerConnectionData(String gameId, String address, int port, List<List<String>> teamsPlayersKeys, boolean allowObservers, String observerKey) {
         this.gameId = gameId;
         this.address = address;
         this.port = port;

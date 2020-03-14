@@ -21,7 +21,7 @@ public class NetworkInputSourceModuleTest {
         NetworkInputSourceModule inputModule = new NetworkInputSourceModule(new NetworkInputSourceModuleConfig(
                 TestInputPacket.class
         ));
-        inputModule.internalStart(new ModulesHandler());
+        inputModule.internalSetup(new ModulesHandler());
 
         List<? extends NetInputPacket> packets = Arrays.asList(
                 new TestInputPacket(true, false, 54.67f)

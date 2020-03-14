@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.TimeUnit;
 
 
 //TODO: should handle host corresponding to hosts connected to the server
@@ -21,20 +22,18 @@ public class NetworkWebsocketsClient implements NetworkClient {
     private Host serverHost;
     private Deque<NetworkPacketRaw> pendingPackets = new ArrayDeque<>();
 
+
     @Override
-    public boolean connect(String address, int port) {
-        URI uri;
-        try {
-            uri = new URI(String.format("ws://%s:%d", address, port));
-        } catch (URISyntaxException e) {
-            logger.error("connection uri invalid: " + e);
-            return false;
+    public boolean connect(ClientConfig config) {
+        URI uri = createConnectionURI(config);
+        if (uri == null) {
+            return isConnected();
         }
 
         wsClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                serverHost = new Host("server", "server", address, port);
+                serverHost = new Host("server", "server", config.address, config.port);
                 logger.info("Client connected to server at address: " + wsClient.getRemoteSocketAddress());
             }
 
@@ -54,8 +53,13 @@ public class NetworkWebsocketsClient implements NetworkClient {
             }
         };
 
-        wsClient.connect();
-        return true;
+        try {
+            logger.info("Trying to connect to " + uri);
+            wsClient.connectBlocking(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.error("Client interrupted while connecting to server: " + e);
+        }
+        return isConnected();
     }
 
     @Override
@@ -85,5 +89,20 @@ public class NetworkWebsocketsClient implements NetworkClient {
     @Override
     public boolean isConnected() {
         return wsClient != null && wsClient.isOpen();
+    }
+
+    private URI createConnectionURI(ClientConfig config) {
+        try {
+            return new URI(String.format("ws://%s:%d?gameId=%s&connectionKey=%s&isObserver=%s",
+                    config.address,
+                    config.port,
+                    config.gameId,
+                    config.connectionKey,
+                    config.isObserver
+            ));
+        } catch (URISyntaxException e) {
+            logger.error("connection uri invalid: " + e);
+            return null;
+        }
     }
 }

@@ -10,7 +10,7 @@ import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.packet_handling.NetworkRawPacketLayer;
 import sol_engine.network.server.NetworkServer;
 import sol_engine.network.server.NetworkWebsocketsServer;
-import sol_engine.network.server.ConnectionData;
+import sol_engine.network.server.ServerConnectionData;
 
 import java.util.*;
 
@@ -18,7 +18,7 @@ public class NetworkModule extends Module {
     private final Logger logger = LoggerFactory.getLogger(NetworkModule.class);
 
     private NetworkModuleConfig config;
-    private ConnectionData connectionData = null;
+    private ServerConnectionData connectionData = null;
 
     private NetworkServer server = null;
     private NetworkClient client = null;
@@ -52,7 +52,7 @@ public class NetworkModule extends Module {
         return rawPacketLayer.isConnected();
     }
 
-    public ConnectionData getConnectionData() {
+    public ServerConnectionData getConnectionData() {
         if (connectionData == null) {
             logger.error("Cannot get connection data before internalSetup() is called");
         }
@@ -62,27 +62,38 @@ public class NetworkModule extends Module {
     @Override
     public void onSetup() {
         if (config.isServer) {
+            if (config.serverConfig == null) {
+                String msg = "ServerConfig must be specified in NetworkModuleConfig if isServer is true";
+                logger.error(msg);
+                throw new IllegalArgumentException(msg);
+            }
             server = new NetworkWebsocketsServer();
             rawPacketLayer = server;
             classPacketLayer = new NetworkClassPacketLayer(server);
-            server.start();
-            this.connectionData = connectionData;
+            this.connectionData = server.start(config.serverConfig);
 
             // wait for connections
             server.waitForConnections();
 
         } else {
+            if (config.clientConfig == null) {
+                String msg = "ClientConfig must be specified in NetworkModuleConfig if isServer is false";
+                logger.error(msg);
+                throw new IllegalArgumentException(msg);
+            }
             client = new NetworkWebsocketsClient();
             rawPacketLayer = client;
             classPacketLayer = new NetworkClassPacketLayer(client);
 
-            client.connect(config.address, config.port);
+            client.connect(config.clientConfig);
         }
+
+        classPacketLayer.usePacketTypes(config.packetTypes);
     }
 
     @Override
     public void onStart() {
-        usePacketTypes(config.packetTypes);
+
     }
 
     @Override
