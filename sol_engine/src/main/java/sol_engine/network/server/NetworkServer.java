@@ -1,10 +1,35 @@
 package sol_engine.network.server;
 
-import sol_engine.network.packet_handling.NetworkRawPacketLayer;
+import sol_engine.network.packet_handling.NetworkEndpoint;
+import sol_engine.network.packet_handling.NetworkPacketLayer;
 
-public interface NetworkServer extends NetworkRawPacketLayer {
+import java.util.Set;
 
-    public ServerConnectionData start(ServerConfig config);
+public interface NetworkServer extends NetworkPacketLayer, NetworkEndpoint {
 
-    public void waitForConnections();
+    interface HandshakeHandler {
+        Host handleHandshake(ConnectingHost connectingHost);
+    }
+
+    interface OpenHandler {
+        boolean handleOpen(Host host);
+    }
+
+    interface CloseHandler {
+        boolean handleClose(Host host);
+    }
+
+    void start(int port);
+
+    void disconnectHost(Host host);
+
+    void waitForConnections();
+
+    Set<Host> getConnectedHosts();
+
+    void onHandshake(HandshakeHandler handler);
+
+    void onOpen(OpenHandler handler);
+
+    void onClose(CloseHandler handler);
 }

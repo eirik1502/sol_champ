@@ -1,6 +1,5 @@
-package sol_engine.network.server;
+package sol_engine.network.websockets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.exceptions.InvalidDataException;
@@ -11,7 +10,10 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.network.network_utils.NetworkUtils;
+import sol_engine.network.packet_handling.NetworkPacket;
+import sol_engine.network.packet_handling.NetworkPacketLayer;
 import sol_engine.network.packet_handling.NetworkPacketRaw;
+import sol_engine.network.server.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,49 +21,30 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NetworkWebsocketsServer implements NetworkServer {
+public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLayer {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
 
-    private ServerConnectionData connectionData;
+    private HandshakeHandler handshakeHander;
+    private OpenHandler openHandler;
+    private CloseHandler closeHandler;
+    private PacketHandler packetHandler;
 
-    private List<ConnectionAcceptanceCriteria> connectionAcceptanceCriteria = new ArrayList<>();
-    private ObjectMapper jsonMapper = new ObjectMapper();
-    private HashMap<WebSocket, Host> connectedHosts = new HashMap<>();
-    private Deque<NetworkPacketRaw> inputPacketQueue = new ArrayDeque<>();
-    private boolean terminated = false;
+    private HashMap<WebSocket, Host> socketToHost = new HashMap<>();
+    private HashMap<Host, WebSocket> hostToSocket = new HashMap<>();
 
     private WebSocketServer wsServer;
 
-    private void addConnectionAcceptanceCriteria(ConnectionAcceptanceCriteria criteria) {
-        connectionAcceptanceCriteria.add(criteria);
-    }
 
-    private ServerConnectionData createConnectionData(ServerConfig config) {
-        return new ServerConnectionData(
-                NetworkUtils.uuid(),
-                "localhost",
-                config.port != -1 ? config.port : NetworkUtils.findFreeSocketPort(),
-                config.teamSizes.stream()
-                        .map(teamSize ->
-                                IntStream.range(0, teamSize)
-                                        .mapToObj(i -> NetworkUtils.uuid())
-                                        .collect(Collectors.toList())
-                        )
-                        .collect(Collectors.toList()),
-                config.allowObservers,
-                config.allowObservers ? NetworkUtils.uuid() : ""
-        );
+    @Override
+    public void start(int port) {
+        wsServer = createWsServer(port);
+        wsServer.start();
     }
 
     @Override
-    public ServerConnectionData start(ServerConfig config) {
-        ServerConnectionData connectionData = createConnectionData(config);
-        if (!config.acceptAllConnections) {
-            addConnectionAcceptanceCriteria(new PlayersConnectionCriteria(connectionData));
-        }
-        wsServer = createWsServer(connectionData.port);
-        wsServer.start();
-        return connectionData;
+    public void disconnectHost(Host host) {
+        WebSocket sock = hostToSocket.get(host);
+        sock.close();  // sock will be run through onClose
     }
 
     @Override
@@ -69,26 +52,37 @@ public class NetworkWebsocketsServer implements NetworkServer {
         return wsServer != null;
     }
 
+    @Override
+    public Set<Host> getConnectedHosts() {
+        return new HashSet<>(hostToSocket.keySet());
+    }
+
+
     private WebSocketServer createWsServer(int port) {
-        NetworkServer thisServer = this;
         return new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onOpen(WebSocket conn, ClientHandshake handshake) {
+                Host host = conn.getAttachment();
 
-                if (!connectedHosts.containsKey(conn)) {
-                    Host host = conn.getAttachment();
-                    connectedHosts.put(conn, host);
-                    logger.info("Host connected: " + host);
-                } else {
-                    logger.warn("connecting host is already connected, after handshake");
+                socketToHost.put(conn, host);
+                hostToSocket.put(host, conn);
+
+                boolean hostValid = openHandler.handleOpen(host);
+
+                if (!hostValid) {
+                    disconnectHost(host);
                 }
-
             }
 
             @Override
             public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-                if (connectedHosts.containsKey(conn)) {
-                    connectedHosts.remove(conn);
+                if (socketToHost.containsKey(conn)) {
+                    Host host = socketToHost.get(conn);
+
+                    closeHandler.handleClose(host);
+
+                    socketToHost.remove(conn);
+                    hostToSocket.remove(host);
                 } else {
                     logger.warn("Disconnecting host was never connected");
                 }
@@ -121,22 +115,26 @@ public class NetworkWebsocketsServer implements NetworkServer {
             ) throws InvalidDataException {
                 ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
 
-                // create a host representation of the connecting host
-                Host host = new Host(
-                        "Fred",
-                        UUID.randomUUID().toString(), // host id
+                Map<String, String> query = NetworkUtils.parseQueryParams(conn.getResourceDescriptor());
+
+                ConnectingHost connectingHost = new ConnectingHost(
                         conn.getRemoteSocketAddress().getAddress().toString(),
-                        conn.getRemoteSocketAddress().getPort()
+                        conn.getRemoteSocketAddress().getPort(),
+                        query.getOrDefault("gameId", ""),
+                        query.getOrDefault("connectionKey", ""),
+                        Boolean.parseBoolean(query.getOrDefault("isObserver", "false")),
+                        "__NAME__"
                 );
+
+                Host host = handshakeHander.handleHandshake(connectingHost);
+
+                if (host == null) {
+                    throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, "host not accepted");
+                }
 
                 // pass the host representation to the onOpen method
                 conn.setAttachment(host);
 
-                boolean accepted = connectionAcceptanceCriteria.stream()
-                        .allMatch(c -> c.accepted(thisServer, host, request.getResourceDescriptor()));
-                if (!accepted) {
-                    throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, "host not accepted");
-                }
                 return builder;
             }
         };
@@ -156,6 +154,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
             } catch (IOException | InterruptedException e) {
                 logger.warn("Exception occured while stopping WebSocket server: " + e);
             }
+            wsServer = null;
         }
     }
 
@@ -166,13 +165,39 @@ public class NetworkWebsocketsServer implements NetworkServer {
         return packets;
     }
 
+
     @Override
-    public void pushPacket(String packet) {
+    public void sendPacketAll(NetworkPacket packet) {
         if (wsServer != null) {
             wsServer.broadcast(packet);
             logger.info("Packet pushed: " + packet);
         } else {
             logger.warn("WebsocketsServer not instanciated when pushing packet: " + packet);
         }
+    }
+
+    @Override
+    public void sendPacket(NetworkPacket packet, List<Host> hosts) {
+
+    }
+
+    @Override
+    public void onHandshake(HandshakeHandler handler) {
+        handshakeHander = handler;
+    }
+
+    @Override
+    public void onOpen(OpenHandler handler) {
+        openHandler = handler;
+    }
+
+    @Override
+    public void onClose(CloseHandler handler) {
+        closeHandler = handler;
+    }
+
+    @Override
+    public void onPacket(PacketHandler handler) {
+        packetHandler = handler;
     }
 }

@@ -1,13 +1,13 @@
 package sol_engine.network.test_utils;
 
 import sol_engine.network.packet_handling.NetworkPacketRaw;
-import sol_engine.network.packet_handling.NetworkRawPacketLayer;
+import sol_engine.network.packet_handling.NetworkPacketLayer;
 import sol_engine.network.server.Host;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class RawPacketBuffer implements NetworkRawPacketLayer {
+public class RawPacketBuffer implements NetworkPacketLayer {
 
     private Deque<NetworkPacketRaw> packetBuffer = new ArrayDeque<>();
 

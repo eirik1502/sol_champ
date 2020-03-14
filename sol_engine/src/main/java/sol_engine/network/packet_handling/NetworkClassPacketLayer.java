@@ -20,10 +20,10 @@ public class NetworkClassPacketLayer {
     // all packet class in use must be present
     private Map<Class<? extends NetworkPacket>, ArrayDeque<NetworkPacket>> pendingPackets = new HashMap<>();
 
-    private NetworkRawPacketLayer rawPacketLayer;
+    private NetworkPacketLayer rawPacketLayer;
 
 
-    public NetworkClassPacketLayer(NetworkRawPacketLayer rawPacketLayer) {
+    public NetworkClassPacketLayer(NetworkPacketLayer rawPacketLayer) {
         this.rawPacketLayer = rawPacketLayer;
     }
 

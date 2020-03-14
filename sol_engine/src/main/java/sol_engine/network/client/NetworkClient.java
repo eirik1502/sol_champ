@@ -1,10 +1,10 @@
 package sol_engine.network.client;
 
-import sol_engine.network.packet_handling.NetworkRawPacketLayer;
+import sol_engine.network.packet_handling.NetworkEndpoint;
+import sol_engine.network.packet_handling.NetworkPacketLayer;
+import sol_engine.network.server.Host;
 
-public interface NetworkClient extends NetworkRawPacketLayer {
+public interface NetworkClient extends NetworkPacketLayer, NetworkEndpoint {
 
-    boolean connect(ClientConfig config);
-
-    boolean isConnected();
+    boolean connect(String address, int port);
 }

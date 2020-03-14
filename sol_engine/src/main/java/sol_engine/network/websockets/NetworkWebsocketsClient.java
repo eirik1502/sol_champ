@@ -1,9 +1,11 @@
-package sol_engine.network.client;
+package sol_engine.network.websockets;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.client.ClientConfig;
+import sol_engine.network.client.NetworkClient;
 import sol_engine.network.packet_handling.NetworkPacketRaw;
 import sol_engine.network.server.Host;
 

@@ -4,12 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
 import sol_engine.network.client.NetworkClient;
-import sol_engine.network.client.NetworkWebsocketsClient;
+import sol_engine.network.websockets.NetworkWebsocketsClient;
 import sol_engine.network.packet_handling.NetworkClassPacketLayer;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.packet_handling.NetworkRawPacketLayer;
+import sol_engine.network.packet_handling.NetworkPacketLayer;
 import sol_engine.network.server.NetworkServer;
-import sol_engine.network.server.NetworkWebsocketsServer;
+import sol_engine.network.websockets.NetworkWebsocketsServer;
 import sol_engine.network.server.ServerConnectionData;
 
 import java.util.*;
@@ -22,7 +22,7 @@ public class NetworkModule extends Module {
 
     private NetworkServer server = null;
     private NetworkClient client = null;
-    private NetworkRawPacketLayer rawPacketLayer;
+    private NetworkPacketLayer rawPacketLayer;
     private NetworkClassPacketLayer classPacketLayer;
 
     public NetworkModule(NetworkModuleConfig config) {

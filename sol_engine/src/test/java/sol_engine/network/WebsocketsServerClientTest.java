@@ -5,15 +5,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sol_engine.network.client.ClientConfig;
-import sol_engine.network.client.NetworkWebsocketsClient;
+import sol_engine.network.websockets.NetworkWebsocketsClient;
 import sol_engine.network.packet_handling.NetworkPacketRaw;
-import sol_engine.network.server.NetworkWebsocketsServer;
+import sol_engine.network.websockets.NetworkWebsocketsServer;
 import sol_engine.network.server.ServerConfig;
 import sol_engine.network.server.ServerConnectionData;
-import sol_engine.network.test_utils.TestPacketString;
 import sol_engine.network.test_utils.TestUtils;
 
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
@@ -154,4 +152,25 @@ public class WebsocketsServerClientTest {
         assertThat(server.pollPackets().size(), is(0));
     }
 
+
+    @Test
+    public void testServerWaitForConnections() {
+        ServerConnectionData connData = server.start(new ServerConfig(
+                List.of(1, 1),
+                false
+        ));
+
+        Thread clientThread = new Thread(() -> {
+            NetworkWebsocketsClient client1 = new NetworkWebsocketsClient();
+            NetworkWebsocketsClient client2 = new NetworkWebsocketsClient();
+            connectClient(client1, connData, 0, 0);
+            connectClient(client2, connData, 0, 1);
+        });
+
+        clientThread.start();
+
+        server.waitForConnections();
+
+        assertThat(server.getConnectedHosts().size(), is(2));
+    }
 }
