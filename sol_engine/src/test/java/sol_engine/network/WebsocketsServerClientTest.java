@@ -1,13 +1,13 @@
 package sol_engine.network;
 
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sol_engine.network.client.ClientConfig;
-import sol_engine.network.websockets.NetworkWebsocketsClient;
-import sol_engine.network.packet_handling.NetworkPacketRaw;
-import sol_engine.network.websockets.NetworkWebsocketsServer;
+import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsClient;
+import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
 import sol_engine.network.server.ServerConfig;
 import sol_engine.network.server.ServerConnectionData;
 import sol_engine.network.test_utils.TestUtils;
@@ -19,72 +19,28 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
 public class WebsocketsServerClientTest {
-    NetworkWebsocketsServer server;
-    NetworkWebsocketsClient client;
+    private final int port = 7654;
 
-    @Before
-    public void setUp() {
-        server = new NetworkWebsocketsServer();
-        client = new NetworkWebsocketsClient();
+    private NetworkWebsocketsServer createAndStartServer(int port) {
+
     }
 
-    @After
-    public void tearDown() {
-        client.terminate();
-        TestUtils.sleepShort();
-        server.terminate();
+    private NetworkWebsocketsClient createAndStartClient(int port) {
+
     }
 
-    private boolean connectClient(NetworkWebsocketsClient client, ServerConnectionData connectionData, int teamIndex, int playerIndex) {
-        return client.connect(new ClientConfig(
-                "localhost",
-                connectionData.port,
-                connectionData.gameId,
-                connectionData.teamsPlayersKeys.get(teamIndex).get(playerIndex)  // connect as the first player on the first team
-        ));
-    }
-
-    private boolean connectObserver(NetworkWebsocketsClient client, ServerConnectionData connectionData) {
-        return connectObserver(client, connectionData, connectionData.observerKey);
-    }
-
-    private boolean connectObserver(NetworkWebsocketsClient client, ServerConnectionData connectionData, String useKey) {
-        return client.connect(new ClientConfig(
-                "localhost",
-                connectionData.port,
-                connectionData.gameId,
-                useKey,
-                true
-        ));
-    }
-
-    private ServerConnectionData startServerClient(ServerConfig config) {
-        ServerConnectionData connectionData = server.start(config);
-        TestUtils.sleepShort();
-        connectClient(client, connectionData, 0, 0);
-        TestUtils.sleepShort();
-        return connectionData;
-    }
 
     @Test
     public void testServerClientConnection() {
-        try {
-            ServerConnectionData connectionData = startServerClient(new ServerConfig(
-                    -1,
-                    List.of(1, 1),
-                    true,
-                    true
-            ));
-            assertThat(client.isConnected(), is(true));
+        NetworkWebsocketsServer server = new NetworkWebsocketsServer();
+        MutableLong openTime = new MutableLong();
 
-            assertThat(server.isConnected(), is(true));
-            assertThat(client.isConnected(), is(true));
+        server.onOpen();
+        server.start(port);
 
-            client.terminate();
-            server.terminate();
-        } catch (Exception e) {
-            Assert.fail("server and client could not make a connection due to an exception: " + e);
-        }
+
+        NetworkWebsocketsClient client = new NetworkWebsocketsClient();
+        client.connect()
     }
 
     @Test

@@ -1,5 +1,8 @@
 package sol_engine.network.server;
 
+/**
+ * This class represents a remote host that is connected
+ */
 public class Host {
     public String name;
     public String connectionKey;

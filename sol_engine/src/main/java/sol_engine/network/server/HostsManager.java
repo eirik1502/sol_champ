@@ -2,13 +2,14 @@ package sol_engine.network.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_utils.NetworkUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class HostsManager implements NetworkServer.HandshakeHandler, NetworkServer.OpenHandler {
+public class HostsManager implements NetworkServer.HandshakeHandler, NetworkServer.OpenHandler, NetworkServer.CloseHandler {
     private final Logger logger = LoggerFactory.getLogger(HostsManager.class);
 
     private ServerConnectionData connectionData;
@@ -30,11 +31,13 @@ public class HostsManager implements NetworkServer.HandshakeHandler, NetworkServ
         return teamPlayerHosts;
     }
 
-    public void handleClose(Host host) {
+    @Override
+    public boolean handleClose(Host host) {
         if (!teamPlayerHosts.checkHostExists(host)) {
             logger.warn("Disconnecting host was never connected");
         }
         teamPlayerHosts.replaceHost(host, null);
+        return true;
     }
 
     /**

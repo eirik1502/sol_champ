@@ -2,6 +2,8 @@ package sol_engine.network.network_utils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,6 +35,22 @@ public class NetworkUtils {
             }
         }
         return -1;
+    }
+
+    public static String toURLQuery(Map<String, String> params) {
+        return "?" + params.entrySet()
+                .stream()
+                .map(entry -> entry.getKey() + "=" + (entry.getValue() != null ? entry.getValue() : ""))
+                .collect(Collectors.joining("&"));
+    }
+
+    public static URI websocketsURI(String address, int port, Map<String, String> queryParams) {
+        try {
+            String uriString = String.format("ws://%s:%d", address, port) + toURLQuery(queryParams);
+            return new URI(uriString);
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 
     public static Map<String, String> parseQueryParams(String url) {

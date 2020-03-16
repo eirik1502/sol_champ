@@ -92,4 +92,8 @@ public class TeamPlayerHosts {
                 .filter(Objects::nonNull)
                 .anyMatch(host -> host.connectionKey.equals(connectionKey));
     }
+
+    public boolean allPlayersPresent() {
+        return teamPlayerHosts.stream().flatMap(List::stream).allMatch(Objects::nonNull);
+    }
 }

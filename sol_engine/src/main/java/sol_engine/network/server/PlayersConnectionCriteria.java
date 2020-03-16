@@ -2,6 +2,7 @@ package sol_engine.network.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_utils.NetworkUtils;
 
 import java.util.*;

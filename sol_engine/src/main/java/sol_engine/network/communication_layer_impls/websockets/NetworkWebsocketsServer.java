@@ -1,4 +1,4 @@
-package sol_engine.network.websockets;
+package sol_engine.network.communication_layer_impls.websockets;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
@@ -9,19 +9,18 @@ import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.communication_layer.NetworkServer;
+import sol_engine.network.communication_layer.PacketClassStringConverter;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.packet_handling.NetworkPacketLayer;
-import sol_engine.network.packet_handling.NetworkPacketRaw;
 import sol_engine.network.server.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLayer {
+public class NetworkWebsocketsServer implements NetworkServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
 
     private HandshakeHandler handshakeHander;
@@ -33,7 +32,12 @@ public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLaye
     private HashMap<Host, WebSocket> hostToSocket = new HashMap<>();
 
     private WebSocketServer wsServer;
+    private PacketClassStringConverter packetConverter = new PacketClassStringConverter();
 
+    @Override
+    public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
+        packetConverter.usePacketTypes(packetTypes);
+    }
 
     @Override
     public void start(int port) {
@@ -71,6 +75,9 @@ public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLaye
 
                 if (!hostValid) {
                     disconnectHost(host);
+                    logger.warn("Connection invalid when opening, after handshake, will disconnect. For host: " + host);
+                } else {
+                    logger.info("Connection opened for host: " + host);
                 }
             }
 
@@ -89,17 +96,25 @@ public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLaye
             }
 
             @Override
-            public void onMessage(WebSocket conn, String message) {
-                if (connectedHosts.containsKey(conn)) {
-                    inputPacketQueue.add(new NetworkPacketRaw(connectedHosts.get(conn), message));
+            public void onMessage(WebSocket sock, String message) {
+                if (socketToHost.containsKey(sock)) {
+                    Host fromHost = socketToHost.get(sock);
+                    NetworkPacket packet = packetConverter.stringToPacket(message);
+
+                    if (packet != null) {
+                        packetHandler.handlePacket(packet, fromHost);
+                    } else {
+                        logger.warn("Could not handle packet as it could not be converted from string");
+                    }
                 } else {
                     logger.warn("Got message from a host that is not connected");
                 }
             }
 
             @Override
-            public void onError(WebSocket conn, Exception ex) {
-                logger.warn("An error occured: " + ex);
+            public void onError(WebSocket sock, Exception ex) {
+                Host forHost = socketToHost.get(sock);
+                logger.warn("An error occurred for host: " + forHost + ", error: " + ex);
             }
 
             @Override
@@ -141,11 +156,6 @@ public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLaye
     }
 
     @Override
-    public void waitForConnections() {
-
-    }
-
-    @Override
     public void terminate() {
         if (wsServer != null) {
             try {
@@ -159,27 +169,28 @@ public class NetworkWebsocketsServer implements NetworkServer, NetworkPacketLaye
     }
 
     @Override
-    public Deque<NetworkPacketRaw> pollPackets() {
-        Deque<NetworkPacketRaw> packets = new ArrayDeque<>(inputPacketQueue);
-        inputPacketQueue.clear();
-        return packets;
+    public void sendPacketAll(NetworkPacket packet) {
+        sendPacket(packet, hostToSocket.keySet());
     }
 
-
     @Override
-    public void sendPacketAll(NetworkPacket packet) {
+    public void sendPacket(NetworkPacket packet, Collection<Host> hosts) {
         if (wsServer != null) {
-            wsServer.broadcast(packet);
-            logger.info("Packet pushed: " + packet);
+            String packetString = packetConverter.packetToString(packet);
+
+            if (packetString != null) {
+                Collection<WebSocket> toSockets = hosts.stream().map(hostToSocket::get).collect(Collectors.toList());
+                wsServer.broadcast(packetString, toSockets);
+                logger.info("Packet broadcasted: " + packet);
+            } else {
+                logger.warn("Packet could not be broadcasted due to conversion failure");
+            }
         } else {
             logger.warn("WebsocketsServer not instanciated when pushing packet: " + packet);
         }
     }
 
-    @Override
-    public void sendPacket(NetworkPacket packet, List<Host> hosts) {
-
-    }
+    // --- register handlers for events ---
 
     @Override
     public void onHandshake(HandshakeHandler handler) {
