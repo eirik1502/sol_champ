@@ -1,16 +1,12 @@
 package sol_engine.network.communication_layer;
 
-import sol_engine.network.communication_layer.NetworkEndpoint;
-import sol_engine.network.communication_layer.NetworkCommunicationLayer;
-import sol_engine.network.server.ConnectingHost;
-import sol_engine.network.server.Host;
-
+import java.util.Map;
 import java.util.Set;
 
-public interface NetworkServer extends NetworkCommunicationLayer, NetworkEndpoint {
+public interface NetworkServer extends NetworkCommunicationServer, NetworkEndpoint {
 
     interface HandshakeHandler {
-        Host handleHandshake(ConnectingHost connectingHost);
+        boolean handleHandshake(Host host, Map<String, String> params);
     }
 
     interface OpenHandler {
@@ -22,6 +18,8 @@ public interface NetworkServer extends NetworkCommunicationLayer, NetworkEndpoin
     }
 
     void start(int port);
+
+    void stop();
 
     void disconnectHost(Host host);
 

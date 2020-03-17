@@ -1,7 +1,9 @@
-package sol_engine.network.server;
+package sol_engine.network.network_game.game_server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.communication_layer.Host;
+import sol_engine.network.network_game.GameHost;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,14 +24,14 @@ public class TeamPlayerHosts {
 
     private final Logger logger = LoggerFactory.getLogger(TeamPlayerHosts.class);
 
-    private List<List<Host>> teamPlayerHosts;  // should be of fixed size
+    private List<List<GameHost>> teamPlayerHosts;  // should be of fixed size
 
 
     public TeamPlayerHosts(List<Integer> teamSizes) {
         teamPlayerHosts = teamSizes.stream()
                 .map(teamSize ->
                         IntStream.range(0, teamSize)
-                                .mapToObj(i -> (Host) null)
+                                .mapToObj(i -> (GameHost) null)
                                 .collect(Collectors.toList())
 
                 )
@@ -42,28 +44,28 @@ public class TeamPlayerHosts {
                 .collect(Collectors.toList());
     }
 
-    public void setHost(int teamIndex, int playerIndex, Host host) {
+    public void setHost(int teamIndex, int playerIndex, GameHost host) {
         teamPlayerHosts.get(teamIndex).set(playerIndex, host);
     }
 
-    public void setHost(TeamPlayer teamPlayer, Host host) {
+    public void setHost(TeamPlayer teamPlayer, GameHost host) {
         setHost(teamPlayer.teamIndex, teamPlayer.playerIndex, host);
     }
 
-    public Host getHost(int teamIndex, int playerIndex) {
+    public GameHost getHost(int teamIndex, int playerIndex) {
         return teamPlayerHosts.get(teamIndex).get(playerIndex);
     }
 
-    public Host getHost(TeamPlayer teamPlayer) {
+    public GameHost getHost(TeamPlayer teamPlayer) {
         return getHost(teamPlayer.teamIndex, teamPlayer.playerIndex);
     }
 
-    public void replaceHost(Host oldHost, Host newHost) {
+    public void replaceHost(GameHost oldHost, GameHost newHost) {
         TeamPlayer oldHostTeamPlayer = getTeamPlayer(oldHost);
         setHost(oldHostTeamPlayer, newHost);
     }
 
-    public TeamPlayer getTeamPlayer(Host host) {
+    public TeamPlayer getTeamPlayer(GameHost host) {
         int teamIndex = IntStream.range(0, teamPlayerHosts.size())
                 .filter(ti -> teamPlayerHosts.get(ti).contains(host))
                 .findFirst()
@@ -82,7 +84,7 @@ public class TeamPlayerHosts {
         return new TeamPlayer(teamIndex, playerIndex);
     }
 
-    public boolean checkHostExists(Host host) {
+    public boolean checkHostExists(GameHost host) {
         return getTeamPlayer(host) == null;
     }
 

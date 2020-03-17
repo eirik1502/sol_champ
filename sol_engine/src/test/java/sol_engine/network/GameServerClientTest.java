@@ -5,12 +5,14 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
 import org.junit.Test;
-import sol_engine.network.client.ClientConfig;
-import sol_engine.network.client.NetworkGameClient;
-import sol_engine.network.server.Host;
-import sol_engine.network.server.NetworkGameServer;
-import sol_engine.network.server.ServerConfig;
-import sol_engine.network.server.ServerConnectionData;
+import sol_engine.network.network_game.GameHost;
+import sol_engine.network.network_game.game_client.ClientConfig;
+import sol_engine.network.network_game.game_client.NetworkGameClient;
+import sol_engine.network.communication_layer.Host;
+import sol_engine.network.network_game.game_server.NetworkGameServer;
+import sol_engine.network.network_game.game_server.ServerConfig;
+import sol_engine.network.network_game.game_server.ServerConnectionData;
+import sol_engine.network.test_utils.TestUtils;
 
 import java.util.List;
 
@@ -34,14 +36,15 @@ public class GameServerClientTest {
                 connectData.gameId,
                 clientConnectionKey
         ));
+        TestUtils.sleepShort();
 
         assertThat("return value of client connect gave false", clientConnected, is(true));
         assertThat("client isConnected() returned false", client.isConnected(), is(true));
 
         assertThat("server have no registered client after client connected",
-                server.getConnectedHosts().size(), is(1));
+                server.getAllConnectedHosts().size(), is(1));
 
-        Host serverConnectedHost = server.getConnectedHosts().iterator().next();
+        GameHost serverConnectedHost = server.getAllConnectedHosts().iterator().next();
 
         assertThat("client did not connect with the right connectionKey",
                 serverConnectedHost.connectionKey, is(equalTo(clientConnectionKey)));

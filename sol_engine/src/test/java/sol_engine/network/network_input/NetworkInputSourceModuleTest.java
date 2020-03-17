@@ -2,7 +2,6 @@ package sol_engine.network.network_input;
 
 import org.junit.Test;
 import sol_engine.module.ModulesHandler;
-import sol_engine.network.NetworkModule;
 import sol_engine.network.network_input.network_input_utils.TestInputPacket;
 import sol_engine.network.test_utils.TestUtils;
 

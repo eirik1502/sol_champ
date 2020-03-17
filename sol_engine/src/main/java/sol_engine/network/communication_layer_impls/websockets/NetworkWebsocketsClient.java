@@ -1,6 +1,7 @@
 package sol_engine.network.communication_layer_impls.websockets;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,7 @@ import sol_engine.network.communication_layer.NetworkClient;
 import sol_engine.network.communication_layer.PacketClassStringConverter;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.server.Host;
+import sol_engine.network.communication_layer.Host;
 
 import java.net.URI;
 import java.util.*;
@@ -18,9 +19,12 @@ import java.util.concurrent.TimeUnit;
 public class NetworkWebsocketsClient implements NetworkClient {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsClient.class);
 
-    private OpenHandler openHandler;
-    private CloseHandler closeHandler;
-    private PacketHandler packetHandler;
+    private OpenHandler openHandler = () -> {
+    };
+    private CloseHandler closeHandler = () -> {
+    };
+    private PacketHandler packetHandler = (packet) -> {
+    };
 
     private final PacketClassStringConverter packetConverter = new PacketClassStringConverter();
 
@@ -30,6 +34,10 @@ public class NetworkWebsocketsClient implements NetworkClient {
     @Override
     public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
         packetConverter.usePacketTypes(packetTypes);
+    }
+
+    public boolean connect(String address, int port) {
+        return connect(address, port, new HashMap<>());
     }
 
     @Override
@@ -51,7 +59,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
             public void onMessage(String message) {
                 NetworkPacket packet = packetConverter.stringToPacket(message);
                 if (packet != null) {
-                    packetHandler.handlePacket(packet, null);
+                    packetHandler.handlePacket(packet);
                 } else {
                     logger.warn("Received packet that could not be converted from string");
                 }
@@ -66,6 +74,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
             @Override
             public void onError(Exception ex) {
                 logger.info("An error occured in WebsocketsClient: " + ex);
+                ex.printStackTrace();
             }
         };
 
@@ -81,14 +90,9 @@ public class NetworkWebsocketsClient implements NetworkClient {
     @Override
     public void disconnect() {
         if (wsClient != null) {
-            wsClient.close();
-        }
-    }
+            wsClient.close(CloseFrame.NORMAL, "called disconnect()");
 
-    @Override
-    public void terminate() {
-        if (wsClient != null) {
-            wsClient.close();
+            logger.info("client disconnecting");
         }
     }
 
@@ -98,7 +102,17 @@ public class NetworkWebsocketsClient implements NetworkClient {
     }
 
     @Override
-    public void sendPacketAll(NetworkPacket packet) {
+    public int getLocalPort() {
+        if (wsClient != null) {
+            return wsClient.getLocalSocketAddress().getPort();
+        } else {
+            logger.warn("Cannot get local port when client is not connected");
+            return -1;
+        }
+    }
+
+    @Override
+    public void sendPacket(NetworkPacket packet) {
         if (isConnected()) {
             String packetString = packetConverter.packetToString(packet);
 
@@ -112,11 +126,6 @@ public class NetworkWebsocketsClient implements NetworkClient {
         } else {
             logger.warn("Sending packet while not connected to server: " + packet);
         }
-    }
-
-    @Override
-    public void sendPacket(NetworkPacket packet, Collection<Host> hosts) {
-        sendPacketAll(packet);
     }
 
     // --- assign handlers ---

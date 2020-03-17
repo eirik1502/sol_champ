@@ -1,13 +1,5 @@
 package sol_game.core_game
 
-import org.joml.Vector2f
-import sol_engine.input_module.InputConsts
-import sol_engine.input_module.InputGuiSourceModule
-import sol_engine.input_module.InputGuiSourceModuleConfig
-import sol_engine.network.NetworkModule
-import sol_engine.network.network_input.NetworkInputSourceModule
-import sol_engine.network.network_input.NetworkInputSourceModuleConfig
-
 class SolGameSImulationClient {
 
 //    if (!useGraphicsInput) {

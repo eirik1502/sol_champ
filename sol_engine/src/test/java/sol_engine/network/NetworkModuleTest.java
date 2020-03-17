@@ -4,15 +4,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sol_engine.module.ModulesHandler;
-import sol_engine.network.client.ClientConfig;
-import sol_engine.network.server.ServerConfig;
+import sol_engine.network.network_game.GameHost;
+import sol_engine.network.network_game.game_client.ClientConfig;
+import sol_engine.network.network_game.game_server.ServerConfig;
 import sol_engine.network.test_utils.TestPacketInt;
 import sol_engine.network.test_utils.TestPacketString;
 import sol_engine.network.test_utils.TestUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
@@ -21,8 +23,8 @@ import static org.junit.Assert.fail;
 
 public class NetworkModuleTest {
 
-    private NetworkModule serverModule;
-    private NetworkModule clientModule;
+    private NetworkServerModule serverModule;
+    private NetworkClientModule clientModule;
     private ModulesHandler serverModulesHandler;
     private ModulesHandler clientModulesHandler;
 
@@ -30,14 +32,14 @@ public class NetworkModuleTest {
     @Before
     public void setUp() {
         int port = 7654;
-        this.serverModule = new NetworkModule(new NetworkModuleConfig(
+        this.serverModule = new NetworkServerModule(new NetworkServerModuleConfig(
                 new ServerConfig(port, List.of(1, 1), true, true),
-                Arrays.asList(TestPacketString.class)
+                List.of(TestPacketString.class)
         ));
 
-        this.clientModule = new NetworkModule(new NetworkModuleConfig(
+        this.clientModule = new NetworkClientModule(new NetworkClientModuleConfig(
                 new ClientConfig("localhost", port, "", ""),
-                Arrays.asList(TestPacketString.class)
+                List.of(TestPacketString.class)
         ));
 
         this.serverModulesHandler = new ModulesHandler();
@@ -49,9 +51,7 @@ public class NetworkModuleTest {
     @After
     public void tearDown() {
         clientModulesHandler.internalEnd();
-        TestUtils.sleepShort();
         serverModulesHandler.internalEnd();
-        TestUtils.sleepShort();
     }
 
     public void startServerClient() {
@@ -79,25 +79,32 @@ public class NetworkModuleTest {
         startServerClient();
 
         TestPacketString packetFromClient = new TestPacketString("hei :)");
-        clientModule.pushPacket(packetFromClient);
+        clientModule.sendPacket(packetFromClient);
         TestUtils.sleepShort();
         serverModule.internalUpdate();
         clientModule.internalUpdate();
 
-        List<TestPacketString> packets = serverModule.peekPackets(TestPacketString.class);
-        assertThat(packets.size(), is(1));
-        assertThat(packets.get(0), both(equalTo(packetFromClient)).and(not(sameInstance(packetFromClient))));
+        Map<GameHost, Deque<TestPacketString>> packetsByHost = serverModule.peekPacketsOfType(TestPacketString.class);
+        assertThat("There are no packets from any hosts", packetsByHost.size(), is(1));
+
+        TestPacketString serverReceivedPacket = packetsByHost.values().iterator().next().peek();
+
+        assertThat("There are no packets assigned for the given host", serverReceivedPacket, is(notNullValue()));
+        assertThat("server received packet did not match that sendt from client",
+                serverReceivedPacket, both(equalTo(packetFromClient)).and(not(sameInstance(packetFromClient))));
+
 
         TestPacketInt packetFromServer = new TestPacketInt(10);
-        serverModule.pushPacket(packetFromServer);
+        serverModule.sendPacketAll(packetFromServer);
 
         TestUtils.sleepShort();
         serverModule.internalUpdate();
         clientModule.internalUpdate();
 
-        List<TestPacketString> clientPackets = clientModule.peekPackets(TestPacketString.class);
-        assertThat(packets.size(), is(1));
-        assertThat(packets.get(0), both(equalTo(packetFromClient)).and(not(sameInstance(packetFromClient))));
+        Deque<TestPacketInt> clientPackets = clientModule.peekPacketsOfType(TestPacketInt.class);
+        assertThat("client had no package after server sendt", clientPackets.size(), is(1));
+        assertThat("client received packet was not equal to that sendt from the server",
+                clientPackets.peek(), both(equalTo(packetFromServer)).and(not(sameInstance(packetFromServer))));
 
     }
 }

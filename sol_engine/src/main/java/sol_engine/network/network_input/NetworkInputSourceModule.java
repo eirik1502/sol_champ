@@ -1,8 +1,11 @@
 package sol_engine.network.network_input;
 
 import org.joml.Vector2f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.input_module.InputSourceModule;
-import sol_engine.network.NetworkModule;
+import sol_engine.network.NetworkServerModule;
+import sol_engine.network.network_game.GameHost;
 import sol_engine.network.packet_handling.NetworkPacket;
 
 import java.lang.reflect.Field;
@@ -11,41 +14,33 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class NetworkInputSourceModule extends InputSourceModule {
+    private final Logger logger = LoggerFactory.getLogger(NetworkInputSourceModule.class);
 
-    private Class<? extends NetInputPacket> packetType;
-    private NetInputPacket inputPacket;
-    private Map<String, Field> inputPacketFieldsByName = new HashMap<>();
+    private final Class<? extends NetInputPacket> packetType;
+    private final Map<String, Field> inputPacketFieldsByName;
+
+    private Map<String, Boolean> triggerActions = new HashMap<>();
+    private Map<String, Float> floatActions = new HashMap<>();
+
 
     public NetworkInputSourceModule(NetworkInputSourceModuleConfig config) {
         this.packetType = config.inputPacketType;
+        inputPacketFieldsByName = Arrays.stream(packetType.getFields())
+                .collect(Collectors.toMap(
+                        Field::getName,
+                        Function.identity()
+                ));
     }
+
 
     @Override
     public boolean checkAction(String label) {
-        if (inputPacketFieldsByName.containsKey(label)) {
-            Field field = inputPacketFieldsByName.get(label);
-            if (field.getType() == boolean.class) {
-                try {
-                    return field.getBoolean(inputPacket);
-                } catch (IllegalAccessException e) {
-                }
-            }
-        }
-        return false;
+        return triggerActions.getOrDefault(label, false);
     }
 
     @Override
     public float floatInput(String label) {
-        if (inputPacketFieldsByName.containsKey(label)) {
-            Field field = inputPacketFieldsByName.get(label);
-            if (field.getType() == float.class) {
-                try {
-                    return field.getFloat(inputPacket);
-                } catch (IllegalAccessException e) {
-                }
-            }
-        }
-        return 0;
+        return floatActions.getOrDefault(label, 0f);
     }
 
     @Override
@@ -55,13 +50,13 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     @Override
     public void onSetup() {
-        usingModules(NetworkModule.class);
+        usingModules(NetworkServerModule.class);
     }
 
     @Override
     public void onStart() {
         // setting network module to use the input packet type specified
-        getModule(NetworkModule.class).usePacketTypes(packetType);
+        getModule(NetworkServerModule.class).usePacketTypes(packetType);
     }
 
     @Override
@@ -71,25 +66,32 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     @Override
     public void onUpdate() {
-        List<? extends NetInputPacket> packets = getModule(NetworkModule.class).peekPackets(packetType);
-        updateWithPackets(packets);
+        NetworkServerModule serverModule = getModule(NetworkServerModule.class);
+        Map<GameHost, ? extends Deque<? extends NetInputPacket>> hostPackets = serverModule.peekPacketsOfType(packetType);
+        hostPackets.forEach((host, packets) -> {
+            NetInputPacket packet = packets.peekFirst();
+            parseAndPutInputsFromPacket(packet, host);
+        });
     }
 
-    private void updateWithPackets(List<? extends NetInputPacket> packets) {
-        for (NetworkPacket packet : packets) {
-            NetInputPacket currPacket = (NetInputPacket) packet;
-            if (currPacket.getClass() != packetType) {
-                // log
-                continue;
-            }
+    private void parseAndPutInputsFromPacket(final NetInputPacket packet, GameHost host) {
+        final String inputGroup = "t" + host.teamIndex + "p" + host.teamPlayerIndex;
+        final String inputGroupPrefix = inputGroup + ":";
 
-            inputPacketFieldsByName = Arrays.stream(packetType.getFields())
-                    .collect(Collectors.toMap(
-                            Field::getName,
-                            Function.identity()
-                    ));
-            inputPacket = currPacket;
-            break;
-        }
+        inputPacketFieldsByName.forEach((fieldName, field) -> {
+            Class<?> fieldType = field.getType();
+            String label = inputGroupPrefix + field.getName();
+            try {
+                if (fieldType == boolean.class) {
+                    triggerActions.put(label, field.getBoolean(packet));
+                } else if (fieldType == float.class) {
+                    floatActions.put(label, field.getFloat(packet));
+                } else {
+                    logger.warn("Registered NetInputPacket type has a field with no effect." +
+                            "Name: " + fieldName + " type: " + fieldType);
+                }
+            } catch (IllegalAccessException e) {
+            }
+        });
     }
 }

@@ -1,7 +1,8 @@
-package sol_engine.network.server;
+package sol_engine.network.network_game.game_server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.communication_layer.Host;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_utils.NetworkUtils;
 

@@ -1,4 +1,4 @@
-package sol_engine.network.client;
+package sol_engine.network.network_game.game_client;
 
 public class ClientConfig {
     public String address;

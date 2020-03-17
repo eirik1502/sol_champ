@@ -9,11 +9,12 @@ import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.network.communication_layer.Host;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.communication_layer.PacketClassStringConverter;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.server.*;
+import sol_engine.network.network_game.game_server.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,10 +24,11 @@ import java.util.stream.Collectors;
 public class NetworkWebsocketsServer implements NetworkServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
 
-    private HandshakeHandler handshakeHander;
-    private OpenHandler openHandler;
-    private CloseHandler closeHandler;
-    private PacketHandler packetHandler;
+    private HandshakeHandler handshakeHander = (host, params) -> true;
+    private OpenHandler openHandler = (host) -> true;
+    private CloseHandler closeHandler = (host) -> true;
+    private PacketHandler packetHandler = (packet, host) -> {
+    };
 
     private HashMap<WebSocket, Host> socketToHost = new HashMap<>();
     private HashMap<Host, WebSocket> hostToSocket = new HashMap<>();
@@ -90,6 +92,8 @@ public class NetworkWebsocketsServer implements NetworkServer {
 
                     socketToHost.remove(conn);
                     hostToSocket.remove(host);
+
+                    logger.info("Client disconnected: " + host);
                 } else {
                     logger.warn("Disconnecting host was never connected");
                 }
@@ -115,12 +119,14 @@ public class NetworkWebsocketsServer implements NetworkServer {
             public void onError(WebSocket sock, Exception ex) {
                 Host forHost = socketToHost.get(sock);
                 logger.warn("An error occurred for host: " + forHost + ", error: " + ex);
+                ex.printStackTrace();
             }
 
             @Override
             public void onStart() {
                 logger.info("Websockets server listening at port: " + this.getPort());
             }
+
 
             @Override
             public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(
@@ -130,20 +136,24 @@ public class NetworkWebsocketsServer implements NetworkServer {
             ) throws InvalidDataException {
                 ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
 
-                Map<String, String> query = NetworkUtils.parseQueryParams(conn.getResourceDescriptor());
-
-                ConnectingHost connectingHost = new ConnectingHost(
-                        conn.getRemoteSocketAddress().getAddress().toString(),
-                        conn.getRemoteSocketAddress().getPort(),
-                        query.getOrDefault("gameId", ""),
-                        query.getOrDefault("connectionKey", ""),
-                        Boolean.parseBoolean(query.getOrDefault("isObserver", "false")),
-                        "__NAME__"
+                Map<String, String> queryParams = NetworkUtils.parseQueryParams(conn.getResourceDescriptor());
+                Host host = new Host(
+                        conn.getRemoteSocketAddress().getHostName(),
+                        conn.getRemoteSocketAddress().getPort()
                 );
 
-                Host host = handshakeHander.handleHandshake(connectingHost);
+                boolean acceptHost = handshakeHander == null || handshakeHander.handleHandshake(host, queryParams);
 
-                if (host == null) {
+//                ConnectingHost connectingHost = new ConnectingHost(
+//                        conn.getRemoteSocketAddress().getAddress().toString(),
+//                        conn.getRemoteSocketAddress().getPort(),
+//                        query.getOrDefault("gameId", ""),
+//                        query.getOrDefault("connectionKey", ""),
+//                        Boolean.parseBoolean(query.getOrDefault("isObserver", "false")),
+//                        "__NAME__"
+//                );
+
+                if (!acceptHost) {
                     throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, "host not accepted");
                 }
 
@@ -156,15 +166,14 @@ public class NetworkWebsocketsServer implements NetworkServer {
     }
 
     @Override
-    public void terminate() {
+    public void stop() {
         if (wsServer != null) {
             try {
-                wsServer.stop();
+                wsServer.stop(100);
                 logger.info("WebsocketsServer stopped");
-            } catch (IOException | InterruptedException e) {
+            } catch (InterruptedException e) {
                 logger.warn("Exception occured while stopping WebSocket server: " + e);
             }
-            wsServer = null;
         }
     }
 

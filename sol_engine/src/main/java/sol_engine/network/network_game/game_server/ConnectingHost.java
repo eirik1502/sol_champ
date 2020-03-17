@@ -1,4 +1,4 @@
-package sol_engine.network.server;
+package sol_engine.network.network_game.game_server;
 
 public class ConnectingHost {
     public String address;

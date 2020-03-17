@@ -1,6 +1,5 @@
 package sol_game.core_game
 
-import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.creator.CreatorSystem
 import sol_engine.ecs.EntityClass
@@ -11,8 +10,8 @@ import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
 import sol_engine.input_module.*
-import sol_engine.network.NetworkModule
-import sol_engine.network.NetworkModuleConfig
+import sol_engine.network.NetworkServerModule
+import sol_engine.network.NetworkServerModuleConfig
 import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.physics_module.*
@@ -44,7 +43,7 @@ open class SolGameSimulationServer(
                     RenderConfig(800f, 450f, 1600f, 900f)
             )))
         }
-        addModule(NetworkModule(NetworkModuleConfig(
+        addModule(NetworkServerModule(NetworkServerModuleConfig(
                 true,
                 port,
                 "localhost",

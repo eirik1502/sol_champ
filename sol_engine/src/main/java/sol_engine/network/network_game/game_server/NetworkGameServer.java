@@ -1,9 +1,11 @@
-package sol_engine.network.server;
+package sol_engine.network.network_game.game_server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sol_engine.network.communication_layer.NetworkCommunicationLayer;
+import sol_engine.network.communication_layer.Host;
+import sol_engine.network.communication_layer.NetworkCommunicationServer;
 import sol_engine.network.communication_layer.NetworkServer;
+import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
@@ -12,20 +14,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NetworkGameServer implements NetworkCommunicationLayer.PacketHandler {
+public class NetworkGameServer implements NetworkCommunicationServer.PacketHandler {
     private final Logger logger = LoggerFactory.getLogger(NetworkGameServer.class);
 
-    private HostsManager hostsManager;
+    private GameHostsManager hostsManager;
     private Deque<NetworkPacket> inputPacketQueue = new ArrayDeque<>();
 
     private NetworkServer server;
 
+    public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
+        server.usePacketTypes(packetTypes);
+    }
 
     public ServerConnectionData start(ServerConfig config) {
         server = new NetworkWebsocketsServer();  // may use another server implementation
 
         ServerConnectionData connectionData = createConnectionData(config);
-        hostsManager = new HostsManager(connectionData);
+        hostsManager = new GameHostsManager(connectionData);
 
         // assign handlers to the server
         server.onHandshake(hostsManager);
@@ -53,8 +58,24 @@ public class NetworkGameServer implements NetworkCommunicationLayer.PacketHandle
         return new TeamPlayerHosts(hostsManager.getTeamPlayerHosts());
     }
 
+    public Set<GameHost> getAllConnectedHosts() {
+        return hostsManager.getAllConnectedHosts();
+    }
+
     @Override
     public void handlePacket(NetworkPacket packet, Host host) {
+
+    }
+
+    public <T extends NetworkPacket> Map<GameHost, Deque<T>> peekPacketsOfType(Class<T> type) {
+        return new HashMap<>();
+    }
+
+    public <T extends NetworkPacket> Map<GameHost, Deque<T>> pollPacketsOfType(Class<T> type) {
+        return new HashMap<>();
+    }
+
+    public void clearAllPackets() {
 
     }
 
@@ -75,9 +96,9 @@ public class NetworkGameServer implements NetworkCommunicationLayer.PacketHandle
         return server.isConnected();
     }
 
-    public void terminate() {
+    public void stop() {
         if (server != null) {
-            server.terminate();
+            server.stop();
         }
     }
 

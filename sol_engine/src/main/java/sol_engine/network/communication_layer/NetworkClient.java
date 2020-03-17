@@ -1,12 +1,8 @@
 package sol_engine.network.communication_layer;
 
-import sol_engine.network.communication_layer.NetworkEndpoint;
-import sol_engine.network.communication_layer.NetworkCommunicationLayer;
-import sol_engine.network.server.Host;
-
 import java.util.Map;
 
-public interface NetworkClient extends NetworkCommunicationLayer, NetworkEndpoint {
+public interface NetworkClient extends NetworkCommunicationClient, NetworkEndpoint {
 
     interface OpenHandler {
         void handleOpen();
@@ -16,9 +12,13 @@ public interface NetworkClient extends NetworkCommunicationLayer, NetworkEndpoin
         void handleClose();
     }
 
+    boolean connect(String address, int port);
+
     boolean connect(String address, int port, Map<String, String> params);
 
     void disconnect();
+
+    int getLocalPort();
 
     void onOpen(OpenHandler handler);
 
