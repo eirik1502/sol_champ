@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import sol_engine.network.communication_layer.Host;
 import sol_engine.network.network_game.GameHost;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -88,11 +85,17 @@ public class TeamPlayerHosts {
         return getTeamPlayer(host) == null;
     }
 
-    public boolean checkConnectonKeyExists(String connectionKey) {
+    public Set<GameHost> getAllPlayerHosts() {
         return teamPlayerHosts.stream()
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
-                .anyMatch(host -> host.connectionKey.equals(connectionKey));
+                .collect(Collectors.toSet());
+    }
+
+    public boolean checkConnectonKeyExists(String connectionKey) {
+        return getAllPlayerHosts().stream()
+                .map(host -> host.connectionKey)
+                .anyMatch(connectionKey::equals);
     }
 
     public boolean allPlayersPresent() {

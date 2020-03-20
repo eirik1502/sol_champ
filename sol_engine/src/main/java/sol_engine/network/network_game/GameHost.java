@@ -6,7 +6,7 @@ public class GameHost {
     public int port;
 
     // set by server
-    public String id;
+    public int sessionId;
 
     // client meta data
     public String name;  // client decided name
@@ -20,10 +20,10 @@ public class GameHost {
     public int teamPlayerIndex;
 
 
-    public GameHost(String address, int port, String id, String name, String connectionKey, boolean isObserver, int teamIndex, int teamPlayerIndex) {
+    public GameHost(String address, int port, int sessionId, String name, String connectionKey, boolean isObserver, int teamIndex, int teamPlayerIndex) {
         this.address = address;
         this.port = port;
-        this.id = id;
+        this.sessionId = sessionId;
         this.name = name;
         this.connectionKey = connectionKey;
         this.isObserver = isObserver;
@@ -36,7 +36,7 @@ public class GameHost {
         return "GameHost{" +
                 "address='" + address + '\'' +
                 ", port=" + port +
-                ", id='" + id + '\'' +
+                ", id='" + sessionId + '\'' +
                 ", name='" + name + '\'' +
                 ", connectionKey='" + connectionKey + '\'' +
                 ", isObserver=" + isObserver +

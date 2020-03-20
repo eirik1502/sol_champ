@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 public class NetworkGameServer implements NetworkCommunicationServer.PacketHandler {
     private final Logger logger = LoggerFactory.getLogger(NetworkGameServer.class);
 
-    private GameHostsManager hostsManager;
+    private ServerGameHostsManager hostsManager;
     private Deque<NetworkPacket> inputPacketQueue = new ArrayDeque<>();
 
     private NetworkServer server;
@@ -30,7 +30,7 @@ public class NetworkGameServer implements NetworkCommunicationServer.PacketHandl
         server = new NetworkWebsocketsServer();  // may use another server implementation
 
         ServerConnectionData connectionData = createConnectionData(config);
-        hostsManager = new GameHostsManager(connectionData);
+        hostsManager = new ServerGameHostsManager(connectionData);
 
         // assign handlers to the server
         server.onHandshake(hostsManager);
@@ -56,6 +56,14 @@ public class NetworkGameServer implements NetworkCommunicationServer.PacketHandl
 
     public TeamPlayerHosts getTeamPlayerHosts() {
         return new TeamPlayerHosts(hostsManager.getTeamPlayerHosts());
+    }
+
+    public Set<GameHost> getAllPlayerHosts() {
+        return hostsManager.getAllPlayerHosts();
+    }
+
+    public Set<GameHost> getObserverHosts() {
+        return hostsManager.getObserverHosts();
     }
 
     public Set<GameHost> getAllConnectedHosts() {

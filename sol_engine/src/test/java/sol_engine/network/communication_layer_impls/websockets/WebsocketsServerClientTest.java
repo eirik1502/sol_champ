@@ -4,6 +4,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.After;
 import org.junit.Test;
+import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsClient;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
 import sol_engine.network.communication_layer.Host;
@@ -129,7 +130,7 @@ public class WebsocketsServerClientTest {
 
         server.onHandshake((host, params) -> {
             handshake.setValue(true);
-            return true;  // accept
+            return new NetworkServer.HandshakeResponse(true, null);  // accept
         });
         server.onOpen(host -> {
             opened.setValue(true);
@@ -165,7 +166,7 @@ public class WebsocketsServerClientTest {
         NetworkWebsocketsClient client = new NetworkWebsocketsClient();
         MutableBoolean opened = new MutableBoolean(false);
         MutableBoolean close = new MutableBoolean(false);
-        client.onOpen(() -> {
+        client.onOpen((params) -> {
             opened.setValue(true);
         });
         client.onClose(() -> {

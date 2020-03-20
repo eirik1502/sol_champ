@@ -13,7 +13,7 @@ sourceSets {
     }
     test {
         java {
-            exclude("sol_engine/network_module", "sol_engine/loaders", "sol_engine/ecs")
+            exclude("sol_engine/network_module/**", "sol_engine/loaders/**", "sol_engine/ecs/**")
         }
     }
 }

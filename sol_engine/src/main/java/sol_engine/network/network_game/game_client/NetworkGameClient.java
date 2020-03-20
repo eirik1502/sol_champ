@@ -1,5 +1,7 @@
 package sol_engine.network.network_game.game_client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.network.communication_layer.NetworkClient;
 import sol_engine.network.communication_layer.NetworkCommunicationClient;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsClient;
@@ -10,13 +12,17 @@ import java.util.*;
 
 public class NetworkGameClient
         implements NetworkClient.OpenHandler, NetworkClient.CloseHandler, NetworkCommunicationClient.PacketHandler {
-    private static final Deque<NetworkPacket> EMPTY_PACKET_QUEUE = new ArrayDeque<>();
+    private final Logger logger = LoggerFactory.getLogger(NetworkGameClient.class);
+
 
     private NetworkClient client;
+
+    private ClientHandshakeParams onOpenParams = null;
+
     private Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> pendingPacketsOfType = new HashMap<>();
 
 
-    public boolean connect(ClientConfig config) {
+    public ClientConnectionData connect(ClientConfig config) {
         GameHostConnectionParams connectParams = new GameHostConnectionParams(
                 config.gameId, config.connectionKey, config.isObserver, ""
         );
@@ -27,8 +33,24 @@ public class NetworkGameClient
         client.onClose(this);
         client.onPacket(this);
 
-        boolean connected = client.connect(config.address, config.port, connectParams.toParamMap());
-        return connected;
+        client.connect(config.address, config.port, connectParams.toParamMap());
+
+        // wait for connection open
+        while (onOpenParams == null) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while waiting for onOpen. Will keep waiting. Exception: " + e);
+            }
+        }
+
+        return new ClientConnectionData(
+                isConnected(),
+                onOpenParams.sessionId,
+                onOpenParams.isObserver,
+                onOpenParams.teamIndex,
+                onOpenParams.playerIndex
+        );
     }
 
     public void disconnect() {
@@ -67,12 +89,13 @@ public class NetworkGameClient
 
 
     @Override
-    public void handleOpen() {
+    public void handleOpen(Map<String, String> params) {
+        onOpenParams = ClientHandshakeParams.fromParams(params);
     }
 
     @Override
     public void handleClose() {
-        client = null;
+//        client = null;
     }
 
     @Override

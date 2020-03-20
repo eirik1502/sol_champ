@@ -5,7 +5,7 @@ import java.util.Map;
 public interface NetworkClient extends NetworkCommunicationClient, NetworkEndpoint {
 
     interface OpenHandler {
-        void handleOpen();
+        void handleOpen(Map<String, String> params);
     }
 
     interface CloseHandler {

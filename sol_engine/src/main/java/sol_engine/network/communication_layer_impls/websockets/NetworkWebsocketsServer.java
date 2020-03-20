@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class NetworkWebsocketsServer implements NetworkServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsServer.class);
 
-    private HandshakeHandler handshakeHander = (host, params) -> true;
+    private HandshakeHandler handshakeHander = (host, params) -> new HandshakeResponse(true, null);
     private OpenHandler openHandler = (host) -> true;
     private CloseHandler closeHandler = (host) -> true;
     private PacketHandler packetHandler = (packet, host) -> {
@@ -142,19 +142,16 @@ public class NetworkWebsocketsServer implements NetworkServer {
                         conn.getRemoteSocketAddress().getPort()
                 );
 
-                boolean acceptHost = handshakeHander == null || handshakeHander.handleHandshake(host, queryParams);
+                HandshakeResponse handlerResponse = handshakeHander.handleHandshake(host, queryParams);
 
-//                ConnectingHost connectingHost = new ConnectingHost(
-//                        conn.getRemoteSocketAddress().getAddress().toString(),
-//                        conn.getRemoteSocketAddress().getPort(),
-//                        query.getOrDefault("gameId", ""),
-//                        query.getOrDefault("connectionKey", ""),
-//                        Boolean.parseBoolean(query.getOrDefault("isObserver", "false")),
-//                        "__NAME__"
-//                );
-
-                if (!acceptHost) {
+                if (!handlerResponse.accepted) {
                     throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, "host not accepted");
+                }
+
+                if (handlerResponse.params != null) {
+                    builder.put(NetworkWebsocketsConsts.HANDSHAKE_EXISTING_FIELDS_FIELD_NAME,
+                            String.join(",", handlerResponse.params.keySet()));
+                    handlerResponse.params.forEach(builder::put);
                 }
 
                 // pass the host representation to the onOpen method

@@ -5,8 +5,18 @@ import java.util.Set;
 
 public interface NetworkServer extends NetworkCommunicationServer, NetworkEndpoint {
 
+    class HandshakeResponse {
+        public boolean accepted;
+        public Map<String, String> params;
+
+        public HandshakeResponse(boolean accepted, Map<String, String> params) {
+            this.accepted = accepted;
+            this.params = params;
+        }
+    }
+
     interface HandshakeHandler {
-        boolean handleHandshake(Host host, Map<String, String> params);
+        HandshakeResponse handleHandshake(Host host, Map<String, String> params);
     }
 
     interface OpenHandler {

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class NetworkWebsocketsClient implements NetworkClient {
     private final Logger logger = LoggerFactory.getLogger(NetworkWebsocketsClient.class);
 
-    private OpenHandler openHandler = () -> {
+    private OpenHandler openHandler = (params) -> {
     };
     private CloseHandler closeHandler = () -> {
     };
@@ -51,7 +51,18 @@ public class NetworkWebsocketsClient implements NetworkClient {
         wsClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                openHandler.handleOpen();
+                Map<String, String> paramsFromServer = new HashMap<>();
+
+                if (handshakedata.hasFieldValue(NetworkWebsocketsConsts.HANDSHAKE_EXISTING_FIELDS_FIELD_NAME)) {
+                    String customFieldNamesStr = handshakedata.getFieldValue(NetworkWebsocketsConsts.HANDSHAKE_EXISTING_FIELDS_FIELD_NAME);
+                    // field names should be comma-separated
+                    String[] customFiledNames = customFieldNamesStr.split(",");
+                    Arrays.stream(customFiledNames)
+                            .map(String::strip)  // clean fields in case they have spaces
+                            .forEach(field -> paramsFromServer.put(field, handshakedata.getFieldValue(field)));
+                }
+
+                openHandler.handleOpen(paramsFromServer);
                 logger.info("Client connected to server at address: " + wsClient.getRemoteSocketAddress());
             }
 
@@ -91,8 +102,6 @@ public class NetworkWebsocketsClient implements NetworkClient {
     public void disconnect() {
         if (wsClient != null) {
             wsClient.close(CloseFrame.NORMAL, "called disconnect()");
-
-            logger.info("client disconnecting");
         }
     }
 
