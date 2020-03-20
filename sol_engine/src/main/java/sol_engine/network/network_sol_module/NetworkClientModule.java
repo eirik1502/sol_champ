@@ -1,7 +1,6 @@
-package sol_engine.network;
+package sol_engine.network.network_sol_module;
 
 import sol_engine.module.Module;
-import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsClient;
 import sol_engine.network.network_game.game_client.NetworkGameClient;
 import sol_engine.network.packet_handling.NetworkPacket;
 

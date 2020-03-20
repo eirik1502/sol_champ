@@ -31,6 +31,8 @@ public interface NetworkServer extends NetworkCommunicationServer, NetworkEndpoi
 
     void stop();
 
+    boolean isRunning();
+
     void disconnectHost(Host host);
 
     Set<Host> getConnectedHosts();

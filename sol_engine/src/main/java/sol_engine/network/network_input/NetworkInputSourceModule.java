@@ -4,9 +4,8 @@ import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.input_module.InputSourceModule;
-import sol_engine.network.NetworkServerModule;
+import sol_engine.network.network_sol_module.NetworkServerModule;
 import sol_engine.network.network_game.GameHost;
-import sol_engine.network.packet_handling.NetworkPacket;
 
 import java.lang.reflect.Field;
 import java.util.*;

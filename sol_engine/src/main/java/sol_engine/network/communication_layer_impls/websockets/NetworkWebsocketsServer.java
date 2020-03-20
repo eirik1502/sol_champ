@@ -54,7 +54,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
     }
 
     @Override
-    public boolean isConnected() {
+    public boolean isRunning() {
         return wsServer != null;
     }
 
@@ -97,6 +97,8 @@ public class NetworkWebsocketsServer implements NetworkServer {
                 } else {
                     logger.warn("Disconnecting host was never connected");
                 }
+
+                wsServer = null;
             }
 
             @Override

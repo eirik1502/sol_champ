@@ -1,4 +1,4 @@
-package sol_engine.network;
+package sol_engine.network.network_sol_module;
 
 import org.junit.After;
 import org.junit.Before;
@@ -7,11 +7,14 @@ import sol_engine.module.ModulesHandler;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.game_client.ClientConfig;
 import sol_engine.network.network_game.game_server.ServerConfig;
+import sol_engine.network.network_sol_module.NetworkClientModule;
+import sol_engine.network.network_sol_module.NetworkClientModuleConfig;
+import sol_engine.network.network_sol_module.NetworkServerModule;
+import sol_engine.network.network_sol_module.NetworkServerModuleConfig;
 import sol_engine.network.test_utils.TestPacketInt;
 import sol_engine.network.test_utils.TestPacketString;
 import sol_engine.network.test_utils.TestUtils;
 
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
@@ -58,11 +61,14 @@ public class NetworkModuleTest {
         try {
             serverModulesHandler.internalSetup();
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("YEEE");
             fail("Exception occurred while starting the server module: " + e);
         }
         try {
             clientModulesHandler.internalSetup();
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Exception occurred while starting the client module: " + e);
         }
     }
@@ -70,7 +76,7 @@ public class NetworkModuleTest {
     @Test
     public void testServerClientConnection() {
         startServerClient();
-        assertThat(serverModule.isConnected(), is(true));
+        assertThat(serverModule.isRunning(), is(true));
         assertThat(clientModule.isConnected(), is(true));
     }
 

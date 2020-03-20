@@ -1,14 +1,11 @@
-package sol_engine.network;
+package sol_engine.network.network_sol_module;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
-import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsClient;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.game_server.NetworkGameServer;
-import sol_engine.network.network_input.NetInputPacket;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
 
 import java.util.*;
@@ -44,8 +41,8 @@ public class NetworkServerModule extends Module {
         server.sendPacketAll(packet);
     }
 
-    public boolean isConnected() {
-        return server.isConnected();
+    public boolean isRunning() {
+        return server.isRunning();
     }
 
     public ServerConnectionData getConnectionData() {

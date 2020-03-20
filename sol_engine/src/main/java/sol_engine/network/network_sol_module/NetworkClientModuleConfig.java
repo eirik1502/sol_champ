@@ -1,4 +1,4 @@
-package sol_engine.network;
+package sol_engine.network.network_sol_module;
 
 import sol_engine.network.network_game.game_client.ClientConfig;
 import sol_engine.network.packet_handling.NetworkPacket;

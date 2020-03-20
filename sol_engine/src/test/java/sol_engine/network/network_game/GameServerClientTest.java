@@ -180,6 +180,11 @@ public class GameServerClientTest {
         );
     }
 
+    @Test
+    public void testSendPackets() {
+        // server and client should send and receive packets, observers should only receive
+    }
+
     private void checkServerState(
             NetworkGameServer server,
             List<ClientConnectionData> playerClientsConnectionData,

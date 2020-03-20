@@ -18,6 +18,8 @@ public interface NetworkClient extends NetworkCommunicationClient, NetworkEndpoi
 
     void disconnect();
 
+    boolean isConnected();
+
     int getLocalPort();
 
     void onOpen(OpenHandler handler);

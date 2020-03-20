@@ -100,8 +100,8 @@ public class NetworkGameServer implements NetworkCommunicationServer.PacketHandl
     }
 
 
-    public boolean isConnected() {
-        return server.isConnected();
+    public boolean isRunning() {
+        return server.isRunning();
     }
 
     public void stop() {

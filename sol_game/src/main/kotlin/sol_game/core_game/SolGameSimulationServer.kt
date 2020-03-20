@@ -10,8 +10,8 @@ import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
 import sol_engine.input_module.*
-import sol_engine.network.NetworkServerModule
-import sol_engine.network.NetworkServerModuleConfig
+import sol_engine.network.network_sol_module.NetworkServerModule
+import sol_engine.network.network_sol_module.NetworkServerModuleConfig
 import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.physics_module.*
