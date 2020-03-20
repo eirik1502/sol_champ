@@ -1,22 +1,24 @@
 package sol_engine.network.network_sol_module;
 
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.network_game.game_server.ServerConfig;
+import sol_engine.network.network_game.game_server.GameServerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkServerModuleConfig {
 
-    public ServerConfig serverConfig;
+    public GameServerConfig gameServerConfig;
     public List<Class<? extends NetworkPacket>> packetTypes = new ArrayList<>();
+    public boolean waitForAllPlayerConnections = false;
 
     public NetworkServerModuleConfig() {
     }
 
-    public NetworkServerModuleConfig(ServerConfig serverConfig, List<Class<? extends NetworkPacket>> packetTypes) {
-        this.serverConfig = serverConfig;
+    public NetworkServerModuleConfig(GameServerConfig gameServerConfig, List<Class<? extends NetworkPacket>> packetTypes, boolean waitForAllPlayerConnections) {
+        this.gameServerConfig = gameServerConfig;
         this.packetTypes = packetTypes;
+        this.waitForAllPlayerConnections = waitForAllPlayerConnections;
     }
 }
 

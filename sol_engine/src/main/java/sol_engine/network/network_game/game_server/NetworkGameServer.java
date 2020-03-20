@@ -3,9 +3,9 @@ package sol_engine.network.network_game.game_server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.network.communication_layer.Host;
-import sol_engine.network.communication_layer.NetworkCommunicationServer;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_game.GameHost;
+import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
@@ -14,32 +14,50 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NetworkGameServer implements NetworkCommunicationServer.PacketHandler {
+public class NetworkGameServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkGameServer.class);
 
     private ServerGameHostsManager hostsManager;
-    private Deque<NetworkPacket> inputPacketQueue = new ArrayDeque<>();
+    private ServerConnectionData connectionData;
+
 
     private NetworkServer server;
 
-    public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
-        server.usePacketTypes(packetTypes);
-    }
 
-    public ServerConnectionData start(ServerConfig config) {
+    public ServerConnectionData setup(GameServerConfig config) {
+        logger.info("setup with config: " + config);
         server = new NetworkWebsocketsServer();  // may use another server implementation
 
-        ServerConnectionData connectionData = createConnectionData(config);
+        connectionData = createConnectionData(config);
         hostsManager = new ServerGameHostsManager(connectionData);
 
         // assign handlers to the server
         server.onHandshake(hostsManager);
         server.onOpen(hostsManager);
         server.onClose(hostsManager);
-        server.onPacket(this);
+        server.onPacket(hostsManager);
 
-        server.start(connectionData.port);
+        logger.info("setup finished with connection data: " + connectionData);
         return connectionData;
+    }
+
+    public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
+        if (server != null) {
+            server.usePacketTypes(packetTypes);
+        } else {
+            logger.warn("calling usePacketTypes() before server is setup");
+        }
+    }
+
+    public void start() {
+        start(false);
+    }
+
+    public void start(boolean waitForAllPlayerConnections) {
+        server.start(connectionData.port);
+        if (waitForAllPlayerConnections) {
+            waitForAllPlayerConnections();
+        }
     }
 
     public boolean waitForAllPlayerConnections() {
@@ -70,13 +88,9 @@ public class NetworkGameServer implements NetworkCommunicationServer.PacketHandl
         return hostsManager.getAllConnectedHosts();
     }
 
-    @Override
-    public void handlePacket(NetworkPacket packet, Host host) {
 
-    }
-
-    public <T extends NetworkPacket> Map<GameHost, Deque<T>> peekPacketsOfType(Class<T> type) {
-        return new HashMap<>();
+    public PacketsQueueByHost peekPacketsForHost(GameHost host) {
+        return hostsManager.peekPacketsForHost(host);
     }
 
     public <T extends NetworkPacket> Map<GameHost, Deque<T>> pollPacketsOfType(Class<T> type) {
@@ -110,7 +124,7 @@ public class NetworkGameServer implements NetworkCommunicationServer.PacketHandl
         }
     }
 
-    private ServerConnectionData createConnectionData(ServerConfig config) {
+    private ServerConnectionData createConnectionData(GameServerConfig config) {
         return new ServerConnectionData(
                 NetworkUtils.uuid(),
                 "localhost",

@@ -1,6 +1,7 @@
 package sol_engine.network.network_sol_module;
 
 import sol_engine.module.Module;
+import sol_engine.network.network_game.game_client.ClientConnectionData;
 import sol_engine.network.network_game.game_client.NetworkGameClient;
 import sol_engine.network.packet_handling.NetworkPacket;
 
@@ -30,13 +31,15 @@ public class NetworkClientModule extends Module {
     @Override
     public void onSetup() {
         client = new NetworkGameClient();
-//        client.usePacketTypes(config.packetTypes);
-        client.connect(config.clientConfig);
+        client.usePacketTypes(config.packetTypes);
     }
 
     @Override
     public void onStart() {
-
+        ClientConnectionData connData = client.connect(config.clientConfig);
+        if (!connData.isConnected) {
+            throw new IllegalStateException("Client module could not connect to server :(");
+        }
     }
 
     @Override

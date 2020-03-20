@@ -9,8 +9,8 @@ public class ClientConnectionData {
     public final int teamIndex;  // the actual team index given by the server, usually equal to the one requested
     public final int playerIndex;  // the actual player index given by the server, usually equal to the one requested
 
-    public ClientConnectionData() {
-        this(false, -1, false, -1, -1);
+    public ClientConnectionData(boolean isConnected) {
+        this(isConnected, -1, false, -1, -1);
     }
 
     public ClientConnectionData(boolean isConnected, int sessionId, boolean isObserver, int teamIndex, int playerIndex) {

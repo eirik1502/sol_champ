@@ -5,18 +5,12 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.After;
 import org.junit.Test;
 import sol_engine.network.communication_layer.NetworkServer;
-import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsClient;
-import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
 import sol_engine.network.communication_layer.Host;
-import sol_engine.network.network_game.game_server.ServerConfig;
-import sol_engine.network.network_game.game_server.ServerConnectionData;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.test_utils.TestPacketString;
 import sol_engine.network.test_utils.TestUtils;
 
 import java.net.*;
-import java.util.Deque;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertThat;

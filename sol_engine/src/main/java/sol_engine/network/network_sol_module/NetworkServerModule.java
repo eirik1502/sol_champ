@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
 import sol_engine.network.network_game.GameHost;
+import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_game.game_server.NetworkGameServer;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
@@ -29,12 +30,23 @@ public class NetworkServerModule extends Module {
     }
 
     public final void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
-        server.usePacketTypes(packetTypes);
+        if (server != null) {
+            server.usePacketTypes(packetTypes);
+        } else {
+            logger.warn("calling usePacketTypes() before game server is setup");
+        }
     }
 
+    public NetworkGameServer getGameServer() {
+        return server;
+    }
 
-    public <T extends NetworkPacket> Map<GameHost, Deque<T>> peekPacketsOfType(Class<T> packetType) {
-        return server.peekPacketsOfType(packetType);
+    public PacketsQueueByHost peekPacketsForHost(GameHost host) {
+        return server.peekPacketsForHost(host);
+    }
+
+    public PacketsQueueByHost peekPacketsOfType(GameHost host) {
+        return server.peekPacketsForHost(host);
     }
 
     public void sendPacketAll(NetworkPacket packet) {
@@ -55,16 +67,21 @@ public class NetworkServerModule extends Module {
     @Override
     public void onSetup() {
         server = new NetworkGameServer();
+        connectionData = server.setup(config.gameServerConfig);
         server.usePacketTypes(config.packetTypes);
-        this.connectionData = server.start(config.serverConfig);
-
-        // wait for connections
-        server.waitForAllPlayerConnections();
     }
 
     @Override
     public void onStart() {
-
+        if (server != null) {
+            server.start();
+            if (config.waitForAllPlayerConnections) {
+                logger.info("Server started, waiting for all connections");
+                server.waitForAllPlayerConnections();
+            }
+        } else {
+            logger.error("server not setup when onStart() is called");
+        }
     }
 
     @Override

@@ -8,7 +8,6 @@ public class GameHostConnectionParams {
     public boolean isObserver;
     public String name;
 
-
     public GameHostConnectionParams(String gameId, String connectionKey, boolean isObserver, String name) {
         this.gameId = gameId;
         this.name = name;
@@ -32,5 +31,16 @@ public class GameHostConnectionParams {
                 "isObserver", Boolean.toString(isObserver),
                 "name", name
         );
+    }
+
+
+    @Override
+    public String toString() {
+        return "GameHostConnectionParams{" +
+                "gameId='" + gameId + '\'' +
+                ", connectionKey='" + connectionKey + '\'' +
+                ", isObserver=" + isObserver +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

@@ -20,7 +20,7 @@ public class ModulesHandler {
 
     public void internalSetup() {
         stream().forEach(module -> {
-            logger.info("Setting up module: " + module.getClass().getSimpleName());
+            logger.info("Setting up module. Type: " + module.getClass().getSimpleName() + ", module: " + module);
             module.internalSetup(this);
         });
         new HashSet<>(modules.values()).stream()
@@ -69,6 +69,10 @@ public class ModulesHandler {
             logger.error("Trying to get a module that is not present: " + moduleType);
         }
         return (T) module;
+    }
+
+    public Map<Class<? extends Module>, Module> getAllModules() {
+        return new HashMap<>(modules);
     }
 
     public boolean hasModule(Class<? extends Module> moduleType) {

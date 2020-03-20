@@ -89,13 +89,14 @@ public class NetworkWebsocketsClient implements NetworkClient {
             }
         };
 
+        boolean connected = false;
         try {
             logger.info("Trying to connect to " + uri);
-            wsClient.connectBlocking(1, TimeUnit.SECONDS);
+            connected = wsClient.connectBlocking(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.error("Client interrupted while connecting to server: " + e);
         }
-        return isConnected();
+        return connected;
     }
 
     @Override

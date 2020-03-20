@@ -7,18 +7,15 @@ import static org.hamcrest.CoreMatchers.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.game_client.ClientConfig;
 import sol_engine.network.network_game.game_client.ClientConnectionData;
 import sol_engine.network.network_game.game_client.NetworkGameClient;
-import sol_engine.network.communication_layer.Host;
 import sol_engine.network.network_game.game_server.NetworkGameServer;
-import sol_engine.network.network_game.game_server.ServerConfig;
+import sol_engine.network.network_game.game_server.GameServerConfig;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
 import sol_engine.network.network_game.game_server.TeamPlayerHosts;
 import sol_engine.network.test_utils.TestUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,10 +60,11 @@ public class GameServerClientTest {
 
     @Test
     public void testConnectionEstablishment() {
-        ServerConnectionData serverConnectionData = server.start(new ServerConfig(
+        ServerConnectionData serverConnectionData = server.setup(new GameServerConfig(
                 List.of(1, 1),
                 true
         ));
+        server.start();
 
         TestUtils.sleepShort();
 
@@ -106,10 +104,11 @@ public class GameServerClientTest {
 
     @Test
     public void testStateAfterConnection() {
-        ServerConnectionData serverConnectionData = server.start(new ServerConfig(
+        ServerConnectionData serverConnectionData = server.setup(new GameServerConfig(
                 List.of(1, 1),
                 true
         ));
+        server.start();
 
         checkServerState(server, List.of(), List.of());
 

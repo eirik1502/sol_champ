@@ -1,11 +1,14 @@
 package sol_engine.network.network_game.game_server;
 
+import com.google.common.base.Functions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.network.communication_layer.Host;
 import sol_engine.network.network_game.GameHost;
+import sol_engine.utils.stream.WithIndex;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,6 +42,10 @@ public class TeamPlayerHosts {
         teamPlayerHosts = toCopy.teamPlayerHosts.stream()
                 .map(ArrayList::new)
                 .collect(Collectors.toList());
+    }
+
+    public boolean hasHost(GameHost host) {
+        return getAllPlayerHosts().contains(host);
     }
 
     public void setHost(int teamIndex, int playerIndex, GameHost host) {
@@ -83,6 +90,28 @@ public class TeamPlayerHosts {
 
     public boolean checkHostExists(GameHost host) {
         return getTeamPlayer(host) == null;
+    }
+
+    private Map<GameHost, TeamPlayer> getTeamPlayerOfAllHostSpots() {
+        return teamPlayerHosts.stream()
+                .map(WithIndex.map())
+                .flatMap(teamHostsI -> teamHostsI.value.stream()
+                        .map(WithIndex.map())
+                        .map(playerHostI -> new TeamPlayer(teamHostsI.i, playerHostI.i))
+                )
+                .collect(Collectors.toMap(
+                        this::getHost,
+                        teamPlayer -> teamPlayer
+                ));
+    }
+
+    // return null if there are no free spots
+    public TeamPlayer getFreeTeamPlayer() {
+        return getTeamPlayerOfAllHostSpots().entrySet().stream()
+                .filter(hostTeamPlayer -> hostTeamPlayer.getKey() == null)
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     public Set<GameHost> getAllPlayerHosts() {

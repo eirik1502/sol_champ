@@ -4,15 +4,19 @@ import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.network.communication_layer.Host;
+import sol_engine.network.communication_layer.NetworkCommunicationServer;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.GameHostConnectionParams;
+import sol_engine.network.network_game.PacketsQueueByHost;
+import sol_engine.network.packet_handling.NetworkPacket;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, NetworkServer.OpenHandler, NetworkServer.CloseHandler {
+public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, NetworkServer.OpenHandler,
+        NetworkServer.CloseHandler, NetworkCommunicationServer.PacketHandler {
     private final Logger logger = LoggerFactory.getLogger(ServerGameHostsManager.class);
     private static int nextSessionId = 0;
 
@@ -23,6 +27,8 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
     private TeamPlayerHosts teamPlayerHosts;  // open player hosts
     private Set<GameHost> observerHosts = new HashSet<>();  // open observer hosts
 
+    private Map<GameHost, PacketsQueueByHost> inputPacketQueue = new HashMap<>();
+
 
     public ServerGameHostsManager(ServerConnectionData connectionData) {
         this.connectionData = connectionData;
@@ -31,6 +37,26 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                         .map(List::size)
                         .collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public void handlePacket(NetworkPacket packet, Host host) {
+        if (openHosts.containsKey(host)) {
+            GameHost gameHost = openHosts.get(host);
+            if (teamPlayerHosts.hasHost(gameHost)) {
+                inputPacketQueue
+                        .get(gameHost)
+                        .add(packet);
+            } else {
+                logger.warn("Got a packet from an observer client, will be discarded. Game host: " + gameHost + ", packet: " + packet);
+            }
+        } else {
+            logger.warn("Got a packet from a non-open host: " + host);
+        }
+    }
+
+    public PacketsQueueByHost peekPacketsForHost(GameHost host) {
+        return new PacketsQueueByHost(inputPacketQueue.get(host));
     }
 
     public TeamPlayerHosts getTeamPlayerHosts() {
@@ -107,6 +133,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                 return false;
             } else {
                 teamPlayerHosts.setHost(gameHost.teamIndex, gameHost.teamPlayerIndex, gameHost);
+                inputPacketQueue.putIfAbsent(gameHost, new PacketsQueueByHost());  // create an input packet entry for the host
             }
         }
         openHosts.put(host, gameHost);
@@ -126,6 +153,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                 observerHosts.remove(gameHost);
             } else {
                 teamPlayerHosts.replaceHost(gameHost, null);
+                inputPacketQueue.remove(gameHost);  // remove packet queue entry
             }
             openHosts.remove(host);
             logger.info("Connection closed for GameHost: " + gameHost);
@@ -144,6 +172,8 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
     }
 
     private GameHost verifyAndCreateGameHost(Host connectingHost, GameHostConnectionParams params) {
+        logger.info("Client initiating handshake. Host: " + connectingHost + ", with params: " + params);
+
         if (params.gameId.equals("") || params.connectionKey.equals("")) {
             logger.info("gameId and/or connectionKey not present");
             return null;
@@ -189,7 +219,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                 return null;
             }
 
-            int teamPlayerIndex = connectionData.teamsPlayersKeys.get(teamIndex).indexOf(params.connectionKey);
+            int playerIndex = connectionData.teamsPlayersKeys.get(teamIndex).indexOf(params.connectionKey);
 
             // check if the key is already used
             if (teamPlayerHosts.checkConnectonKeyExists(params.connectionKey)) {
@@ -205,7 +235,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                     params.connectionKey,
                     false,
                     teamIndex,
-                    teamPlayerIndex
+                    playerIndex
             );
         }
 
