@@ -6,6 +6,7 @@ import sol_engine.network.communication_layer.Host;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.PacketsQueueByHost;
+import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
@@ -89,12 +90,12 @@ public class NetworkGameServer {
     }
 
 
-    public PacketsQueueByHost peekPacketsForHost(GameHost host) {
+    public PacketsQueueByType peekPacketsForHost(GameHost host) {
         return hostsManager.peekPacketsForHost(host);
     }
 
-    public <T extends NetworkPacket> Map<GameHost, Deque<T>> pollPacketsOfType(Class<T> type) {
-        return new HashMap<>();
+    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
+        return hostsManager.peekPacketsOfType(type);
     }
 
     public void clearAllPackets() {

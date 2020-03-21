@@ -17,10 +17,10 @@ public class GameHost {
     // host role
     public boolean isObserver;
     public int teamIndex;
-    public int teamPlayerIndex;
+    public int playerIndex;  // the player index on the team
 
 
-    public GameHost(String address, int port, int sessionId, String name, String connectionKey, boolean isObserver, int teamIndex, int teamPlayerIndex) {
+    public GameHost(String address, int port, int sessionId, String name, String connectionKey, boolean isObserver, int teamIndex, int playerIndex) {
         this.address = address;
         this.port = port;
         this.sessionId = sessionId;
@@ -28,7 +28,7 @@ public class GameHost {
         this.connectionKey = connectionKey;
         this.isObserver = isObserver;
         this.teamIndex = teamIndex;
-        this.teamPlayerIndex = teamPlayerIndex;
+        this.playerIndex = playerIndex;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class GameHost {
                 ", connectionKey='" + connectionKey + '\'' +
                 ", isObserver=" + isObserver +
                 ", teamIndex=" + teamIndex +
-                ", teamPlayerIndex=" + teamPlayerIndex +
+                ", teamPlayerIndex=" + playerIndex +
                 '}';
     }
 }

@@ -9,7 +9,9 @@ import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.GameHostConnectionParams;
 import sol_engine.network.network_game.PacketsQueueByHost;
+import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.packet_handling.NetworkPacket;
+import sol_engine.utils.collections.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +29,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
     private TeamPlayerHosts teamPlayerHosts;  // open player hosts
     private Set<GameHost> observerHosts = new HashSet<>();  // open observer hosts
 
-    private Map<GameHost, PacketsQueueByHost> inputPacketQueue = new HashMap<>();
+    private Map<GameHost, PacketsQueueByType> inputPacketQueue = new HashMap<>();
 
 
     public ServerGameHostsManager(ServerConnectionData connectionData) {
@@ -55,8 +57,17 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         }
     }
 
-    public PacketsQueueByHost peekPacketsForHost(GameHost host) {
-        return new PacketsQueueByHost(inputPacketQueue.get(host));
+    public PacketsQueueByType peekPacketsForHost(GameHost host) {
+        return new PacketsQueueByType(inputPacketQueue.get(host));
+    }
+
+    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
+        return inputPacketQueue.entrySet().stream()
+                .flatMap(entry -> entry.getValue()
+                        .peekAll(type).stream()
+                        .map(packetOfType -> new Pair<>(entry.getKey(), packetOfType))
+                )
+                .collect(PacketsQueueByHost.pairCollector());
     }
 
     public TeamPlayerHosts getTeamPlayerHosts() {
@@ -101,7 +112,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                     "sessionId", Integer.toString(gameHost.sessionId),
                     "isObserver", Boolean.toString(gameHost.isObserver),
                     "teamIndex", Integer.toString(gameHost.teamIndex),
-                    "playerIndex", Integer.toString(gameHost.teamPlayerIndex)
+                    "playerIndex", Integer.toString(gameHost.playerIndex)
             );
             unopenedAcceptedHosts.put(host, gameHost);
             return new NetworkServer.HandshakeResponse(true, responseParams);
@@ -132,8 +143,8 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                 logger.info("ConnectionKey already used when connection is opened for host: " + host);
                 return false;
             } else {
-                teamPlayerHosts.setHost(gameHost.teamIndex, gameHost.teamPlayerIndex, gameHost);
-                inputPacketQueue.putIfAbsent(gameHost, new PacketsQueueByHost());  // create an input packet entry for the host
+                teamPlayerHosts.setHost(gameHost.teamIndex, gameHost.playerIndex, gameHost);
+                inputPacketQueue.putIfAbsent(gameHost, new PacketsQueueByType());  // create an input packet entry for the host
             }
         }
         openHosts.put(host, gameHost);

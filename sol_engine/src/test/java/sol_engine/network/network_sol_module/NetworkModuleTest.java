@@ -6,13 +6,13 @@ import org.junit.Test;
 import sol_engine.module.Module;
 import sol_engine.module.ModulesHandler;
 import sol_engine.network.network_game.GameHost;
-import sol_engine.network.network_game.PacketsQueueByHost;
+import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_game.game_client.ClientConfig;
 import sol_engine.network.network_game.game_server.GameServerConfig;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
-import sol_engine.network.test_utils.TestPacketInt;
-import sol_engine.network.test_utils.TestPacketString;
-import sol_engine.network.test_utils.TestUtils;
+import sol_engine.network.network_test_utils.TestPacketInt;
+import sol_engine.network.network_test_utils.TestPacketString;
+import sol_engine.network.network_test_utils.TestUtils;
 
 import java.util.Deque;
 import java.util.Iterator;
@@ -56,7 +56,7 @@ public class NetworkModuleTest {
     private NetworkServerModule create1v1ServerModule(ModulesHandler addTo, boolean waitForAllConnections) {
         NetworkServerModule sm = new NetworkServerModule(new NetworkServerModuleConfig(
                 new GameServerConfig(port, List.of(1, 1), true),
-                List.of(TestPacketString.class),
+                List.of(TestPacketString.class, TestPacketInt.class),
                 waitForAllConnections
         ));
         addTo.addModule(sm);
@@ -76,7 +76,7 @@ public class NetworkModuleTest {
                                 : serverConnectionData.teamsPlayersKeys.get(teamIndex).get(playerIndex),
                         isObserver
                 ),
-                List.of(TestPacketString.class)
+                List.of(TestPacketString.class, TestPacketInt.class)
         ));
         addTo.addModule(cm);
         return cm;
@@ -152,7 +152,7 @@ public class NetworkModuleTest {
         updateModulesHandlers(serverModulesHandler, client1ModulesHandler);
 
         GameHost serversClientHost = serverModule.getGameServer().getAllConnectedHosts().iterator().next();
-        PacketsQueueByHost packetsByType = serverModule.peekPacketsForHost(serversClientHost);
+        PacketsQueueByType packetsByType = serverModule.peekPacketsForHost(serversClientHost);
         assertThat("There are no packets on the server from any hosts", packetsByType.totalPacketCount(), is(1));
 
         TestPacketString serverReceivedPacket = packetsByType.peek(TestPacketString.class);
@@ -161,7 +161,7 @@ public class NetworkModuleTest {
         assertThat("server received packet did not match that sendt from client",
                 serverReceivedPacket, both(equalTo(packetFromClient)).and(not(sameInstance(packetFromClient))));
 
-
+        // Send from server to client
         TestPacketInt packetFromServer = new TestPacketInt(10);
 
         serverModule.sendPacketAll(packetFromServer);

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.PacketsQueueByHost;
+import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_game.game_server.NetworkGameServer;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
@@ -41,12 +42,12 @@ public class NetworkServerModule extends Module {
         return server;
     }
 
-    public PacketsQueueByHost peekPacketsForHost(GameHost host) {
+    public PacketsQueueByType peekPacketsForHost(GameHost host) {
         return server.peekPacketsForHost(host);
     }
 
-    public PacketsQueueByHost peekPacketsOfType(GameHost host) {
-        return server.peekPacketsForHost(host);
+    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
+        return server.peekPacketsOfType(type);
     }
 
     public void sendPacketAll(NetworkPacket packet) {

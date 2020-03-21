@@ -14,7 +14,7 @@ import sol_engine.network.network_game.game_server.NetworkGameServer;
 import sol_engine.network.network_game.game_server.GameServerConfig;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
 import sol_engine.network.network_game.game_server.TeamPlayerHosts;
-import sol_engine.network.test_utils.TestUtils;
+import sol_engine.network.network_test_utils.TestUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;

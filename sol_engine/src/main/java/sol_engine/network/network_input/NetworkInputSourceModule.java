@@ -4,8 +4,8 @@ import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.input_module.InputSourceModule;
+import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_sol_module.NetworkServerModule;
-import sol_engine.network.network_game.GameHost;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -66,15 +66,15 @@ public class NetworkInputSourceModule extends InputSourceModule {
     @Override
     public void onUpdate() {
         NetworkServerModule serverModule = getModule(NetworkServerModule.class);
-        Map<GameHost, ? extends Deque<? extends NetInputPacket>> hostPackets = serverModule.peekPacketsOfType(packetType);
+        PacketsQueueByHost<? extends NetInputPacket> hostPackets = serverModule.peekPacketsOfType(packetType);
         hostPackets.forEach((host, packets) -> {
-            NetInputPacket packet = packets.peekFirst();
-            parseAndPutInputsFromPacket(packet, host);
+            NetInputPacket packet = packets.peek();
+            parseAndPutInputsFromPacket(packet, host.teamIndex, host.playerIndex);
         });
     }
 
-    private void parseAndPutInputsFromPacket(final NetInputPacket packet, GameHost host) {
-        final String inputGroup = "t" + host.teamIndex + "p" + host.teamPlayerIndex;
+    private void parseAndPutInputsFromPacket(final NetInputPacket packet, int teamIndex, int playerIndex) {
+        final String inputGroup = "t" + teamIndex + "p" + playerIndex;
         final String inputGroupPrefix = inputGroup + ":";
 
         inputPacketFieldsByName.forEach((fieldName, field) -> {

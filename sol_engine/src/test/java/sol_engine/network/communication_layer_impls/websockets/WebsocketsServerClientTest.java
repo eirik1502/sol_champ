@@ -7,8 +7,8 @@ import org.junit.Test;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.communication_layer.Host;
 import sol_engine.network.network_utils.NetworkUtils;
-import sol_engine.network.test_utils.TestPacketString;
-import sol_engine.network.test_utils.TestUtils;
+import sol_engine.network.network_test_utils.TestPacketString;
+import sol_engine.network.network_test_utils.TestUtils;
 
 import java.net.*;
 import java.util.Set;

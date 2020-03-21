@@ -40,7 +40,7 @@ public class PacketsQueueByType {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends NetworkPacket> Deque<T> peekAllPacketsOfType(Class<T> type) {
+    public <T extends NetworkPacket> Deque<T> peekAll(Class<T> type) {
         return (Deque<T>) new ArrayDeque<>(queueByType.get(type));
     }
 
