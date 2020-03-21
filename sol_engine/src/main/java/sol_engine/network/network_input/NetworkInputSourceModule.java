@@ -4,6 +4,7 @@ import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.input_module.InputSourceModule;
+import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_sol_module.NetworkServerModule;
 
@@ -66,7 +67,10 @@ public class NetworkInputSourceModule extends InputSourceModule {
     @Override
     public void onUpdate() {
         NetworkServerModule serverModule = getModule(NetworkServerModule.class);
-        PacketsQueueByHost<? extends NetInputPacket> hostPackets = serverModule.peekPacketsOfType(packetType);
+
+        Map<GameHost, ? extends Deque<? extends NetInputPacket>> hostPackets
+                = serverModule.getCurrentPacketsOfType(packetType);
+
         hostPackets.forEach((host, packets) -> {
             NetInputPacket packet = packets.peek();
             parseAndPutInputsFromPacket(packet, host.teamIndex, host.playerIndex);

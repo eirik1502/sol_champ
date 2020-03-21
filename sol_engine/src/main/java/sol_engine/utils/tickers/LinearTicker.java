@@ -64,9 +64,6 @@ public class LinearTicker implements Ticker {
                 timeSinceUpdate = 0;
                 iterationsBetweenUpdate = 0;
 
-//                if (deltaTime > tickTime) {
-//                    deltaTime = 0;
-//                }
             } else {
                 ++iterationsBetweenUpdate;
 

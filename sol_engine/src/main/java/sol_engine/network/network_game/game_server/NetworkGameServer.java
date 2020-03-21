@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import sol_engine.network.communication_layer.Host;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_game.GameHost;
+import sol_engine.network.network_game.PacketsQueue;
 import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_utils.NetworkUtils;
@@ -63,6 +64,10 @@ public class NetworkGameServer {
 
     public boolean waitForAllPlayerConnections() {
         while (!hostsManager.getTeamPlayerHosts().allPlayersPresent()) {
+            if (server == null) {
+                logger.info("Server stopped while waiting for all connections");
+                return false;
+            }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -89,18 +94,29 @@ public class NetworkGameServer {
         return hostsManager.getAllConnectedHosts();
     }
 
-
-    public PacketsQueueByType peekPacketsForHost(GameHost host) {
-        return hostsManager.peekPacketsForHost(host);
+    public PacketsQueue peekInputPacketsQueue() {
+        return hostsManager.peekInputPacketQueue();
     }
 
-    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
-        return hostsManager.peekPacketsOfType(type);
+    public PacketsQueue popInputPacketsQueue() {
+        return hostsManager.popInputPacketQueue();
     }
 
-    public void clearAllPackets() {
-
-    }
+//    public PacketsQueueByType peekPacketsForHost(GameHost host) {
+//        return hostsManager.peekPacketsForHost(host);
+//    }
+//
+//    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
+//        return hostsManager.peekPacketsOfType(type);
+//    }
+//
+//    public PacketsQueueByType pollPacketsForHost(GameHost host) {
+//        return hostsManager.pollPacketsForHost(host);
+//    }
+//
+//    public <T extends NetworkPacket> PacketsQueueByHost<T> pollPacketsOfType(Class<T> type) {
+//        return hostsManager.pollPacketsOfType(type);
+//    }
 
     public void sendPacketAll(NetworkPacket packet) {
         server.sendPacketAll(packet);
@@ -122,6 +138,7 @@ public class NetworkGameServer {
     public void stop() {
         if (server != null) {
             server.stop();
+            server = null;
         }
     }
 

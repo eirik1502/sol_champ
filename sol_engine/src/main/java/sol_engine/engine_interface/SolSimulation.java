@@ -60,37 +60,51 @@ public abstract class SolSimulation {
     public final void start() {
         if (!isSetup) {
             logger.error("Must call setup() before start()");
-            return;
+        } else {
+            logger.info("Starting");
+            modulesHandler.internalStart();
+            onStart();
         }
-        modulesHandler.internalStart();
-        onStart();
     }
 
     public final void terminate() {
-        if (terminated) return;
-
-        terminated = true;
-        onEnd();
-        modulesHandler.internalEnd();
+        if (!terminated) {
+            terminated = true;
+            logger.info("terminating");
+            onEnd();
+            modulesHandler.internalEnd();
+        } else {
+            logger.warn("terminated called, but already terminating");
+        }
     }
 
     public final void step() {
+        if (terminated) {
+            logger.warn("calling step() after termination");
+            return;
+        }
+
         onStepStart();
 
         world.update();
         modulesHandler.internalUpdate();
+
+        onStepEnd();
+
         if (modulesHandler.isSimulationShouldTerminate()) {
             terminate();
         }
+    }
 
-        onStepEnd();
+    public ModulesHandler getModulesHandler() {
+        return modulesHandler;
     }
 
     public boolean isTerminated() {
         return terminated;
     }
 
-    public World getGameState() {
+    public World getWorld() {
         return world;
     }
 

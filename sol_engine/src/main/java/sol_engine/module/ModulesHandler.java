@@ -20,7 +20,7 @@ public class ModulesHandler {
 
     public void internalSetup() {
         stream().forEach(module -> {
-            logger.info("Setting up module. Type: " + module.getClass().getSimpleName() + ", module: " + module);
+            logger.info("Setting up module: " + module.getClass().getSimpleName() + ", object: " + module);
             module.internalSetup(this);
         });
         new HashSet<>(modules.values()).stream()
@@ -30,7 +30,10 @@ public class ModulesHandler {
     }
 
     public void internalStart() {
-        stream().forEach(Module::internalStart);
+        stream().forEach(module -> {
+            logger.info("Starting module: " + module.getClass().getSimpleName() + ", object: " + module);
+            module.internalStart();
+        });
     }
 
     public void internalUpdate() {
@@ -43,7 +46,10 @@ public class ModulesHandler {
     }
 
     public void internalEnd() {
-        stream().forEach(m -> m.internalEnd());
+        stream().forEach(module -> {
+            logger.info("Ending module: " + module.getClass().getSimpleName() + ", object: " + module);
+            module.internalEnd();
+        });
     }
 
     public void addModule(Module module) {
@@ -55,11 +61,13 @@ public class ModulesHandler {
     }
 
     public void removeModule(Module module) {
-        removeModule(module.getClass());
+        logger.info("Ending and removing module: " + module.getClass().getSimpleName() + ", object: " + module);
+        module.internalEnd();
+        this.modules.remove(module.getClass());
     }
 
     private void removeModule(Class<? extends Module> moduleType) {
-        this.modules.remove(moduleType);
+        removeModule(this.modules.get(moduleType));
     }
 
     @SuppressWarnings("unchecked")

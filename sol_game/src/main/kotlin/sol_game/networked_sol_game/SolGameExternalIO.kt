@@ -1,8 +1,8 @@
-package sol_game.core_game_wrappers
+package sol_game.networked_sol_game
 
 import sol_engine.core.TransformComp
 import sol_engine.input_module.ExternalInputSourceModule
-import sol_game.core_game.CharacterTeamsConfig
+import sol_game.core_game.CharacterConfig
 import sol_game.core_game.SolGameSimulationServer
 import sol_game.core_game.components.CharacterComp
 
@@ -10,8 +10,12 @@ class SolGameExternalIO(
         val pollPlayersInput: () -> PlayersInput,
         val pushGameState: (gameState: GameState) -> Unit,
         private val headless: Boolean = false,
-        private val debugMode: Boolean = false
-) : SolGameSimulationServer(CharacterTeamsConfig(), headless = false, debugMode = debugMode) {
+        private val debugUI: Boolean = false
+) : SolGameSimulationServer(
+        listOf(CharacterConfig(), CharacterConfig()),
+        headless = headless,
+        debugUI = debugUI
+) {
 
 
     override fun onStepStart() {

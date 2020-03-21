@@ -173,6 +173,9 @@ public class NetworkWebsocketsServer implements NetworkServer {
             } catch (InterruptedException e) {
                 logger.warn("Exception occured while stopping WebSocket server: " + e);
             }
+            wsServer = null;
+        } else {
+            logger.warn("Stopped before started. Nothing happens");
         }
     }
 

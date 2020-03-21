@@ -30,8 +30,12 @@ public class PacketsQueueByType {
         queueByType.computeIfAbsent(packet.getClass(), key -> new ArrayDeque<>()).add(packet);
     }
 
-    public void clear() {
+    public void clearAll() {
         queueByType.clear();
+    }
+
+    public void clear(Class<? extends NetworkPacket> type) {
+        queueByType.get(type).clear();
     }
 
     @SuppressWarnings("unchecked")

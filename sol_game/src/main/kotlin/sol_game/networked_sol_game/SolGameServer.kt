@@ -1,9 +1,8 @@
-package sol_game.sol_game_server
+package sol_game.networked_sol_game
 
 import mu.KotlinLogging
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.utils.Repeat
-import sol_game.core_game_wrappers.SolGameExternalIO
 import java.util.*
 
 

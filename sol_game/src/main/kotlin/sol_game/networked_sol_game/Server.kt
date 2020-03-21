@@ -1,4 +1,4 @@
-package sol_game.sol_game_server
+package sol_game.networked_sol_game
 
 import com.fasterxml.jackson.module.kotlin.*
 import mu.KotlinLogging
@@ -9,9 +9,6 @@ import org.java_websocket.framing.CloseFrame
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.handshake.ServerHandshakeBuilder
 import org.java_websocket.server.WebSocketServer
-import sol_game.core_game_wrappers.GameState
-import sol_game.core_game_wrappers.PlayerInput
-import sol_game.core_game_wrappers.PlayersInput
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.util.*

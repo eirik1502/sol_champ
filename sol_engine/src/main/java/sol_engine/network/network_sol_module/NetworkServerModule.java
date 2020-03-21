@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
 import sol_engine.network.network_game.GameHost;
+import sol_engine.network.network_game.PacketsQueue;
 import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_game.game_server.NetworkGameServer;
@@ -19,6 +20,9 @@ public class NetworkServerModule extends Module {
     private ServerConnectionData connectionData = null;
 
     private NetworkGameServer server;
+
+    private PacketsQueue currentPackets = new PacketsQueue();
+
 
     public NetworkServerModule(NetworkServerModuleConfig config) {
         this.config = config;
@@ -42,12 +46,12 @@ public class NetworkServerModule extends Module {
         return server;
     }
 
-    public PacketsQueueByType peekPacketsForHost(GameHost host) {
-        return server.peekPacketsForHost(host);
+    public Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> getCurrentPacketsForHost(GameHost host) {
+        return currentPackets.peekForHost(host);
     }
 
-    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
-        return server.peekPacketsOfType(type);
+    public <T extends NetworkPacket> Map<GameHost, Deque<T>> getCurrentPacketsOfType(Class<T> type) {
+        return currentPackets.peekOfType(type);
     }
 
     public void sendPacketAll(NetworkPacket packet) {
@@ -92,6 +96,7 @@ public class NetworkServerModule extends Module {
 
     @Override
     public void onUpdate() {
-        server.clearAllPackets();
+        currentPackets.clear();
+        currentPackets.addAll(server.popInputPacketsQueue());
     }
 }

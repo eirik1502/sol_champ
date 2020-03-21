@@ -1,4 +1,4 @@
-package sol_game.sol_game_server
+package sol_game.networked_sol_game
 
 data class SolGameServerConfig(
         val playerCount: Int,

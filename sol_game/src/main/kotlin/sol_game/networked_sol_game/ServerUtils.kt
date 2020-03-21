@@ -1,4 +1,4 @@
-package sol_game.sol_game_server
+package sol_game.networked_sol_game
 
 import java.io.IOException
 import java.net.ServerSocket

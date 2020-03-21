@@ -10,6 +10,7 @@ import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
 import sol_engine.input_module.*
+import sol_engine.network.network_game.game_server.GameServerConfig
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_engine.network.network_sol_module.NetworkServerModuleConfig
 import sol_engine.network.network_input.NetworkInputSourceModule
@@ -19,41 +20,41 @@ import sol_game.core_game.components.*
 import sol_game.core_game.systems.*
 
 open class SolGameSimulationServer(
-        private val characterTeamsConfig: CharacterTeamsConfig,
-        private val port: Int = 7779,
-//        private val controlPlayerIndex: Int = 0,
+        private val charactersConfigs: List<CharacterConfig>,
+        private val requestPort: Int = -1,
+        private val allowObservers: Boolean = true,
         private val headless: Boolean = false,
-//        private val useGraphicsInput: Boolean = false,
-        private val debugMode: Boolean = false
+        private val debugUI: Boolean = false
 ) : SolSimulation() {
 
     init {
-//        if (useGraphicsInput && headless) {
-//            throw IllegalStateException("Cannot use headless mode with graphical inputs")
-//        }
-        if (debugMode && headless) {
-            throw IllegalStateException("cannot run in debug mode while headless")
+        if (charactersConfigs.size != 2) {
+            throw IllegalArgumentException("Two character configs must be given")
         }
     }
 
     override fun onSetupModules() {
         if (!headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
-                    WindowConfig(0.5f, 0.5f, "sol game", true),
+                    WindowConfig(0.5f, 0.5f, "sol server", true),
                     RenderConfig(800f, 450f, 1600f, 900f)
             )))
         }
         addModule(NetworkServerModule(NetworkServerModuleConfig(
-                true,
-                port,
-                "localhost",
+                GameServerConfig(
+                        requestPort,
+                        listOf(1, 1),
+                        allowObservers
+                ),
                 listOf(),
-                listOf()
+                false
         )))
         addModule(NetworkInputSourceModule(NetworkInputSourceModuleConfig(
                 SolInputPacket::class.java
         )))
-        addModule(InputModule(InputModuleConfig(NetworkInputSourceModule::class.java)))
+        addModule(InputModule(InputModuleConfig(
+                NetworkInputSourceModule::class.java
+        )))
     }
 
     override fun onSetupWorld() {
@@ -77,7 +78,7 @@ open class SolGameSimulationServer(
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
-                if (debugMode) CreatorSystem::class.java else null,
+                if (!headless && debugUI) CreatorSystem::class.java else null,
                 SolGuiSystem::class.java,
 
                 RenderSystem::class.java
@@ -95,7 +96,7 @@ open class SolGameSimulationServer(
 
         createCharacterClass()
 
-        instanciatePlayer(0);
+        instanciatePlayer(0, 0);
 
         world.instanciateEntityClass("character", "opponent")
                 .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(500f, 500f) }
@@ -152,9 +153,9 @@ open class SolGameSimulationServer(
         )
     }
 
-    fun instanciatePlayer(playerIndex: Int) {
+    fun instanciatePlayer(teamIndex: Int, playerIndex: Int) {
         val playerName = "player$playerIndex"
-        val inputGroup = playerName
+        val inputGroup = "t${teamIndex}p$playerIndex"
         world.instanciateEntityClass("character", playerName)
                 .addComponent(InputComp(
                         inputGroup,

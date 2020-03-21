@@ -1,13 +1,16 @@
 package sol_engine.engine_interface;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.utils.tickers.Ticker;
 
 // Don't use this class yet
 // TODO: clean this up, should extends SimulationLoop?
 
-public class ThreadedSimulationLoop extends Thread {
+public class ThreadedSimulationLoop {
+    private final Logger logger = LoggerFactory.getLogger(ThreadedSimulationLoop.class);
 
-
+    private Thread thread;
     private SimulationLoop simulationLoop;
 
 
@@ -27,13 +30,33 @@ public class ThreadedSimulationLoop extends Thread {
         simulationLoop = new SimulationLoop(simulation, stepTicker);
     }
 
-    @Override
-    public void run() {
-        super.run();
-        simulationLoop.start();
+    public void start() {
+        thread = new Thread(() -> {
+            simulationLoop.start();
+        }, "SimulationLoop");
+        thread.start();
+    }
+
+    public void startAndWaitUntilFinished() {
+        start();
+        waitUntilFinished();
+    }
+
+    public void waitUntilFinished() {
+        if (thread != null) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while waiting for simulation to finish");
+                e.printStackTrace();
+            }
+        } else {
+            logger.warn("Trying to wait for simulation before it is started");
+        }
     }
 
     public void terminate() {
-        simulationLoop.terminate();
+        simulationLoop.terminate();  // should make the thread stop
+        waitUntilFinished();
     }
 }

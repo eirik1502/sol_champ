@@ -1,4 +1,4 @@
-package sol_game.core_game_wrappers
+package sol_game.networked_sol_game
 
 data class PlayerInput(
         val moveLeft: Boolean = false,
