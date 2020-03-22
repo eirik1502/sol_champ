@@ -1,5 +1,6 @@
 package sol_game.core_game
 
+import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.creator.CreatorSystem
 import sol_engine.ecs.EntityClass
@@ -10,12 +11,14 @@ import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
 import sol_engine.input_module.*
+import sol_engine.network.network_ecs.NetworkEcsUtils
 import sol_engine.network.network_game.game_server.GameServerConfig
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_engine.network.network_sol_module.NetworkServerModuleConfig
 import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.physics_module.*
+import sol_engine.utils.collections.Pair
 import sol_game.core_game.components.*
 import sol_game.core_game.systems.*
 
@@ -24,7 +27,8 @@ open class SolGameSimulationServer(
         private val requestPort: Int = -1,
         private val allowObservers: Boolean = true,
         private val headless: Boolean = false,
-        private val debugUI: Boolean = false
+        private val debugUI: Boolean = false,
+        private val allowGui: Boolean
 ) : SolSimulation() {
 
     init {
@@ -77,26 +81,35 @@ open class SolGameSimulationServer(
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
-                if (!headless && debugUI) CreatorSystem::class.java else null,
-                SolGuiSystem::class.java,
+                if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
+                if (allowGui) SolGuiSystem::class.java else null,
 
                 RenderSystem::class.java
         )
 
+        createWalls(world)
+
         charactersConfigs
-                .flatMap { createCharacterEntityClass(it) }
+                .flatMap { createCharacterEntityClass(true, it) }
                 .forEach { world.addEntityClass(it) }
 
-        instanciateCharacter(
+        NetworkEcsUtils.createAddNetServerHostSpawner(
                 world,
-                charactersConfigs[0].name,
-                0,
-                0,
-                200f,
-                300f
+                listOf(
+                        listOf(Pair(charactersConfigs[0].name, Vector2f(200f, 200f))),
+                        listOf(Pair(charactersConfigs[0].name, Vector2f(700f, 1400f)))
+                )
         )
 
-        createWalls(world)
+//        instanciateCharacter(
+//                true,
+//                world,
+//                charactersConfigs[0].name,
+//                0,
+//                0,
+//                200f,
+//                300f
+//        )
     }
 
 

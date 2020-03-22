@@ -14,34 +14,36 @@ class SolGameServer(
         requestPort: Int = DEFAULT_PORT,
         allowObservers: Boolean = true,
         headless: Boolean = false,
-        debugUI: Boolean = false  // cannot be set in headless mode
+        debugUI: Boolean = false,  // cannot be set in headless mode
+        // gui is not supported when running multiple instances of SolGameServer / Client on multiple threads
+        allowGui: Boolean = true
 ) {
-
-    private var threadedLoop: ThreadedSimulationLoop? = null
 
     private val serverSim: SolGameSimulationServer = SolGameSimulationServer(
             charactersConfigs,
             requestPort,
             allowObservers,
             headless,
-            debugUI
+            debugUI,
+            allowGui
     )
 
+    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(serverSim);
+
     fun setup(): ServerConnectionData {
-        serverSim.setup();
+        threadedLoop.setup();
         return serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
     }
 
     fun start() {
-        threadedLoop = ThreadedSimulationLoop(serverSim)
-        threadedLoop?.start()
+        threadedLoop.start()
     }
 
     fun waitUntilFinished() {
-        threadedLoop?.waitUntilFinished()
+        threadedLoop.waitUntilFinished()
     }
 
     fun terminate() {
-        threadedLoop?.terminate()
+        threadedLoop.terminate()
     }
 }

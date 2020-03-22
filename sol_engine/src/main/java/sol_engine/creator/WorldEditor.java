@@ -9,7 +9,7 @@ import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.World;
 import sol_engine.graphics_module.GraphicsModule;
-import sol_engine.graphics_module.imgui.*;
+import sol_engine.graphics_module.gui.imgui.*;
 import sol_engine.utils.stream.WithIndex;
 
 import java.lang.reflect.Field;

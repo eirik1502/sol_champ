@@ -1,4 +1,4 @@
-package sol_engine.graphics_module.imgui;
+package sol_engine.graphics_module.gui.imgui;
 
 import imgui.internal.ItemFlag;
 

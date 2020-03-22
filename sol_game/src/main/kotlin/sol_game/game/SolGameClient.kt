@@ -1,11 +1,7 @@
 package sol_game.game
 
 import sol_engine.engine_interface.ThreadedSimulationLoop
-import sol_engine.network.network_game.game_server.ServerConnectionData
-import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_game.core_game.SolGameSimulationClient
-import sol_game.core_game.SolGameSimulationServer
-import kotlin.reflect.KClass
 
 
 class SolGameClient(
@@ -14,12 +10,11 @@ class SolGameClient(
         gameId: String,
         connectionKey: String,
         isObserver: Boolean,
-        player: SolPlayer? = null,
+        player: SolClientPlayer? = null,
         headless: Boolean = false,
-        debugUI: Boolean = false  // cannot be set in headless mode
+        debugUI: Boolean = false,  // cannot be set in headless mode
+        allowGui: Boolean = true
 ) {
-
-    private var threadedLoop: ThreadedSimulationLoop? = null
 
     private val clientSim: SolGameSimulationClient = SolGameSimulationClient(
             connectAddress,
@@ -29,23 +24,25 @@ class SolGameClient(
             isObserver,
             player,
             headless,
-            debugUI
+            debugUI,
+            allowGui
     )
 
+    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(clientSim)
+
     fun setup() {
-        clientSim.setup();
+        threadedLoop.setup();
     }
 
     fun start() {
-        threadedLoop = ThreadedSimulationLoop(clientSim)
-        threadedLoop?.start()
+        threadedLoop.start()
     }
 
     fun waitUntilFinished() {
-        threadedLoop?.waitUntilFinished()
+        threadedLoop.waitUntilFinished()
     }
 
     fun terminate() {
-        threadedLoop?.terminate()
+        threadedLoop.terminate()
     }
 }

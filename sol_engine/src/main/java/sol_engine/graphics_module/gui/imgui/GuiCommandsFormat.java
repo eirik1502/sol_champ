@@ -1,9 +1,9 @@
-package sol_engine.graphics_module.imgui;
+package sol_engine.graphics_module.gui.imgui;
 
 import imgui.ImGui;
 import org.joml.Vector2f;
 
-import static sol_engine.graphics_module.imgui.GuiCommandsUtils.*;
+import static sol_engine.graphics_module.gui.imgui.GuiCommandsUtils.*;
 
 public class GuiCommandsFormat {
 

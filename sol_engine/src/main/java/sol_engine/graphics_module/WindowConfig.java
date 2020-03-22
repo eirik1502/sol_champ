@@ -14,8 +14,4 @@ public class WindowConfig {
         this.title = title;
         this.vsync = vsync;
     }
-
-    public WindowConfig(float relWidth, float relHeight, String title) {
-        this(relWidth, relHeight, title, true);
-    }
 }

@@ -7,6 +7,7 @@ import sol_engine.input_module.InputSourceModule;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.PacketsQueueByHost;
 import sol_engine.network.network_sol_module.NetworkServerModule;
+import sol_engine.utils.ClassUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -25,7 +26,8 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
     public NetworkInputSourceModule(NetworkInputSourceModuleConfig config) {
         this.packetType = config.inputPacketType;
-        inputPacketFieldsByName = Arrays.stream(packetType.getFields())
+        inputPacketFieldsByName = Arrays.stream(packetType.getDeclaredFields())
+                .peek(field -> field.setAccessible(true))  // in case fields are private, like kotlin classes
                 .collect(Collectors.toMap(
                         Field::getName,
                         Function.identity()
@@ -94,6 +96,7 @@ public class NetworkInputSourceModule extends InputSourceModule {
                             "Name: " + fieldName + " type: " + fieldType);
                 }
             } catch (IllegalAccessException e) {
+                logger.warn("Could not parse field: " + fieldName + ", because: " + e);
             }
         });
     }

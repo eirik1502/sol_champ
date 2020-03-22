@@ -22,10 +22,12 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
     private ServerConnectionData connectionData;
 
     private Map<Host, GameHost> unopenedAcceptedHosts = new HashMap<>();  // hosts passed handshake but not yet opened
+
     private Map<Host, GameHost> openHosts = new HashMap<>();  // all open hosts
     private TeamPlayerHosts teamPlayerHosts;  // open player hosts
     private Set<GameHost> observerHosts = new HashSet<>();  // open observer hosts
 
+    private Deque<GameHost> newConnectedHosts = new ArrayDeque<>();  // newly connected hosts to be retrieved
     private PacketsQueue inputPacketQueue = new PacketsQueue();
 
 
@@ -50,6 +52,27 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         } else {
             logger.warn("Got a packet from a non-open host: " + host);
         }
+    }
+
+    public Host getOpenHost(GameHost ghost) {
+        return openHosts.entrySet().stream()
+                .filter(entry -> entry.getValue() == ghost)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseGet(() -> {
+                    logger.warn("Trying to get a Host from a GameHost that is not an open host: " + ghost);
+                    return null;
+                });
+    }
+
+    public Deque<GameHost> peekNewConnectedHosts() {
+        return new ArrayDeque<>(newConnectedHosts);
+    }
+
+    public Deque<GameHost> popNewConnectedHosts() {
+        Deque<GameHost> holdNewConnections = peekNewConnectedHosts();
+        newConnectedHosts.clear();
+        return holdNewConnections;
     }
 
     public PacketsQueue peekInputPacketQueue() {
@@ -139,6 +162,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
             }
         }
         openHosts.put(host, gameHost);
+        newConnectedHosts.add(gameHost);  // add as new connection to be retrieved
         return true;
     }
 

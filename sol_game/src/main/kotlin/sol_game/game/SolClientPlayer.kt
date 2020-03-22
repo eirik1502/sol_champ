@@ -4,26 +4,28 @@ import sol_engine.ecs.World
 import sol_engine.module.ModulesHandler
 import sol_engine.network.network_input.NetInputPacket
 import sol_game.core_game.NetGameState
+import sol_game.core_game.SolInputPacket
 
-interface SolPlayer {
+interface SolClientPlayer {
+
+    fun onSetup()
 
     fun onStart(
             world: World,
-            modules: ModulesHandler,
             teamIndex: Int,
             playerIndex: Int
     )
 
     fun onUpdate(
             world: World,
-            modules: ModulesHandler,
             netGameState: NetGameState
-    ): NetInputPacket
+    ): SolInputPacket
 
     fun onEnd(
             world: World,
-            modules: ModulesHandler,
-            winnerTeamIndex: Int
+            won: Boolean,
+            winnerTeamIndex: Int,
+            winnerPlayerIndex: Int
     )
 
 }

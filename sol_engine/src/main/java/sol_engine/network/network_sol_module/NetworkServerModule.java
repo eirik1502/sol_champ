@@ -22,6 +22,7 @@ public class NetworkServerModule extends Module {
     private NetworkGameServer server;
 
     private PacketsQueue currentPackets = new PacketsQueue();
+    private Set<GameHost> currentNewConnections = new HashSet<>();
 
 
     public NetworkServerModule(NetworkServerModuleConfig config) {
@@ -46,6 +47,10 @@ public class NetworkServerModule extends Module {
         return server;
     }
 
+    public Set<GameHost> getNewConnectedHosts() {
+        return new HashSet<>(currentNewConnections);
+    }
+
     public Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> getCurrentPacketsForHost(GameHost host) {
         return currentPackets.peekForHost(host);
     }
@@ -56,6 +61,14 @@ public class NetworkServerModule extends Module {
 
     public void sendPacketAll(NetworkPacket packet) {
         server.sendPacketAll(packet);
+    }
+
+    public void sendPacket(NetworkPacket packet, List<GameHost> hosts) {
+        server.sendPacket(packet, hosts);
+    }
+
+    public void sendPacket(NetworkPacket packet, GameHost... hosts) {
+        server.sendPacket(packet, hosts);
     }
 
     public boolean isRunning() {
@@ -98,5 +111,8 @@ public class NetworkServerModule extends Module {
     public void onUpdate() {
         currentPackets.clear();
         currentPackets.addAll(server.popInputPacketsQueue());
+
+        currentNewConnections.clear();
+        currentNewConnections.addAll(server.popNewConnections());
     }
 }

@@ -41,9 +41,6 @@ public class Window {
         centerWindow();
 
         createRenderingContext(config.vsync);
-        show();
-        focus();
-
     }
 
     public long getNativeWindowId() {

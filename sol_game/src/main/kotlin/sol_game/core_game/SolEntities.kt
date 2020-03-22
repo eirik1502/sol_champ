@@ -29,7 +29,7 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
                     SceneChildComp()
             )
     val ab = Ability(
-            abConfig.name,
+            abEntityClassName,
             abConfig.rechargeTime,
             abConfig.distanceFromChar,
             abConfig.speed,
@@ -39,7 +39,7 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
     return Pair(abEntityClass, ab)
 }
 
-fun createCharacterEntityClass(config: CharacterConfig): List<EntityClass> {
+fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List<EntityClass> {
     val abAbilities: List<Pair<EntityClass, Ability>> = config.abilities.map { createAbility(config.name, it) }
 
     val characterEntityClass = EntityClass(config.name)
@@ -47,27 +47,36 @@ fun createCharacterEntityClass(config: CharacterConfig): List<EntityClass> {
                     TransformComp(),
                     RenderShapeComp(RenderableShape.CirclePointing(32f, MattMaterial.RED())),
                     PhysicsBodyComp(10f, 0.05f, 0.5f),
-                    MoveByVelocityComp(30f, "moveLeft", "moveRight", "moveUp", "moveDown"),
+                    MoveByVelocityComp(30f, "mvLeft", "mvRight", "mvUp", "mvDown"),
                     AbilityComp(abAbilities.map { it.second }),
                     CollisionComp(PhysicsBodyShape.Circ(32f)),
                     NaturalCollisionResolutionComp(),
                     CharacterComp("ability1", "ability2", "ability3"),
                     FaceCursorComp(),
-                    HurtboxComp(),
-                    InputComp(
-                            setOf("moveLeft", "moveRight", "moveUp", "moveDown", "ability1", "ability2", "ability3"),
-                            setOf("aimX", "aimY"),
-                            setOf("aimXY")
-                    )
+                    HurtboxComp()
             )
+    if (isServer) {
+        characterEntityClass.addBaseComponents(
+                InputComp(
+                        setOf("mvLeft", "mvRight", "mvUp", "mvDown", "ability1", "ability2", "ability3"),
+                        setOf("aimX", "aimY"),
+                        setOf()
+                )
+        )
+    } else {
+
+    }
+
     return abAbilities.map { it.first } + characterEntityClass
 }
 
-fun instanciateCharacter(world: World, name: String, teamIndex: Int, playerIndex: Int, startX: Float, startY: Float) {
+fun instanciateCharacter(isServer: Boolean, world: World, name: String, teamIndex: Int, playerIndex: Int, startX: Float, startY: Float) {
     val inputGroup = "t${teamIndex}p${playerIndex}"
-    world.instanciateEntityClass(name, name)
+    val charEClass = world.instanciateEntityClass(name, name)
             .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(startX, startY) }
-            .modifyComponent(InputComp::class.java) { comp -> comp.inputGroup = inputGroup }
+    if (isServer) {
+        charEClass.modifyComponent(InputComp::class.java) { comp -> comp.inputGroup = inputGroup }
+    }
 }
 
 fun createWalls(world: World) {

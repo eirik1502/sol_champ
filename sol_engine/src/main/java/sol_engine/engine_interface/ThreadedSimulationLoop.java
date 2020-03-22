@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.utils.tickers.Ticker;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+
 // Don't use this class yet
 // TODO: clean this up, should extends SimulationLoop?
 
@@ -13,28 +16,63 @@ public class ThreadedSimulationLoop {
     private Thread thread;
     private SimulationLoop simulationLoop;
 
+    private final Object waitStartLock = new Object();
+    private AtomicBoolean setupComplete = new AtomicBoolean(false);
+
 
     public ThreadedSimulationLoop(SimulationLoop simulationLoop) {
         this.simulationLoop = simulationLoop;
+
+        thread = new Thread(() -> {
+            logger.info("Setup on thread");
+            simulationLoop.setup();
+            logger.info("Setup on thread complete");
+            setupComplete.set(true);
+            synchronized (waitStartLock) {
+                try {
+                    waitStartLock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            logger.info("Starting");
+            simulationLoop.start();
+        }, "SimulationLoop_" + simulationLoop.getSimulation().getClass().getSimpleName());
     }
 
     public ThreadedSimulationLoop(SolSimulation simulation) {
-        simulationLoop = new SimulationLoop(simulation);
+        this(new SimulationLoop(simulation));
     }
 
     public ThreadedSimulationLoop(SolSimulation simulation, float tickFrequency) {
-        simulationLoop = new SimulationLoop(simulation, tickFrequency);
+        this(new SimulationLoop(simulation, tickFrequency));
     }
 
     public ThreadedSimulationLoop(SolSimulation simulation, Ticker stepTicker) {
-        simulationLoop = new SimulationLoop(simulation, stepTicker);
+        this(new SimulationLoop(simulation, stepTicker));
+    }
+
+    public void setup() {
+        setupComplete.set(false);
+        thread.start();
+        while (!setupComplete.get()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        logger.info("Setup outside thread complete");
     }
 
     public void start() {
-        thread = new Thread(() -> {
-            simulationLoop.start();
-        }, "SimulationLoop");
-        thread.start();
+        if (!setupComplete.get()) {
+            logger.error("Setup must be called through this threaded loop before starting");
+        }
+        synchronized (waitStartLock) {
+            waitStartLock.notify();  // notify the thread so it startst the simulation
+        }
     }
 
     public void startAndWaitUntilFinished() {

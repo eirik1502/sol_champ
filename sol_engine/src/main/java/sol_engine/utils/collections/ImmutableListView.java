@@ -13,6 +13,10 @@ public class ImmutableListView<T> implements Iterable<T> {
         this.list = forList;
     }
 
+    public int size() {
+        return list.size();
+    }
+
     @Override
     public Iterator<T> iterator() {
         return list.iterator();

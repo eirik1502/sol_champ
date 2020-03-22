@@ -13,10 +13,9 @@ import sol_engine.network.network_game.game_server.ServerConnectionData;
 import sol_engine.network.network_test_utils.TestPacketInt;
 import sol_engine.network.network_test_utils.TestPacketString;
 import sol_engine.network.network_test_utils.TestUtils;
+import sol_engine.network.packet_handling.NetworkPacket;
 
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertThat;
@@ -152,10 +151,12 @@ public class NetworkModuleTest {
         updateModulesHandlers(serverModulesHandler, client1ModulesHandler);
 
         GameHost serversClientHost = serverModule.getGameServer().getAllConnectedHosts().iterator().next();
-        PacketsQueueByType packetsByType = serverModule.peekPacketsForHost(serversClientHost);
-        assertThat("There are no packets on the server from any hosts", packetsByType.totalPacketCount(), is(1));
+        Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> packetsByType
+                = serverModule.getCurrentPacketsForHost(serversClientHost);
+        int totalPacketCount = (int) packetsByType.values().stream().mapToInt(Collection::size).count();
+        assertThat("There are no packets on the server from any hosts", totalPacketCount, is(1));
 
-        TestPacketString serverReceivedPacket = packetsByType.peek(TestPacketString.class);
+        TestPacketString serverReceivedPacket = (TestPacketString) packetsByType.get(TestPacketString.class).peek();
 
         assertThat("Packet on server is null", serverReceivedPacket, is(notNullValue()));
         assertThat("server received packet did not match that sendt from client",

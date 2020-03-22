@@ -2,7 +2,7 @@ package sol_engine.creator;
 
 import sol_engine.ecs.World;
 import sol_engine.graphics_module.GraphicsModule;
-import sol_engine.graphics_module.imgui.GuiCommands;
+import sol_engine.graphics_module.gui.imgui.GuiCommands;
 
 public interface CreatorFrame {
 

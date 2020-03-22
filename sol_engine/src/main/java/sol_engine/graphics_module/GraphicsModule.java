@@ -23,13 +23,14 @@ public class GraphicsModule extends Module {
 
     @Override
     public void onSetup() {
-
+        window = new Window(config.windowConfig);
+        renderer = new Renderer(config.renderConfig, window.getRenderingContext());
     }
 
     @Override
     public void onStart() {
-        window = new Window(config.windowConfig);
-        renderer = new Renderer(config.renderConfig, window.getRenderingContext());
+        window.show();
+        window.focus();
     }
 
     @Override

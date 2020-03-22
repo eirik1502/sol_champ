@@ -94,6 +94,14 @@ public class NetworkGameServer {
         return hostsManager.getAllConnectedHosts();
     }
 
+    public Deque<GameHost> peekNewConnections() {
+        return hostsManager.peekNewConnectedHosts();
+    }
+
+    public Deque<GameHost> popNewConnections() {
+        return hostsManager.popNewConnectedHosts();
+    }
+
     public PacketsQueue peekInputPacketsQueue() {
         return hostsManager.peekInputPacketQueue();
     }
@@ -122,12 +130,15 @@ public class NetworkGameServer {
         server.sendPacketAll(packet);
     }
 
-    public void sendPacket(NetworkPacket packet, List<Host> hosts) {
-        server.sendPacket(packet, hosts);
+    public void sendPacket(NetworkPacket packet, List<GameHost> hosts) {
+        hosts.stream()
+                .map(ghost -> hostsManager.getOpenHost(ghost))
+                .filter(Objects::nonNull)
+                .forEach(h -> server.sendPacket(packet, h));
     }
 
-    public void sendPacket(NetworkPacket packet, Host... hosts) {
-        server.sendPacket(packet, hosts);
+    public void sendPacket(NetworkPacket packet, GameHost... hosts) {
+        sendPacket(packet, List.of(hosts));
     }
 
 

@@ -14,7 +14,8 @@ class SolGameExternalIO(
 ) : SolGameSimulationServer(
         listOf(CharacterConfig(), CharacterConfig()),
         headless = headless,
-        debugUI = debugUI
+        debugUI = debugUI,
+        allowGui = true
 ) {
 
 

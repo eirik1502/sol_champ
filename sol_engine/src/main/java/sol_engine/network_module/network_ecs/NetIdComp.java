@@ -6,4 +6,7 @@ public class NetIdComp extends Component {
 
     public int id;
 
+    public NetIdComp(int id) {
+        this.id = id;
+    }
 }

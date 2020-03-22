@@ -41,7 +41,7 @@ public class GameHost {
                 ", connectionKey='" + connectionKey + '\'' +
                 ", isObserver=" + isObserver +
                 ", teamIndex=" + teamIndex +
-                ", teamPlayerIndex=" + playerIndex +
+                ", playerIndex=" + playerIndex +
                 '}';
     }
 }

@@ -29,6 +29,11 @@ public class SimulationLoop {
         this.ticker = stepTicker;
     }
 
+    public void setup() {
+        logger.info("setting up");
+        simulation.setup();
+    }
+
     public void start() {
         logger.info("starting");
         simulation.start();
@@ -53,5 +58,9 @@ public class SimulationLoop {
 
     public void terminate() {
         shouldTerminate = true;
+    }
+
+    public SolSimulation getSimulation() {
+        return simulation;
     }
 }

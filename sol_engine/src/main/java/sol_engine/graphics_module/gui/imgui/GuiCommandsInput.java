@@ -1,11 +1,11 @@
-package sol_engine.graphics_module.imgui;
+package sol_engine.graphics_module.gui.imgui;
 
 import imgui.ImGui;
 import sol_engine.utils.mutable_primitives.MFloat;
 import sol_engine.utils.mutable_primitives.MInt;
 import sol_engine.utils.mutable_primitives.MString;
 
-import static sol_engine.graphics_module.imgui.GuiCommandsUtils.*;
+import static sol_engine.graphics_module.gui.imgui.GuiCommandsUtils.*;
 
 public class GuiCommandsInput {
 

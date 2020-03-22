@@ -27,7 +27,7 @@ class SolGuiSystem : ModuleSystemBase() {
         val i = MInt(0)
         forEachWithComponents(HurtboxComp::class.java, TransformComp::class.java)
         { entity, hurtboxComp, transComp ->
-            graphicsMod.renderer.gui.draw { imgui ->
+            graphicsMod.renderer.guiRenderer.draw { imgui ->
                 val posWindowSpace = posToWindowSize(transComp.position)
                 val x: Float =
                         if (i.value++ % 2 == 0) 3f

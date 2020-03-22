@@ -1,4 +1,4 @@
-package sol_engine.graphics_module.imgui;
+package sol_engine.graphics_module.gui.imgui;
 
 import imgui.ImGui;
 import org.joml.Vector2f;
@@ -6,7 +6,7 @@ import sol_engine.utils.collections.ArrayUtils;
 
 import java.util.List;
 
-import static sol_engine.graphics_module.imgui.GuiCommandsUtils.convertVector2;
+import static sol_engine.graphics_module.gui.imgui.GuiCommandsUtils.convertVector2;
 
 public class GuiCommandsChart {
 

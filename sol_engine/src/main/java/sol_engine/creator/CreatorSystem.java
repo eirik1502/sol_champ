@@ -59,7 +59,7 @@ public class CreatorSystem extends ModuleSystemBase {
     protected void onUpdate() {
         GraphicsModule graphics = getModule(GraphicsModule.class);
 
-        graphics.getRenderer().getGui().draw(gui -> {
+        graphics.getRenderer().getGuiRenderer().draw(gui -> {
             if (gui.menu.beginMainMenuBar()) {
                 creatorFramesEntries.forEach(entry -> {
                     gui.getNative().pushStyleColor(Col.Text, entry.active.value

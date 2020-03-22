@@ -1,10 +1,10 @@
-package sol_engine.graphics_module.imgui;
+package sol_engine.graphics_module.gui.imgui;
 
 import imgui.ImGui;
 import sol_engine.utils.mutable_primitives.MBoolean;
 
-import static sol_engine.graphics_module.imgui.GuiCommandsUtils.withConvertedBoolean;
-import static sol_engine.graphics_module.imgui.GuiCommandsUtils.withConvertedMBoolean;
+import static sol_engine.graphics_module.gui.imgui.GuiCommandsUtils.withConvertedBoolean;
+import static sol_engine.graphics_module.gui.imgui.GuiCommandsUtils.withConvertedMBoolean;
 
 public class GuiCommandsMenu {
 

@@ -6,7 +6,7 @@ import sol_engine.graphics_module.FrameBuffer;
 import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.RenderingContext;
 import sol_engine.graphics_module.graphical_objects.Renderable;
-import sol_engine.graphics_module.imgui.Gui;
+import sol_engine.graphics_module.gui.imgui.GuiRenderer;
 import sol_engine.graphics_module.materials.Material;
 import sol_engine.graphics_module.shaders.ColorShader;
 import sol_engine.graphics_module.shaders.MVPShader;
@@ -43,7 +43,7 @@ public class Renderer {
 
     private RenderingContext context;
     private FrameBuffer frameBuffer;
-    private Gui gui;
+    private GuiRenderer guiRenderer;
     private ShaderManager shaderManager;
     private MeshManager meshManager;
 
@@ -56,8 +56,8 @@ public class Renderer {
         this.config = config;
         this.context = context;
 
-        gui = new Gui(context.getWindow());
-        gui.startFrame();
+        guiRenderer = new GuiRenderer(context.getWindow());
+        guiRenderer.startFrame();
 
         shaderManager = new ShaderManager();
         meshManager = new MeshManager();
@@ -67,7 +67,7 @@ public class Renderer {
     }
 
     public void terminate() {
-        gui.terminate();
+        guiRenderer.terminate();
     }
 
     public RenderingContext getContext() {
@@ -82,8 +82,8 @@ public class Renderer {
         toBeRendered.add(new RenderData(renderable, position, rotationZ));
     }
 
-    public Gui getGui() {
-        return gui;
+    public GuiRenderer getGuiRenderer() {
+        return guiRenderer;
     }
 
     public void render() {
@@ -130,13 +130,13 @@ public class Renderer {
             });
         });
 
-        gui.render();
+        guiRenderer.render();
         context.swapBuffers();
 
         toBeRendered.clear();
         time++;
 
 
-        gui.startFrame();
+        guiRenderer.startFrame();
     }
 }

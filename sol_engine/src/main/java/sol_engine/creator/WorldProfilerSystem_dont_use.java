@@ -8,8 +8,8 @@ import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
 import sol_engine.ecs.WorldUpdateListener;
 import sol_engine.graphics_module.GraphicsModule;
-import sol_engine.graphics_module.imgui.GuiCommands;
-import sol_engine.graphics_module.imgui.GuiWindowFlags;
+import sol_engine.graphics_module.gui.imgui.GuiCommands;
+import sol_engine.graphics_module.gui.imgui.GuiWindowFlags;
 import sol_engine.utils.mutable_primitives.MBoolean;
 import sol_engine.utils.stream.WithIndex;
 import sol_engine.utils.tickers.DeltaTimer;
@@ -55,7 +55,7 @@ public class WorldProfilerSystem_dont_use extends ModuleSystemBase implements Wo
     protected void onUpdate() {
         GraphicsModule graphicsModule = getModule(GraphicsModule.class);
 
-        graphicsModule.getRenderer().getGui().draw(cmds -> {
+        graphicsModule.getRenderer().getGuiRenderer().draw(cmds -> {
             if (cmds.begin("Profiler", true,
                     GuiWindowFlags.AlwaysAutoResize, GuiWindowFlags.MenuBar)) {
 
