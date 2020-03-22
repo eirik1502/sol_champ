@@ -49,7 +49,7 @@ public class EntityClass {
         return new ImmutableSetView<>(baseComponents);
     }
 
-
+    // TODO: use overriding classes
     public Entity instanciate(World world, String entityName) {
         Entity e = world.createEntity(entityName);
 

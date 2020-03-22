@@ -4,7 +4,7 @@ import sol_engine.ecs.Component
 import sol_game.core_game.Ability
 
 class AbilityComp(
-        vararg abilities: Ability
+        abilities: List<Ability> = listOf()
 ) : Component() {
 
     var isExecuting: Boolean = false

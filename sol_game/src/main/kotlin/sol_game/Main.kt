@@ -2,22 +2,22 @@
 
 package sol_game
 
-import sol_engine.engine_interface.SimulationLoop
 import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_game.core_game.CharacterConfig
-import sol_game.core_game.SolGameSimulationServer
 import sol_game.game.SolGameServer
 
 fun main(args: Array<String>) {
 
     val server = SolGameServer(
-            charactersConfigs = listOf(CharacterConfig(), CharacterConfig())
+            charactersConfigs = listOf(CharacterConfig(), CharacterConfig()),
+            debugUI = true
     )
     val serverConnectionData: ServerConnectionData = server.setup()
     println("Server connection: $serverConnectionData")
     server.start()
     println("server started")
-    server.terminate()
+    server.waitUntilFinished();
+//    server.terminate()
     println("Terminated")
 
 //    val solServer = SolGameServer()

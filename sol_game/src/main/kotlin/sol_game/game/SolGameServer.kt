@@ -11,7 +11,7 @@ import sol_game.core_game.SolGameSimulationServer
 
 class SolGameServer(
         charactersConfigs: List<CharacterConfig> = listOf(),
-        requestPort: Int = -1,
+        requestPort: Int = DEFAULT_PORT,
         allowObservers: Boolean = true,
         headless: Boolean = false,
         debugUI: Boolean = false  // cannot be set in headless mode
