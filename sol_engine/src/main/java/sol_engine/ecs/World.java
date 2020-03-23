@@ -1,6 +1,8 @@
 package sol_engine.ecs;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.utils.collections.ImmutableListView;
 
 import java.lang.reflect.Constructor;
@@ -9,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class World {
+    private final Logger logger = LoggerFactory.getLogger(World.class);
 
     private static List<Entity> EMPTY_ENTITIES_LIST = new ArrayList<>();
     private static ImmutableListView<Entity> EMPTY_ENTITIES_LIST_VIEW = new ImmutableListView<>(EMPTY_ENTITIES_LIST);
@@ -112,6 +115,12 @@ public class World {
         entitiesScheduledForAdd.add(e);
     }
 
+    public Entity addEntity(String name) {
+        Entity entity = createEntity(name);
+        addEntity(entity);
+        return entity;
+    }
+
     public EntityClass getEntityClass(String name) {
         return entityClasses.get(name);
     }
@@ -138,8 +147,12 @@ public class World {
 
     private void addScheduledEntities() {
         entitiesScheduledForAdd.forEach(entity -> {
-            familyHandler.addEntity(entity);
-            entities.add(entity);
+            if (!entities.contains(entity)) {
+                familyHandler.addEntity(entity);
+                entities.add(entity);
+            } else {
+                logger.warn("Trying to add an entity that is already present. Nothing happens");
+            }
         });
         entitiesScheduledForAdd.clear();
     }

@@ -1,10 +1,8 @@
 package sol_game.game
 
 import sol_engine.ecs.World
-import sol_engine.module.ModulesHandler
-import sol_engine.network.network_input.NetInputPacket
-import sol_game.core_game.NetGameState
-import sol_game.core_game.SolInputPacket
+import sol_game.core_game.SolGameStatePacket
+import sol_game.core_game.SolActionsPacket
 
 interface SolClientPlayer {
 
@@ -18,8 +16,8 @@ interface SolClientPlayer {
 
     fun onUpdate(
             world: World,
-            netGameState: NetGameState
-    ): SolInputPacket
+            solGameStatePacket: SolGameStatePacket
+    ): SolActionsPacket
 
     fun onEnd(
             world: World,

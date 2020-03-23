@@ -5,9 +5,9 @@ import org.joml.Vector2f
 import sol_engine.ecs.World
 import sol_engine.input_module.InputSourceModule
 import sol_engine.network.network_sol_module.NetworkClientModule
-import sol_engine.utils.ClassUtils
-import sol_game.core_game.NetGameState
-import sol_game.core_game.SolInputPacket
+import sol_engine.utils.reflection_utils.ClassUtils
+import sol_game.core_game.SolGameStatePacket
+import sol_game.core_game.SolActionsPacket
 import sol_game.game.SolClientPlayer
 
 data class SolClientPlayerModuleConfig(
@@ -22,7 +22,7 @@ class SolClientPlayerModule(
     private lateinit var player: SolClientPlayer
     private lateinit var world: World
 
-    private var currSolInput: SolInputPacket = SolInputPacket()
+    private var currSolActions: SolActionsPacket = SolActionsPacket()
 
     // Should be called before onStart
     fun setWorld(world: World) {
@@ -48,7 +48,7 @@ class SolClientPlayerModule(
 
     override fun onUpdate() {
         // TODO: retrieve game state
-        currSolInput = player.onUpdate(world, NetGameState())
+        currSolActions = player.onUpdate(world, SolGameStatePacket())
     }
 
     override fun onEnd() {
@@ -63,21 +63,21 @@ class SolClientPlayerModule(
 
     override fun checkAction(label: String?): Boolean {
         return when (label) {
-            "mvLeft" -> currSolInput.mvLeft
-            "mvRight" -> currSolInput.mvRight
-            "mvUp" -> currSolInput.mvUp
-            "mvDown" -> currSolInput.mvDown
-            "ability1" -> currSolInput.ability1
-            "ability2" -> currSolInput.ability2
-            "ability3" -> currSolInput.ability3
+            "mvLeft" -> currSolActions.mvLeft
+            "mvRight" -> currSolActions.mvRight
+            "mvUp" -> currSolActions.mvUp
+            "mvDown" -> currSolActions.mvDown
+            "ability1" -> currSolActions.ability1
+            "ability2" -> currSolActions.ability2
+            "ability3" -> currSolActions.ability3
             else -> false
         }
     }
 
     override fun floatInput(label: String?): Float {
         return when (label) {
-            "aimX" -> currSolInput.aimX
-            "aimY" -> currSolInput.aimY
+            "aimX" -> currSolActions.aimX
+            "aimY" -> currSolActions.aimY
             else -> 0f
         }
     }

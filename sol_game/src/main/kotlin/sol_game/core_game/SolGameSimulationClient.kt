@@ -2,6 +2,7 @@ package sol_game.core_game
 
 import org.joml.Vector2f
 import sol_engine.creator.CreatorSystem
+import sol_engine.ecs.Entity
 import sol_engine.engine_interface.SolSimulation
 import sol_engine.game_utils.CollisionInteractionSystem
 import sol_engine.game_utils.DestroySelfTimedSystem
@@ -9,12 +10,15 @@ import sol_engine.game_utils.EmitterTimedSystem
 import sol_engine.game_utils.MoveByVelocitySystem
 import sol_engine.graphics_module.*
 import sol_engine.input_module.*
+import sol_engine.network.network_ecs.NetEcsUtils
 import sol_engine.network.network_game.game_client.ClientConfig
 import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.network.network_sol_module.NetworkClientModuleConfig
 import sol_engine.physics_module.CollisionSystem
 import sol_engine.physics_module.NaturalCollisionResolutionSystem
 import sol_engine.physics_module.PhysicsSystem
+import sol_game.core_game.components.SolActionsPacketComp
+import sol_game.core_game.components.SolStatePacketComp
 import sol_game.core_game.systems.*
 import sol_game.game.SolClientPlayer
 
@@ -42,16 +46,15 @@ class SolGameSimulationClient(
             addModule(InputGuiSourceModule(InputGuiSourceModuleConfig(
                     Vector2f(1600f, 900f),
                     mapOf(
-                            "moveLeft" to InputConsts.KEY_A,
-                            "moveRight" to InputConsts.KEY_D,
-                            "moveUp" to InputConsts.KEY_W,
-                            "moveDown" to InputConsts.KEY_S,
+                            "mvLeft" to InputConsts.KEY_A,
+                            "mvRight" to InputConsts.KEY_D,
+                            "mvUp" to InputConsts.KEY_W,
+                            "mvDown" to InputConsts.KEY_S,
                             "ability1" to InputConsts.MOUSE_BUTTON_LEFT,
                             "ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
                             "ability3" to InputConsts.KEY_SPACE,
                             "aimX" to InputConsts.CURSOR_X,
-                            "aimY" to InputConsts.CURSOR_Y,
-                            "aimXY" to InputConsts.CURSOR_VEC
+                            "aimY" to InputConsts.CURSOR_Y
                     )
             )))
         }
@@ -69,6 +72,8 @@ class SolGameSimulationClient(
 
     override fun onSetupWorld() {
         world.addSystems(
+                ClientNetworkInputSystem::class.java,  // retrieves game state from server
+
                 MoveByVelocitySystem::class.java,
 
                 FaceCursorSystem::class.java,
@@ -86,56 +91,30 @@ class SolGameSimulationClient(
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
+                // rendering
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
                 if (!headless && allowGui) SolGuiSystem::class.java else null,
+                if (!headless) RenderSystem::class.java else null,
 
-                if (!headless) RenderSystem::class.java else null
+                // Regular inputs are not used to update game state, only the server state input
+                // Take input as a result of the state update, hence put it last
+                InputSystem::class.java,  // retrieves input from the registered InputSourceModule
+                InputToSolActionsSystem::class.java,
+                if (player != null) SolPlayerSystem::class.java else null,  // takes input from the player
+                ClientNetworkOutputSystem::class.java  // send the inputs to the server
         )
 
+        NetEcsUtils.addNetClientHostSpawner(world);
+
+        world.addEntity("server-communication")
+                .addComponent(SolStatePacketComp())
+                .addComponent(InputComp())
+                .addComponent(SolActionsPacketComp())
+
+
         createWalls(world)
-
-//        charactersConfigs
-//                .flatMap { createCharacterEntityClass(true, it) }
-//                .forEach { world.addEntityClass(it) }
-//
-//        instanciateCharacter(
-//                true,
-//                world,
-//                charactersConfigs[0].name,
-//                0,
-//                0,
-//                200f,
-//                300f
-//        )
-
     }
 
-
-//    if (!useGraphicsInput) {
-//        val netMod = NetworkModule(NetworkModuleConfig(
-//                true,
-//                7778,
-//                ""
-//        ))
-//        val netInputMod = NetworkInputSourceModule(NetworkInputSourceModuleConfig(
-//                SolInputPacket::class.java
-//        ))
-//    }
-//    val inputSourceModule =
-//            if (useGraphicsInput)
-//                InputGuiSourceModule(InputGuiSourceModuleConfig(
-//                        Vector2f(1600f, 900f),
-//                        mapOf(
-//                                "player${controlPlayerIndex}:moveLeft" to InputConsts.KEY_A,
-//                                "player${controlPlayerIndex}:moveRight" to InputConsts.KEY_D,
-//                                "player${controlPlayerIndex}:moveUp" to InputConsts.KEY_W,
-//                                "player${controlPlayerIndex}:moveDown" to InputConsts.KEY_S,
-//                                "player${controlPlayerIndex}:ability1" to InputConsts.MOUSE_BUTTON_LEFT,
-//                                "player${controlPlayerIndex}:ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
-//                                "player${controlPlayerIndex}:ability3" to InputConsts.KEY_SPACE,
-//                                "player${controlPlayerIndex}:aimX" to InputConsts.CURSOR_X,
-//                                "player${controlPlayerIndex}:aimY" to InputConsts.CURSOR_Y,
-//                                "player${controlPlayerIndex}:aimXY" to InputConsts.CURSOR_VEC
-//                        )
-//                ))
+    override fun onStart() {
+    }
 }

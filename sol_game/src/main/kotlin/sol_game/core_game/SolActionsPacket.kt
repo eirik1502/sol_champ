@@ -2,7 +2,7 @@ package sol_game.core_game
 
 import sol_engine.network.network_input.NetInputPacket
 
-class SolInputPacket(
+class SolActionsPacket(
         val mvLeft: Boolean = false,
         val mvRight: Boolean = false,
         val mvUp: Boolean = false,

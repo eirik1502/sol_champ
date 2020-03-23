@@ -5,14 +5,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
-import sol_engine.input_module.InputComp;
-import sol_engine.loaders.LoadersLogger;
+import sol_engine.ecs.Entity;
+import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_sol_module.NetworkServerModule;
-import sol_engine.network.network_ecs.NetIdComp;
 import sol_engine.utils.collections.Pair;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class NetServerSystem extends ModuleSystemBase {
     private final Logger logger = LoggerFactory.getLogger(NetServerSystem.class);
+
+    private Map<Entity, EntityHost> entityHosts = new HashMap<>();
 
     @Override
     protected void onSetup() {
@@ -22,6 +28,14 @@ public class NetServerSystem extends ModuleSystemBase {
 
     @Override
     public void onStart() {
+        NetworkServerModule serverModule = getModule(NetworkServerModule.class);
+        serverModule.usePacketTypes(HostConnectedPacket.class);
+
+        forEachWithComponents(NetServerComp.class, (entity, netServerComp) -> {
+            if (netServerComp.staticConnectionPacket != null) {
+                serverModule.usePacketTypes(netServerComp.staticConnectionPacket.getClass());
+            }
+        });
     }
 
     @Override
@@ -33,21 +47,50 @@ public class NetServerSystem extends ModuleSystemBase {
         }
 
         forEachWithComponents(NetServerComp.class, (entity, netServerComp) -> {
+            //TODO: handle disconnecting hosts
+
             serverMod.getNewConnectedHosts().forEach(newHost -> {
-                Pair<String, Vector2f> newEntityData = netServerComp.hostEntitiesStartData
+                EntityHostStartData newEntityData = netServerComp.hostEntitiesStartData
                         .get(newHost.teamIndex).get(newHost.playerIndex);
-                String eClass = newEntityData.getFirst();
-                Vector2f startPos = newEntityData.getLast();
-                String inputGroup = "t" + newHost.teamIndex + "p" + newHost.playerIndex;
-                String name = eClass + "_" + newHost.name;
+                String entityClass = newEntityData.entityClass;
+                Vector2f startPos = newEntityData.startPos;
+                Entity newHostEntity = NetEcsUtils.addEntityForHost(
+                        true,
+                        newHost,
+                        entityClass,
+                        startPos,
+                        world
+                );
 
-                world.instanciateEntityClass(eClass, name)
-                        .addComponent(new NetIdComp(newHost.sessionId))
-                        .modifyIfHasComponent(TransformComp.class, comp -> comp.position.set(startPos))
-                        .modifyIfHasComponent(InputComp.class, comp -> comp.inputGroup = inputGroup);
+                if (netServerComp.staticConnectionPacket != null) {
+                    // reply with the static connect packet
+                    serverMod.sendPacket(netServerComp.staticConnectionPacket, newHost);
+                }
 
-                // let the client know its connected
-                serverMod.sendPacket(new ServerConnectResponsePacket(), newHost);
+                // send the new client to all previously connected hosts
+                // the new host is not present in this map yet
+                HostConnectedPacket newHostPacket = new HostConnectedPacket(
+                        newHost,
+                        entityClass,
+                        startPos
+                );
+                List<GameHost> connectedHosts = entityHosts.values().stream()
+                        .map(entityHost -> entityHost.host)
+                        .collect(Collectors.toList());
+                serverMod.sendPacket(newHostPacket, connectedHosts);
+
+                // add the new host
+                entityHosts.put(newHostEntity, new EntityHost(newHostEntity, newHost, entityClass));
+
+                // send all connected hosts to the new client
+                entityHosts.values().forEach(entityHost ->
+                        serverMod.sendPacket(new HostConnectedPacket(
+                                        entityHost.host,
+                                        entityHost.entityClass,
+                                        entityHost.entity.getComponent(TransformComp.class).position
+                                ),
+                                newHost
+                        ));
             });
         });
     }

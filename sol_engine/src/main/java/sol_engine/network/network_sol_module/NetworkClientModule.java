@@ -7,7 +7,9 @@ import sol_engine.network.network_game.game_client.ClientConnectionData;
 import sol_engine.network.network_game.game_client.NetworkGameClient;
 import sol_engine.network.packet_handling.NetworkPacket;
 
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.List;
 
 public class NetworkClientModule extends Module {
     private final Logger logger = LoggerFactory.getLogger(NetworkClientModule.class);
@@ -18,6 +20,20 @@ public class NetworkClientModule extends Module {
 
     public NetworkClientModule(NetworkClientModuleConfig config) {
         this.config = config;
+    }
+
+
+    @SafeVarargs
+    public final void usePacketTypes(Class<? extends NetworkPacket>... packetTypes) {
+        usePacketTypes(Arrays.asList(packetTypes));
+    }
+
+    public final void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
+        if (client != null) {
+            client.usePacketTypes(packetTypes);
+        } else {
+            logger.warn("calling usePacketTypes() before client is setup");
+        }
     }
 
     public boolean isConnected() {
