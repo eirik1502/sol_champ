@@ -8,6 +8,9 @@ import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_game.core_game.CharacterConfig
 import sol_game.core_game.SolGameSimulationServer
+import sol_game.networked_sol_game.Server
+
+typealias TerminationCallback = (gameServer: SolGameServer) -> Unit
 
 class SolGameServer(
         charactersConfigs: List<CharacterConfig> = listOf(),
@@ -30,6 +33,10 @@ class SolGameServer(
 
     private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(serverSim);
 
+    fun onTermination(callback: TerminationCallback) {
+        threadedLoop.onTermination() { threadedLoop, loop, sim -> callback(this) }
+    }
+
     fun setup(): ServerConnectionData {
         threadedLoop.setup();
         return serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
@@ -37,6 +44,10 @@ class SolGameServer(
 
     fun start() {
         threadedLoop.start()
+    }
+
+    fun getConnectionData(): ServerConnectionData {
+        return serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
     }
 
     fun waitUntilFinished() {

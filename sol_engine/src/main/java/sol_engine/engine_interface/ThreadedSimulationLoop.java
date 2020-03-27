@@ -5,12 +5,15 @@ import org.slf4j.LoggerFactory;
 import sol_engine.utils.tickers.Ticker;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
 
 // Don't use this class yet
 // TODO: clean this up, should extends SimulationLoop?
 
 public class ThreadedSimulationLoop {
+    public static interface TerminationCallback {
+        public void onTermination(ThreadedSimulationLoop threadedSimLoop, SimulationLoop simLoop, SolSimulation sim);
+    }
+
     private final Logger logger = LoggerFactory.getLogger(ThreadedSimulationLoop.class);
 
     private Thread thread;
@@ -18,6 +21,9 @@ public class ThreadedSimulationLoop {
 
     private final Object waitStartLock = new Object();
     private AtomicBoolean setupComplete = new AtomicBoolean(false);
+
+    private TerminationCallback terminationCallback = (a, b, c) -> {
+    };
 
 
     public ThreadedSimulationLoop(SimulationLoop simulationLoop) {
@@ -51,6 +57,10 @@ public class ThreadedSimulationLoop {
 
     public ThreadedSimulationLoop(SolSimulation simulation, Ticker stepTicker) {
         this(new SimulationLoop(simulation, stepTicker));
+    }
+
+    public void onTermination(TerminationCallback callback) {
+        terminationCallback = callback;
     }
 
     public void setup() {
@@ -96,5 +106,6 @@ public class ThreadedSimulationLoop {
     public void terminate() {
         simulationLoop.terminate();  // should make the thread stop
         waitUntilFinished();
+        terminationCallback.onTermination(this, simulationLoop, simulationLoop.getSimulation());
     }
 }

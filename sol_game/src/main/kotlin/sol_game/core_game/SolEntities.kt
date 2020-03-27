@@ -23,7 +23,7 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
             .addBaseComponents(
                     TransformComp(),
                     RenderShapeComp(RenderableShape.CirclePointing(abConfig.radius, MattMaterial.BLUE())),
-                    DestroySelfTimedComp(abConfig.activeHitboxTime),
+                    DestroySelfTimedComp(abConfig.activeTime),
                     CollisionComp(PhysicsBodyShape.Circ(abConfig.radius)),
                     HitboxComp(abConfig.damage, abConfig.baseKnockback, abConfig.knockbackRatio),
                     SceneChildComp()
@@ -33,7 +33,7 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
             abConfig.rechargeTime,
             abConfig.distanceFromChar,
             abConfig.speed,
-            abConfig.startupTime + abConfig.activeHitboxTime + abConfig.endlagTime,
+            abConfig.startupTime + abConfig.activeTime + abConfig.endlagTime,
             abConfig.startupTime
     )
     return Pair(abEntityClass, ab)

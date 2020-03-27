@@ -31,7 +31,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 application {
     mainClassName = "sol_game.Main"
-    this.applicationDefaultJvmArgs = listOf("-Dorg.lwjgl.util.Debug=true")
+    this.applicationDefaultJvmArgs = listOf(
+            "-Dorg.lwjgl.util.Debug=true",
+            "-Dorg.slf4j.simpleLogger.defaultLogLevel=warn"
+    )
 }
 
 java {
