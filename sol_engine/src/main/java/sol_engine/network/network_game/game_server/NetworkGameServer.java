@@ -46,6 +46,7 @@ public class NetworkGameServer {
     public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
         if (server != null) {
             server.usePacketTypes(packetTypes);
+            logger.info("using packet types: " + packetTypes);
         } else {
             logger.warn("calling usePacketTypes() before server is setup");
         }

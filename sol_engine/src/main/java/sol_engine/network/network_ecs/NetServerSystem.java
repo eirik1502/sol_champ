@@ -32,7 +32,11 @@ public class NetServerSystem extends ModuleSystemBase {
         serverModule.usePacketTypes(HostConnectedPacket.class);
 
         forEachWithComponents(NetServerComp.class, (entity, netServerComp) -> {
+            System.out.println(entity.name);
             if (netServerComp.staticConnectionPacket != null) {
+                System.out.println("Net packet:");
+                System.out.println(netServerComp.staticConnectionPacket.getClass());
+                System.out.println(netServerComp.staticConnectionPacket);
                 serverModule.usePacketTypes(netServerComp.staticConnectionPacket.getClass());
             }
         });

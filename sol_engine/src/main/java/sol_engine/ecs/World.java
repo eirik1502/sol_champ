@@ -115,11 +115,12 @@ public class World {
         entitiesScheduledForAdd.add(e);
     }
 
-    public Entity addEntity(String name) {
-        Entity entity = createEntity(name);
-        addEntity(entity);
-        return entity;
-    }
+    //TODO: Need to fix adding components after entities are added
+//    public Entity addEntity(String name) {
+//        Entity entity = createEntity(name);
+//        addEntity(entity);
+//        return entity;
+//    }
 
     public EntityClass getEntityClass(String name) {
         return entityClasses.get(name);

@@ -20,6 +20,7 @@ public class Window {
     private static final Logger logger = LoggerFactory.getLogger(Window.class);
 
     private static boolean GLFW_intied = false;
+    private static final Object GLFW_set_inited_lock = new Object();
 
     private long windowId;
     private RenderingContext context;
@@ -92,27 +93,36 @@ public class Window {
         context = new RenderingContext(this, vsync);
     }
 
-    private static synchronized void initGLFW() {
-        if (GLFW_intied) {
-            logger.info("Initing GLFW, GLFW already inited. Nothing happens");
-        } else {
-            logger.info("Initing GLFW");
+    private static void initGLFW() {
+        synchronized (GLFW_set_inited_lock) {
+            if (GLFW_intied) {
+                logger.info("Initing GLFW, GLFW already inited. Nothing happens");
+            } else {
+                logger.info("Initing GLFW");
 
-            // inits GLFW and GL
-            boolean glfwInited = glfwInit();
+                // inits GLFW and GL
+                boolean glfwInited = glfwInit();
 
-            if (!glfwInited) {
-                logger.error("Could not initialize GLFW");
-                throw new IllegalStateException("Could not initialize GLFW!");
+                if (!glfwInited) {
+                    logger.error("Could not initialize GLFW");
+                    throw new IllegalStateException("Could not initialize GLFW!");
+                }
+
+                GLFWErrorCallback.createPrint(System.err).set();  // TODO: should be connected to slf4j logger
+
+                glfwDefaultWindowHints(); // optional, the current window hints are already the default
+                glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+                glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
+
+                GLFW_intied = true;
             }
+        }
+    }
 
-            GLFWErrorCallback.createPrint(System.err).set();  // TODO: should be connected to slf4j logger
-
-            glfwDefaultWindowHints(); // optional, the current window hints are already the default
-            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
-
-            GLFW_intied = true;
+    private void destroyGLFW() {
+        synchronized (GLFW_set_inited_lock) {
+            glfwTerminate();
+            GLFW_intied = false;
         }
     }
 
@@ -169,6 +179,6 @@ public class Window {
 
     public void terminate() {
         glfwDestroyWindow(windowId);
-        glfwTerminate();
+        destroyGLFW();
     }
 }

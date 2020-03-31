@@ -45,7 +45,9 @@ open class SolGameSimulationServer(
                         listOf(1, 1),
                         allowObservers
                 ),
-                listOf(),
+                listOf(
+                        CharactersConfigsPacket::class.java
+                ),
                 false
         )))
         addModule(NetworkInputSourceModule(NetworkInputSourceModuleConfig(
@@ -90,6 +92,7 @@ open class SolGameSimulationServer(
 
         NetEcsUtils.addNetServerHostSpawner(
                 world,
+                CharactersConfigsPacket(charactersConfigs),
                 listOf(
                         listOf(EntityHostStartData(charactersConfigs[0].name, Vector2f(200f, 200f))),
                         listOf(EntityHostStartData(charactersConfigs[0].name, Vector2f(700f, 1400f)))

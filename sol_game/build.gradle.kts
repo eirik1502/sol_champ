@@ -33,7 +33,28 @@ application {
     mainClassName = "sol_game.Main"
     this.applicationDefaultJvmArgs = listOf(
             "-Dorg.lwjgl.util.Debug=true",
-            "-Dorg.slf4j.simpleLogger.defaultLogLevel=warn"
+            "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"
+    )
+}
+
+tasks.register<JavaExec>("runPoolServer") {
+    classpath = sourceSets["main"].runtimeClasspath
+    this.main = "sol_game.Main"
+    this.group = "application"
+    this.args = listOf("poolServer")
+    this.jvmArgs = listOf(
+            "-Dorg.lwjgl.util.Debug=false",
+            "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"
+    )
+}
+tasks.register<JavaExec>("runClient") {
+    classpath = sourceSets["main"].runtimeClasspath
+    this.main = "sol_game.Main"
+    this.group = "application"
+    this.args = listOf("client")
+    this.jvmArgs = listOf(
+            "-Dorg.lwjgl.util.Debug=false",
+            "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"
     )
 }
 

@@ -66,7 +66,9 @@ class SolGameSimulationClient(
                         connectionKey,
                         isObserver
                 ),
-                listOf()
+                listOf(
+                        CharactersConfigsPacket::class.java
+                )
         )))
     }
 
@@ -104,12 +106,17 @@ class SolGameSimulationClient(
                 ClientNetworkOutputSystem::class.java  // send the inputs to the server
         )
 
-        NetEcsUtils.addNetClientHostSpawner(world);
+        NetEcsUtils.addNetClientHostSpawner(world,
+                CharactersConfigsPacket::class.java,
+                ClientCharacterConfigsHandler::class.java
+        );
 
-        world.addEntity("server-communication")
-                .addComponent(SolStatePacketComp())
-                .addComponent(InputComp())
-                .addComponent(SolActionsPacketComp())
+        world.addEntity(
+                world.createEntity("server_communication")
+                        .addComponent(SolStatePacketComp())
+                        .addComponent(InputComp())
+                        .addComponent(SolActionsPacketComp())
+        )
 
 
         createWalls(world)

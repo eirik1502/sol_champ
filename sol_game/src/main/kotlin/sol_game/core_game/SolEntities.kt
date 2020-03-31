@@ -39,6 +39,15 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
     return Pair(abEntityClass, ab)
 }
 
+fun addAllCharactersEntityClasses(isServer: Boolean, configs: List<CharacterConfig>, world: World) {
+    configs.forEach { addCharacterEntityClass(isServer, it, world) }
+}
+
+fun addCharacterEntityClass(isServer: Boolean, config: CharacterConfig, world: World) {
+    createCharacterEntityClass(isServer, config)
+            .forEach { world.addEntityClass(it) }
+}
+
 fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List<EntityClass> {
     val abAbilities: List<Pair<EntityClass, Ability>> = config.abilities.map { createAbility(config.name, it) }
 

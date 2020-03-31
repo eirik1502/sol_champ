@@ -33,6 +33,7 @@ public class NetworkGameClient
     public void usePacketTypes(List<Class<? extends NetworkPacket>> packetTypes) {
         if (client != null) {
             client.usePacketTypes(packetTypes);
+            logger.info("using packet types: " + packetTypes);
         } else {
             logger.warn("calling usePacketTypes() before client is setup");
         }

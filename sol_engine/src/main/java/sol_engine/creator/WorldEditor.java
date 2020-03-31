@@ -110,7 +110,7 @@ public class WorldEditor implements CreatorFrame {
         boolean fieldDeactivated = fieldIsPrimitive && fieldIsFinal;
 
         String indentationStr = new String(new char[indentationCount * 3]).replace('\0', ' ');
-        System.out.println(field.getName() + " " + field.getType());
+//        System.out.println(field.getName() + " " + field.getType());
         try {
             imgui.core.text(indentationStr + fieldName + " ");
             imgui.format.sameLine();

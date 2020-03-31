@@ -26,7 +26,8 @@ public class PacketsQueue {
     }
 
     public void addAll(PacketsQueue source) {
-        source.queueByType.values()
+        // new hash map to try to avoid concurrancy bug
+        new HashMap<>(source.queueByType).values()
                 .forEach(queueByHost ->
                         queueByHost.forEach(this::addAll)
                 );
