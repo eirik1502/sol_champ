@@ -6,15 +6,15 @@ import sol_engine.engine_interface.SolSimulation
 import sol_engine.game_utils.*
 import sol_engine.graphics_module.*
 import sol_engine.input_module.*
-import sol_engine.network.network_ecs.EntityHostStartData
-import sol_engine.network.network_ecs.NetEcsUtils
+import sol_engine.network.network_ecs.host_managing.EntityHostStartData
+import sol_engine.network.network_ecs.host_managing.NetEcsUtils
+import sol_engine.network.network_ecs.world_syncing.NetTransformServerSystem
 import sol_engine.network.network_game.game_server.GameServerConfig
-import sol_engine.network.network_sol_module.NetworkServerModule
+import sol_engine.network.network_sol_module.NetworkserverModuleule
 import sol_engine.network.network_sol_module.NetworkServerModuleConfig
 import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.physics_module.*
-import sol_engine.utils.collections.Pair
 import sol_game.core_game.systems.*
 
 open class SolGameSimulationServer(
@@ -77,6 +77,8 @@ open class SolGameSimulationServer(
 
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
+
+                NetTransformServerSystem::class.java,
 
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
                 if (allowGui) SolGuiSystem::class.java else null,

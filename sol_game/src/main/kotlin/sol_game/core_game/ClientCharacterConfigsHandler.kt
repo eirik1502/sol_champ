@@ -1,8 +1,7 @@
 package sol_game.core_game
 
-import sol_engine.creator.SolEditor
 import sol_engine.ecs.World
-import sol_engine.network.network_ecs.StaticConnectionPacketHandler
+import sol_engine.network.network_ecs.host_managing.StaticConnectionPacketHandler
 import sol_engine.network.packet_handling.NetworkPacket
 
 class ClientCharacterConfigsHandler : StaticConnectionPacketHandler {

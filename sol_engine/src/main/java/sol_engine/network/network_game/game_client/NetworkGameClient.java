@@ -9,6 +9,8 @@ import sol_engine.network.network_game.GameHostConnectionParams;
 import sol_engine.network.packet_handling.NetworkPacket;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.stream.Collectors;
 
 public class NetworkGameClient
         implements NetworkClient.OpenHandler, NetworkClient.CloseHandler, NetworkCommunicationClient.PacketHandler {
@@ -19,7 +21,7 @@ public class NetworkGameClient
 
     private ClientConnectionData connectionData = null;  // set when client is opened
 
-    private Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> pendingPacketsOfType = new HashMap<>();
+    private final Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> pendingPacketsOfType = new HashMap<>();
 
 
     public NetworkGameClient() {
@@ -71,23 +73,39 @@ public class NetworkGameClient
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends NetworkPacket> Deque<T> peekPacketsOfType(Class<T> type) {
-        return new ArrayDeque<>((Collection<T>) pendingPacketsOfType.getOrDefault(type, new ArrayDeque<>()));
+//    @SuppressWarnings("unchecked")
+//    public <T extends NetworkPacket> Deque<T> peekPacketsOfType(Class<T> type) {
+//        return new ArrayDeque<>((Collection<T>) pendingPacketsOfType.getOrDefault(type, new ArrayDeque<>()));
+//    }
+//
+//    public <T extends NetworkPacket> Deque<T> pollPacketsOfType(Class<T> type) {
+//        // synchronized to not let any packets arrive in between get and clear
+//        synchronized (pendingPacketsOfType) {
+//            Deque<T> packets = peekPacketsOfType(type);
+//            pendingPacketsOfType.getOrDefault(type, new ArrayDeque<>()).clear();
+//            return packets;
+//        }
+//    }
+
+    public Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> pollAllPackets() {
+        synchronized (pendingPacketsOfType) {
+            Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> allPackets = pendingPacketsOfType.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> new ArrayDeque<>(entry.getValue())
+                    ));
+            clearAllPackets();
+            return allPackets;
+        }
     }
 
-    public <T extends NetworkPacket> Deque<T> pollPacketsOfType(Class<T> type) {
-        Deque<T> packets = peekPacketsOfType(type);
-        clearPackets();
-        return packets;
-    }
-
-    public void clearPackets() {
+    public void clearAllPackets() {
         pendingPacketsOfType.values().forEach(Deque::clear);
     }
 
 
     public void sendPacket(NetworkPacket packet) {
+        logger.info("Sending packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
         client.sendPacket(packet);
     }
 
@@ -124,6 +142,11 @@ public class NetworkGameClient
 
     @Override
     public void handlePacket(NetworkPacket packet) {
-        pendingPacketsOfType.computeIfAbsent(packet.getClass(), key -> new ArrayDeque<>()).add(packet);
+        logger.info("Received packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
+
+        // synchronizing to not interfere with the poll method
+        synchronized (pendingPacketsOfType) {
+            pendingPacketsOfType.computeIfAbsent(packet.getClass(), key -> new ConcurrentLinkedDeque<>()).add(packet);
+        }
     }
 }

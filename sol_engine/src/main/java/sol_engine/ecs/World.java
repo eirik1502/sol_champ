@@ -82,9 +82,10 @@ public class World {
     public <T extends SystemBase> T addSystemInstance(T sys) {
         Class<T> systemType = (Class<T>) sys.getClass();
         systems.put(systemType, sys);
+        sys.internalSetup(this); // component families must be set here
         listeners.systemAddedListeners.forEach(l -> l.onSystemAdded(sys.getClass(), sys));
-        sys.internalSetup(); // component families must be set here
-        sys.internalStart(this, familyHandler.getEntitiesOfFamily(sys.compFamily));
+        sys.internalSetupEnd(familyHandler.getEntitiesOfFamily(sys.compFamily));
+        sys.internalStart();
         return sys;
     }
 

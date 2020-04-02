@@ -42,18 +42,24 @@ public abstract class SolSimulation {
             return;
         }
         modulesHandler = new ModulesHandler();
-        onSetupModules();
+        onSetupModules();  // simulation adds modules
         modulesHandler.internalSetup();
 
         world = new World();
+
+        // make sure module based systems know about modules
         systemAddedListener = (sysType, sys) -> {
             if (sys instanceof ModuleSystemBase) {
-                ((ModuleSystemBase) sys).setModulesHandler(modulesHandler);
+                ModuleSystemBase modSys = (ModuleSystemBase) sys;
+                modSys.setModulesHandler(modulesHandler);
+                modSys.internalSetupEnd();
             }
         };
         world.listeners.addSystemAddedListener(systemAddedListener);
 
-        onSetupWorld();
+        onSetupWorld();  // components and systems are added
+
+
         isSetup = true;
     }
 

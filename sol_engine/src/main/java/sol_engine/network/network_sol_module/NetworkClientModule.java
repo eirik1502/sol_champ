@@ -3,13 +3,13 @@ package sol_engine.network.network_sol_module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
+import sol_engine.network.network_game.PacketsQueue;
 import sol_engine.network.network_game.game_client.ClientConnectionData;
 import sol_engine.network.network_game.game_client.NetworkGameClient;
 import sol_engine.network.packet_handling.NetworkPacket;
 
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class NetworkClientModule extends Module {
     private final Logger logger = LoggerFactory.getLogger(NetworkClientModule.class);
@@ -17,6 +17,9 @@ public class NetworkClientModule extends Module {
     private NetworkClientModuleConfig config;
     private NetworkGameClient client;
     private ClientConnectionData connData = new ClientConnectionData(false);
+
+    private final Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> currentPacketsOfType = new HashMap<>();
+
 
     public NetworkClientModule(NetworkClientModuleConfig config) {
         this.config = config;
@@ -47,8 +50,9 @@ public class NetworkClientModule extends Module {
         return connData;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends NetworkPacket> Deque<T> peekPacketsOfType(Class<T> type) {
-        return client.peekPacketsOfType(type);
+        return new ArrayDeque<>((Collection<T>) currentPacketsOfType.getOrDefault(type, new ArrayDeque<>()));
     }
 
     public void sendPacket(NetworkPacket packet) {
@@ -60,15 +64,15 @@ public class NetworkClientModule extends Module {
         client = new NetworkGameClient();
         client.usePacketTypes(config.packetTypes);
 
-        connData = client.connect(config.clientConfig);
-        if (!connData.isConnected) {
-            throw new IllegalStateException("Client module could not connect to server :(");
-        }
+
     }
 
     @Override
     public void onStart() {
-
+        connData = client.connect(config.clientConfig);
+        if (!connData.isConnected) {
+            throw new IllegalStateException("Client module could not connect to server :(");
+        }
     }
 
     @Override
@@ -78,6 +82,12 @@ public class NetworkClientModule extends Module {
 
     @Override
     public void onUpdate() {
+        currentPacketsOfType.clear();
+        currentPacketsOfType.putAll(client.pollAllPackets());
+//        logger.info("Updating current packets: " + currentPacketsOfType.entrySet().stream()
+//                .filter(entry -> entry.getValue().size() != 0)
+//                .collect(Collectors.toMap(entry -> entry.getKey().getSimpleName(), entry -> entry.getValue().size()))
+//        );
 
     }
 }

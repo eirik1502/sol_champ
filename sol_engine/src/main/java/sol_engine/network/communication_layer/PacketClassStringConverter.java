@@ -1,6 +1,7 @@
 package sol_engine.network.communication_layer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ public class PacketClassStringConverter {
 
     private static final String PACKET_TYPE_FIELD_NAME = "_packetType";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private final Map<String, Class<? extends NetworkPacket>> registeredPacketTypesByName = new HashMap<>();
 

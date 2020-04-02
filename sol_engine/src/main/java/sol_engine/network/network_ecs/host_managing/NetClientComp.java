@@ -1,10 +1,7 @@
-package sol_engine.network.network_ecs;
+package sol_engine.network.network_ecs.host_managing;
 
 import sol_engine.ecs.Component;
 import sol_engine.network.packet_handling.NetworkPacket;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NetClientComp extends Component {
 

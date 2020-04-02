@@ -1,9 +1,7 @@
-package sol_engine.network.network_ecs;
+package sol_engine.network.network_ecs.host_managing;
 
-import org.joml.Vector2f;
 import sol_engine.ecs.Component;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.utils.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,13 @@
-package sol_engine.network.network_ecs;
+package sol_engine.network.network_ecs.host_managing;
 
 import org.joml.Vector2f;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.World;
 import sol_engine.input_module.InputComp;
+import sol_engine.network.network_ecs.world_syncing.NetIdComp;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.utils.collections.Pair;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class NetEcsUtils {
     ) {
         String name = entityClass + "_" + host.name;
         Entity hostEntity = world.instanciateEntityClass(entityClass, name)
-                .addComponent(new NetIdComp(host.sessionId))
+                .addComponent(new NetIdComp(host))
                 .modifyIfHasComponent(TransformComp.class, comp -> comp.position.set(startPos));
 
         if (isServer) {

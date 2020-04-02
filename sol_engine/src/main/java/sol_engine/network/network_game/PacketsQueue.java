@@ -4,6 +4,7 @@ import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.utils.collections.Pair;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiConsumer;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -27,9 +28,9 @@ public class PacketsQueue {
 
     public void addAll(PacketsQueue source) {
         // new hash map to try to avoid concurrancy bug
-        new HashMap<>(source.queueByType).values()
+        source.queueByType.values()
                 .forEach(queueByHost ->
-                        queueByHost.forEach(this::addAll)
+                        queueByHost.forEach((host, queue) -> this.addAll(host, queue))
                 );
     }
 
@@ -50,7 +51,7 @@ public class PacketsQueue {
 
     public void add(GameHost host, NetworkPacket packet) {
         queueByType.computeIfAbsent(getType(packet), type_ -> new HashMap<>())
-                .computeIfAbsent(host, queueByHost -> new ArrayDeque<>())
+                .computeIfAbsent(host, queueByHost -> new ConcurrentLinkedDeque<>())
                 .add(packet);
     }
 

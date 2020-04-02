@@ -3,13 +3,13 @@ package sol_game.core_game
 import sol_engine.core.TransformComp
 import sol_engine.ecs.EntityClass
 import sol_engine.ecs.World
-import sol_engine.game_utils.CollisionInteractionComp
 import sol_engine.game_utils.DestroySelfTimedComp
 import sol_engine.game_utils.MoveByVelocityComp
 import sol_engine.graphics_module.RenderShapeComp
 import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
+import sol_engine.network.network_ecs.world_syncing.NetTransformComp
 import sol_engine.physics_module.CollisionComp
 import sol_engine.physics_module.NaturalCollisionResolutionComp
 import sol_engine.physics_module.PhysicsBodyComp
@@ -62,7 +62,8 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
                     NaturalCollisionResolutionComp(),
                     CharacterComp("ability1", "ability2", "ability3"),
                     FaceCursorComp(),
-                    HurtboxComp()
+                    HurtboxComp(),
+                    NetTransformComp()
             )
     if (isServer) {
         characterEntityClass.addBaseComponents(

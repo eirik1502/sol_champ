@@ -18,6 +18,9 @@ public abstract class Module {
 
     abstract public void onStart();
 
+//    protected void onStartEnd() {
+//    }
+
     abstract public void onEnd();
 
     abstract public void onUpdate();
@@ -35,6 +38,10 @@ public abstract class Module {
     public final void internalStart() {
         onStart();
     }
+
+//    public final void internalStartEnd() {
+//        onStartEnd();
+//    }
 
     public final void internalUpdate() {
         onUpdate();

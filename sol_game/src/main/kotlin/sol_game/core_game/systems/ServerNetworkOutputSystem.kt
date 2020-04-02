@@ -2,7 +2,7 @@ package sol_game.core_game.systems
 
 import sol_engine.core.ModuleSystemBase
 import sol_engine.core.TransformComp
-import sol_engine.network.network_ecs.NetIdComp
+import sol_engine.network.network_ecs.world_syncing.NetIdComp
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_game.core_game.SolGameStatePacket
 import sol_game.core_game.SolPlayerStatePacket
@@ -28,7 +28,7 @@ class ServerNetworkOutputSystem() : ModuleSystemBase() {
                     val netComp = entity.getComponent(NetIdComp::class.java)
                     val transComp = entity.getComponent(TransformComp::class.java)
                     SolPlayerStatePacket(
-                            netComp.id,
+                            netComp.gameHost.sessionId,
                             transComp.x,
                             transComp.y,
                             transComp.rotationZ

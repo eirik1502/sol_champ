@@ -36,6 +36,13 @@ public class ModulesHandler {
         });
     }
 
+//    public void internalStartEnd() {
+//        stream().forEach(module -> {
+//            logger.info("Calling onStartEnd for module: " + module.getClass().getSimpleName() + ", object: " + module);
+//            module.internalStartEnd();
+//        });
+//    }
+
     public void internalUpdate() {
         stream().forEach(m -> {
             m.internalUpdate();

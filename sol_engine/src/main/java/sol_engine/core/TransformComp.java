@@ -5,7 +5,6 @@ import sol_engine.ecs.Component;
 
 public class TransformComp extends Component {
 
-
     public final Vector2f position;
     public final Vector2f scale;
     public float rotationZ;

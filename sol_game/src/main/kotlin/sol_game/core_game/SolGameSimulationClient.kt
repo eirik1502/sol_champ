@@ -2,7 +2,6 @@ package sol_game.core_game
 
 import org.joml.Vector2f
 import sol_engine.creator.CreatorSystem
-import sol_engine.ecs.Entity
 import sol_engine.engine_interface.SolSimulation
 import sol_engine.game_utils.CollisionInteractionSystem
 import sol_engine.game_utils.DestroySelfTimedSystem
@@ -10,7 +9,8 @@ import sol_engine.game_utils.EmitterTimedSystem
 import sol_engine.game_utils.MoveByVelocitySystem
 import sol_engine.graphics_module.*
 import sol_engine.input_module.*
-import sol_engine.network.network_ecs.NetEcsUtils
+import sol_engine.network.network_ecs.host_managing.NetEcsUtils
+import sol_engine.network.network_ecs.world_syncing.NetTransformClientSystem
 import sol_engine.network.network_game.game_client.ClientConfig
 import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.network.network_sol_module.NetworkClientModuleConfig
@@ -58,6 +58,11 @@ class SolGameSimulationClient(
                     )
             )))
         }
+
+        addModule(InputModule(InputModuleConfig(
+                InputGuiSourceModule::class.java
+        )));
+
         addModule(NetworkClientModule(NetworkClientModuleConfig(
                 ClientConfig(
                         connectAddress,
@@ -75,6 +80,7 @@ class SolGameSimulationClient(
     override fun onSetupWorld() {
         world.addSystems(
                 ClientNetworkInputSystem::class.java,  // retrieves game state from server
+                NetTransformClientSystem::class.java,
 
                 MoveByVelocitySystem::class.java,
 
@@ -114,7 +120,11 @@ class SolGameSimulationClient(
         world.addEntity(
                 world.createEntity("server_communication")
                         .addComponent(SolStatePacketComp())
-                        .addComponent(InputComp())
+                        .addComponent(InputComp(
+                                setOf("mvLeft", "mvRight", "mvUp", "mvDown", "ability1", "ability2", "ability3"),
+                                setOf("aimX", "aimY"),
+                                setOf()
+                        ))
                         .addComponent(SolActionsPacketComp())
         )
 
@@ -123,5 +133,12 @@ class SolGameSimulationClient(
     }
 
     override fun onStart() {
+    }
+
+    override fun onStepEnd() {
+        world.insight.entities
+                .filter { it.hasComponent(SolActionsPacketComp::class.java) }
+                .map { it.getComponent(SolActionsPacketComp::class.java) }
+//                .forEach { println(it.actionsPacket) }
     }
 }

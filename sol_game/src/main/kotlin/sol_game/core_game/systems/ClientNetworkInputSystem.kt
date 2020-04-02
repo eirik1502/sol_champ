@@ -12,16 +12,19 @@ import sol_game.core_game.components.SolStatePacketComp
  * Stores the state in all SolStatePacketComps
  */
 class ClientNetworkInputSystem : ModuleSystemBase() {
-    override fun onUpdate() {
+    override fun onSetup() {
         usingComponents(SolStatePacketComp::class.java)
         usingModules(NetworkClientModule::class.java)
     }
 
-    override fun onSetup() {
+    override fun onSetupEnd() {
         getModule(NetworkClientModule::class.java).usePacketTypes(SolGameStatePacket::class.java)
     }
 
     override fun onStart() {
+    }
+
+    override fun onUpdate() {
         forEachWithComponents(SolStatePacketComp::class.java) { _, statePacketComp ->
             val currPackets = getModule(NetworkClientModule::class.java)
                     .peekPacketsOfType(SolGameStatePacket::class.java)

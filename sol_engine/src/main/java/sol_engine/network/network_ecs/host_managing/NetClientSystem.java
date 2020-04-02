@@ -1,16 +1,16 @@
-package sol_engine.network.network_ecs;
+package sol_engine.network.network_ecs.host_managing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Entity;
+import sol_engine.network.network_ecs.packets.HostConnectedPacket;
 import sol_engine.network.network_sol_module.NetworkClientModule;
-import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.utils.reflection_utils.ClassUtils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 public class NetClientSystem extends ModuleSystemBase {
+    private final Logger logger = LoggerFactory.getLogger(NetClientSystem.class);
+
     @Override
     protected void onSetup() {
         usingComponents(NetClientComp.class);
@@ -18,17 +18,21 @@ public class NetClientSystem extends ModuleSystemBase {
     }
 
     @Override
-    protected void onStart() {
+    protected void onSetupEnd() {
         NetworkClientModule clientModule = getModule(NetworkClientModule.class);
-
-        List<Class<? extends NetworkPacket>> staticConnectPacketTypes = entitiesStream()
-                .map(entity -> entity.getComponent(NetClientComp.class))
-                .map(clientComp -> clientComp.staticConnectionPacketType)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
         clientModule.usePacketTypes(HostConnectedPacket.class);
-        clientModule.usePacketTypes(staticConnectPacketTypes);
+
+//        List<Class<? extends NetworkPacket>> staticConnectPacketTypes = entitiesStream()
+//                .map(entity -> entity.getComponent(NetClientComp.class))
+//                .map(clientComp -> clientComp.staticConnectionPacketType)
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+//        clientModule.usePacketTypes(staticConnectPacketTypes);
+    }
+
+    @Override
+    protected void onStart() {
+
     }
 
     @Override
@@ -39,6 +43,7 @@ public class NetClientSystem extends ModuleSystemBase {
                 clientModule.peekPacketsOfType(clientComp.staticConnectionPacketType).forEach(packet -> {
                     ClassUtils.instanciateNoarg(clientComp.staticConnectionPacketHandler)
                             .handleConnectionPacket(packet, world);
+                    logger.info("Static connection packet handled");
                 });
             }
 
@@ -51,6 +56,7 @@ public class NetClientSystem extends ModuleSystemBase {
                                 connectPacket.startPos,
                                 world
                         );
+                        logger.info("Entiity created for a HostConnectedPacket, entity: " + newHostEntity + " packet: " + connectPacket);
                     });
         });
     }

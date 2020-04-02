@@ -19,6 +19,8 @@ public class GameHost {
     public int teamIndex;
     public int playerIndex;  // the player index on the team
 
+    public GameHost() {
+    }
 
     public GameHost(String address, int port, int sessionId, String name, String connectionKey, boolean isObserver, int teamIndex, int playerIndex) {
         this.address = address;
