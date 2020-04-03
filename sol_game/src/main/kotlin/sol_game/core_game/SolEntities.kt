@@ -9,7 +9,7 @@ import sol_engine.graphics_module.RenderShapeComp
 import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
-import sol_engine.network.network_ecs.world_syncing.NetTransformComp
+import sol_engine.network.network_ecs.world_syncing.NetSyncComp
 import sol_engine.physics_module.CollisionComp
 import sol_engine.physics_module.NaturalCollisionResolutionComp
 import sol_engine.physics_module.PhysicsBodyComp
@@ -63,7 +63,7 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
                     CharacterComp("ability1", "ability2", "ability3"),
                     FaceCursorComp(),
                     HurtboxComp(),
-                    NetTransformComp()
+                    NetSyncComp(setOf(TransformComp::class.java))
             )
     if (isServer) {
         characterEntityClass.addBaseComponents(

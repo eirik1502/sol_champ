@@ -2,7 +2,8 @@ package sol_game.core_game.systems
 
 import sol_engine.core.ModuleSystemBase
 import sol_engine.core.TransformComp
-import sol_engine.network.network_ecs.world_syncing.NetIdComp
+import sol_engine.network.network_ecs.host_managing.NetHostComp
+import sol_engine.network.network_ecs.host_managing.NetIdComp
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_game.core_game.SolGameStatePacket
 import sol_game.core_game.SolPlayerStatePacket
@@ -13,6 +14,7 @@ class ServerNetworkOutputSystem() : ModuleSystemBase() {
     override fun onSetup() {
         usingComponents(
                 CharacterComp::class.java,
+                NetHostComp::class.java,
                 NetIdComp::class.java,
                 TransformComp::class.java
         )
@@ -25,10 +27,11 @@ class ServerNetworkOutputSystem() : ModuleSystemBase() {
         val serverModule = getModule(NetworkServerModule::class.java)
         val playerStatePackets =
                 entities.map { entity ->
-                    val netComp = entity.getComponent(NetIdComp::class.java)
+                    val netComp = entity.getComponent(NetHostComp::class.java)
                     val transComp = entity.getComponent(TransformComp::class.java)
+                    val netIdComp = entity.getComponent(NetIdComp::class.java)
                     SolPlayerStatePacket(
-                            netComp.gameHost.sessionId,
+                            netIdComp.id,
                             transComp.x,
                             transComp.y,
                             transComp.rotationZ

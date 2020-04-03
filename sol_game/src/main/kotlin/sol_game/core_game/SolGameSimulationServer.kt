@@ -1,6 +1,6 @@
 package sol_game.core_game
 
-import org.joml.Vector2f
+import sol_engine.core.TransformComp
 import sol_engine.creator.CreatorSystem
 import sol_engine.engine_interface.SolSimulation
 import sol_engine.game_utils.*
@@ -8,12 +8,13 @@ import sol_engine.graphics_module.*
 import sol_engine.input_module.*
 import sol_engine.network.network_ecs.host_managing.EntityHostStartData
 import sol_engine.network.network_ecs.host_managing.NetEcsUtils
-import sol_engine.network.network_ecs.world_syncing.NetTransformServerSystem
+import sol_engine.network.network_ecs.world_syncing.NetSyncServerSystem
 import sol_engine.network.network_game.game_server.GameServerConfig
-import sol_engine.network.network_sol_module.NetworkserverModuleule
+
 import sol_engine.network.network_sol_module.NetworkServerModuleConfig
 import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
+import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_engine.physics_module.*
 import sol_game.core_game.systems.*
 
@@ -78,7 +79,7 @@ open class SolGameSimulationServer(
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
-                NetTransformServerSystem::class.java,
+                NetSyncServerSystem::class.java,
 
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
                 if (allowGui) SolGuiSystem::class.java else null,
@@ -96,8 +97,12 @@ open class SolGameSimulationServer(
                 world,
                 CharactersConfigsPacket(charactersConfigs),
                 listOf(
-                        listOf(EntityHostStartData(charactersConfigs[0].name, Vector2f(200f, 200f))),
-                        listOf(EntityHostStartData(charactersConfigs[0].name, Vector2f(700f, 1400f)))
+                        listOf(
+                                EntityHostStartData(charactersConfigs[0].name, listOf(TransformComp(200f, 200f)))
+                        ),
+                        listOf(
+                                EntityHostStartData(charactersConfigs[0].name, listOf(TransformComp(700f, 1400f)))
+                        )
                 )
         )
 

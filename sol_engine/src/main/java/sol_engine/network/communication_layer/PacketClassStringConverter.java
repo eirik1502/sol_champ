@@ -16,7 +16,9 @@ public class PacketClassStringConverter {
 
     private static final String PACKET_TYPE_FIELD_NAME = "_packetType";
 
-    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
 
     private final Map<String, Class<? extends NetworkPacket>> registeredPacketTypesByName = new HashMap<>();
 

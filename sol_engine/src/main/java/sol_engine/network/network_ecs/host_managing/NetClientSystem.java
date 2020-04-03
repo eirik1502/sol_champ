@@ -1,9 +1,11 @@
 package sol_engine.network.network_ecs.host_managing;
 
+import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Entity;
+import sol_engine.network.network_ecs.packets.CreateHostEntityPacket;
 import sol_engine.network.network_ecs.packets.HostConnectedPacket;
 import sol_engine.network.network_sol_module.NetworkClientModule;
 import sol_engine.utils.reflection_utils.ClassUtils;
@@ -20,7 +22,7 @@ public class NetClientSystem extends ModuleSystemBase {
     @Override
     protected void onSetupEnd() {
         NetworkClientModule clientModule = getModule(NetworkClientModule.class);
-        clientModule.usePacketTypes(HostConnectedPacket.class);
+        clientModule.usePacketTypes(CreateHostEntityPacket.class);
 
 //        List<Class<? extends NetworkPacket>> staticConnectPacketTypes = entitiesStream()
 //                .map(entity -> entity.getComponent(NetClientComp.class))
@@ -47,13 +49,14 @@ public class NetClientSystem extends ModuleSystemBase {
                 });
             }
 
-            clientModule.peekPacketsOfType(HostConnectedPacket.class)
+            clientModule.peekPacketsOfType(CreateHostEntityPacket.class)
                     .forEach(connectPacket -> {
                         Entity newHostEntity = NetEcsUtils.addEntityForHost(
                                 false,
                                 connectPacket.host,
+                                connectPacket.netId,
                                 connectPacket.entityClass,
-                                connectPacket.startPos,
+                                connectPacket.updateComponents,
                                 world
                         );
                         logger.info("Entiity created for a HostConnectedPacket, entity: " + newHostEntity + " packet: " + connectPacket);

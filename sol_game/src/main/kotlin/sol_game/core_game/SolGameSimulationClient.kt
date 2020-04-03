@@ -10,7 +10,7 @@ import sol_engine.game_utils.MoveByVelocitySystem
 import sol_engine.graphics_module.*
 import sol_engine.input_module.*
 import sol_engine.network.network_ecs.host_managing.NetEcsUtils
-import sol_engine.network.network_ecs.world_syncing.NetTransformClientSystem
+import sol_engine.network.network_ecs.world_syncing.NetSyncClientSystem
 import sol_engine.network.network_game.game_client.ClientConfig
 import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.network.network_sol_module.NetworkClientModuleConfig
@@ -80,7 +80,7 @@ class SolGameSimulationClient(
     override fun onSetupWorld() {
         world.addSystems(
                 ClientNetworkInputSystem::class.java,  // retrieves game state from server
-                NetTransformClientSystem::class.java,
+                NetSyncClientSystem::class.java,
 
                 MoveByVelocitySystem::class.java,
 
