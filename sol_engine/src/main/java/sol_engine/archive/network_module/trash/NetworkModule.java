@@ -1,11 +1,11 @@
-package sol_engine.network_module.network_modules;
+package sol_engine.archive.network_module.network_modules;
 
 import sol_engine.modules.Module;
-import sol_engine.network_module.NetPacket;
-import sol_engine.network_module.connection_handler.PacketListener;
-import sol_engine.network_module.connection_handler.ServerConnectionsHandler;
-import sol_engine.network_module.connection_handler._ClientConnectionHandler;
-import sol_engine.network_module.connection_handler._ConnectionsHandler;
+import sol_engine.archive.network_module.NetPacket;
+import sol_engine.archive.network_module.connection_handler.PacketListener;
+import sol_engine.archive.network_module.connection_handler.ServerConnectionsHandler;
+import sol_engine.archive.network_module.connection_handler._ClientConnectionHandler;
+import sol_engine.archive.network_module.connection_handler._ConnectionsHandler;
 
 public class NetworkModule extends Module {
 

@@ -1,11 +1,11 @@
-package sol_engine.network_module.network_ecs;
+package sol_engine.archive.network_module.network_ecs;
 
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.EntityClassInstanciateListener;
-import sol_engine.network_module.NetChannel;
-import sol_engine.network_module.network_modules.NetworkModule;
+import sol_engine.archive.network_module.NetChannel;
+import sol_engine.archive.network_module.network_modules.NetworkModule;
 
 public class _NetSystem extends ModuleSystemBase implements EntityClassInstanciateListener {
 

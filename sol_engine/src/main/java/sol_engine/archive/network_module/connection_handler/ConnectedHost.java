@@ -1,6 +1,6 @@
-package sol_engine.network_module.connection_handler;
+package sol_engine.archive.network_module.connection_handler;
 
-import sol_engine.network_module.NetPacket;
+import sol_engine.archive.network_module.NetPacket;
 
 import java.util.ArrayList;
 import java.util.List;

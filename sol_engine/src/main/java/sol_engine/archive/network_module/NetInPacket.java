@@ -1,4 +1,4 @@
-package sol_engine.network_module;
+package sol_engine.archive.network_module;
 
 import java.io.*;
 

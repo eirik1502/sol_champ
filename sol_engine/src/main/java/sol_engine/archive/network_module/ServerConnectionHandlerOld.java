@@ -1,7 +1,7 @@
-package sol_engine.network_module;
+package sol_engine.archive.network_module;
 
 import com.esotericsoftware.kryonet.Server;
-import sol_engine.network_module.connection_handler.ConnectedHost;
+import sol_engine.archive.network_module.connection_handler.ConnectedHost;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,4 +1,4 @@
-package sol_engine.network_module.connection_handler;
+package sol_engine.archive.network_module.connection_handler;
 
 import com.esotericsoftware.kryonet.Connection;
 

@@ -1,4 +1,4 @@
-package sol_engine.network_module.network_modules;
+package sol_engine.archive.network_module.network_modules;
 
 public class NetworkClientModuleConfig {
     public int port;

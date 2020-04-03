@@ -1,8 +1,8 @@
-package sol_engine.network_module.network_ecs;
+package sol_engine.archive.network_module.network_ecs;
 
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.core.TransformComp;
-import sol_engine.network_module.network_modules.NetworkServerModule;
+import sol_engine.archive.network_module.network_modules.NetworkServerModule;
 
 public class NetServerSystem extends ModuleSystemBase {
 

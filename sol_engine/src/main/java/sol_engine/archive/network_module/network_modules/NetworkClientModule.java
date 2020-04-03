@@ -1,7 +1,7 @@
-package sol_engine.network_module.network_modules;
+package sol_engine.archive.network_module.network_modules;
 
 import sol_engine.module.Module;
-import sol_engine.network_module.connection_handler.ConnectionEstablisher;
+import sol_engine.archive.network_module.connection_handler.ConnectionEstablisher;
 
 public class NetworkClientModule extends Module {
 

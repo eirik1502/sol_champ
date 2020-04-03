@@ -1,6 +1,4 @@
-package sol_engine.network_module;
-
-import com.google.common.collect.ImmutableMap;
+package sol_engine.archive.network_module;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

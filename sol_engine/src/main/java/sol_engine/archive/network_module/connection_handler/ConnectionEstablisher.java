@@ -1,9 +1,9 @@
-package sol_engine.network_module.connection_handler;
+package sol_engine.archive.network_module.connection_handler;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import sol_engine.network_module.NetPacket;
+import sol_engine.archive.network_module.NetPacket;
 
 import java.io.IOException;
 
