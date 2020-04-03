@@ -82,7 +82,7 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
 
 fun instanciateCharacter(isServer: Boolean, world: World, name: String, teamIndex: Int, playerIndex: Int, startX: Float, startY: Float) {
     val inputGroup = "t${teamIndex}p${playerIndex}"
-    val charEClass = world.instanciateEntityClass(name, name)
+    val charEClass = world.addEntity(name, name)
             .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(startX, startY) }
     if (isServer) {
         charEClass.modifyComponent(InputComp::class.java) { comp -> comp.inputGroup = inputGroup }
@@ -99,7 +99,7 @@ fun createWalls(world: World) {
     ))
 
     val createWall = { name: String, x: Float, y: Float, width: Float, height: Float ->
-        world.instanciateEntityClass("wall", name)
+        world.addEntity(name, "wall")
                 .modifyComponent(TransformComp::class.java) { transComp -> transComp.setPosition(x + width / 2, y + height / 2) }
                 .modifyComponent(RenderShapeComp::class.java) { comp ->
                     comp.renderable.width = width

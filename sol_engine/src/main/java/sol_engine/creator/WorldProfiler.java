@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
-import sol_engine.ecs.WorldUpdateListener;
+import sol_engine.ecs.listeners.WorldUpdateListener;
 import sol_engine.graphics_module.GraphicsModule;
 import sol_engine.graphics_module.gui.imgui.GuiCommands;
 import sol_engine.graphics_module.gui.imgui.GuiWindowFlags;

@@ -1,7 +1,7 @@
 package sol_engine.network.network_ecs.host_managing;
 
-import org.joml.Vector2f;
-import sol_engine.core.TransformComp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.World;
@@ -11,8 +11,11 @@ import sol_engine.network.packet_handling.NetworkPacket;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NetEcsUtils {
+    private static Logger logger = LoggerFactory.getLogger(NetEcsUtils.class);
 
     public static void addNetServerHostSpawner(
             World world,
@@ -53,7 +56,7 @@ public class NetEcsUtils {
             World world
     ) {
         String name = entityClass + "_" + host.name;
-        Entity hostEntity = world.instanciateEntityClass(entityClass, name)
+        Entity hostEntity = world.addEntity(name, entityClass)
                 .addComponent(new NetHostComp(host))
                 .addComponent(new NetIdComp(netId));
 //                .modifyIfHasComponent(TransformComp.class, comp -> comp.position.set(startPos));
@@ -73,5 +76,23 @@ public class NetEcsUtils {
                 .filter(entity -> entity.hasComponent(NetIdComp.class))
                 .filter(entity -> entity.getComponent(NetIdComp.class).id == entityNetId)
                 .findFirst();
+    }
+
+    public static Set<Component> componentsToBeSynced(Entity entity, Set<Class<? extends Component>> syncComponentTypes) {
+        return componentsToBeSynced(entity, syncComponentTypes, logger);
+    }
+
+    public static Set<Component> componentsToBeSynced(Entity entity, Set<Class<? extends Component>> syncComponentTypes, Logger _logger) {
+        return syncComponentTypes.stream()
+                .filter(compType -> {
+                    if (entity.hasComponent(compType)) {
+                        return true;
+                    } else {
+                        _logger.warn("Trying to sync a component that is not present in entity. CompType: " + compType + ", Entity: " + entity);
+                        return false;
+                    }
+                })
+                .map(entity::getComponent)
+                .collect(Collectors.toSet());
     }
 }

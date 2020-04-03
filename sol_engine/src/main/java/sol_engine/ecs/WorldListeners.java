@@ -1,25 +1,33 @@
 package sol_engine.ecs;
 
+import sol_engine.ecs.listeners.EntityClassInstanciateListener;
+import sol_engine.ecs.listeners.EntityListener;
+import sol_engine.ecs.listeners.SystemAddedListener;
+import sol_engine.ecs.listeners.WorldUpdateListener;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class WorldListeners {
 
-    List<EntityClassInstanciateListener> entityClassInstanciateListeners = new ArrayList<>();
     List<SystemAddedListener> systemAddedListeners = new ArrayList<>();
     List<WorldUpdateListener> worldUpdateListeners = new ArrayList<>();
+    List<EntityListener.WillBeAdded> entityWillBeAddedListeners = new ArrayList<>();
+    List<EntityListener.WillBeRemoved> entityWillBeRemovedListeners = new ArrayList<>();
+    List<EntityListener.Added> entityAddedListeners = new ArrayList<>();
+    List<EntityListener.Removed> entityRemovedListeners = new ArrayList<>();
 
+    private Map<Class<? extends EntityListener>, List<? extends EntityListener>> entityListenerListsByType = Map.of(
+            EntityListener.WillBeAdded.class, entityWillBeAddedListeners,
+            EntityListener.WillBeRemoved.class, entityWillBeRemovedListeners,
+            EntityListener.Added.class, entityAddedListeners,
+            EntityListener.Removed.class, entityRemovedListeners
+    );
 
     WorldListeners() {
     }
 
-    public void addEntityClassInstanciateListener(EntityClassInstanciateListener listener) {
-        entityClassInstanciateListeners.add(listener);
-    }
-
-    public void removeEntityClassInstanciateListener(EntityClassInstanciateListener listener) {
-        entityClassInstanciateListeners.remove(listener);
-    }
 
     public void addSystemAddedListener(SystemAddedListener listener) {
         systemAddedListeners.add(listener);
@@ -35,5 +43,16 @@ public class WorldListeners {
 
     public boolean removeWorldUpdateListener(WorldUpdateListener listener) {
         return this.worldUpdateListeners.remove(listener);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <T extends EntityListener> void addEntityListener(Class<T> entityListenerType, T listener) {
+        List<T> listenerList = (List<T>) entityListenerListsByType.get(entityListenerType);
+        listenerList.add(listener);
+    }
+
+    public boolean removeEntityListener(EntityListener listener) {
+        return entityListenerListsByType.get(listener.getClass()).remove(listener);
     }
 }

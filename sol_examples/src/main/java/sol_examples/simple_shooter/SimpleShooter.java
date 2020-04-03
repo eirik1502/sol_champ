@@ -151,7 +151,7 @@ public class SimpleShooter extends SolSimulation {
         ));
 
         Function.FiveArgReturn<String, Float, Float, Float, Float, Void> createWall = (name, x, y, width, height) -> {
-            world.instanciateEntityClass("wall", name)
+            world.addEntity(name, "wall")
                     .modifyComponent(TransformComp.class, transComp -> transComp.setPosition(x + width / 2, y + height / 2))
                     .modifyComponent(RenderShapeComp.class, comp -> {
                         comp.renderable.width = width;
@@ -175,14 +175,14 @@ public class SimpleShooter extends SolSimulation {
             float startY = wallThickness + MathF.random() * (worldHeight - wallThickness * 2);
             float startVelocity = 120 * 5;
             Vector2f startImpulse = randomNormalizedVector2f().mul(startVelocity);
-            world.instanciateEntityClass("circ", "circ" + i)
+            world.addEntity("circ" + i, "circ")
                     .modifyComponent(TransformComp.class, transComp -> transComp.setPosition(startX, startY))
                     .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.set(startImpulse));
         });
 
 //        world.instanciateEntityClass("marker", "marker");
 
-        world.instanciateEntityClass("player", "player")
+        world.addEntity("player", "player")
                 .modifyComponent(TransformComp.class, transComp -> transComp.setPosition(worldWidth / 2, worldHeight / 2))
                 .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.set(new Vector2f(60, 0)));
 

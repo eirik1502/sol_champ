@@ -3,7 +3,7 @@ package sol_engine.engine_interface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
-import sol_engine.ecs.SystemAddedListener;
+import sol_engine.ecs.listeners.SystemAddedListener;
 import sol_engine.ecs.World;
 import sol_engine.module.Module;
 import sol_engine.module.ModulesHandler;

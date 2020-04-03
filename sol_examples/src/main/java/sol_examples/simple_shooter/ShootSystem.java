@@ -40,7 +40,7 @@ public class ShootSystem extends ModuleSystemBase {
                     initialDirectionVec.mul(shootComp.initialBulletSpeed, initialBulletSpeed);
                     position.add(initialDirectionVec.mul(40, tempVec), initialBulletPosition);
 
-                    world.instanciateEntityClass(shootComp.bulletEntityClass, "bullet")
+                    world.addEntity("bullet", shootComp.bulletEntityClass)
                             .modifyComponent(TransformComp.class, comp ->
                                     comp.setPosition(initialBulletPosition.x, initialBulletPosition.y))
                             .modifyComponent(PhysicsBodyComp.class, comp -> comp.impulse.add(initialBulletSpeed));

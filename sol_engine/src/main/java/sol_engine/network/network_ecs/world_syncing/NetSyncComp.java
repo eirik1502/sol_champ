@@ -7,6 +7,8 @@ import java.util.Set;
 
 public class NetSyncComp extends Component {
 
+    public boolean syncAdd = true;
+    public boolean syncRemove = true;
     public Set<Class<? extends Component>> syncComponentTypes = new HashSet<>();
 
 

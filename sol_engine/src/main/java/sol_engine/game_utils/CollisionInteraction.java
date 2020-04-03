@@ -47,7 +47,7 @@ public class CollisionInteraction {
     public CollisionInteraction create(String className, String instanceName) {
         return addScript((world, self, other) -> {
             TransformComp transComp = self.getComponent(TransformComp.class);
-            world.instanciateEntityClass(className, instanceName)
+            world.addEntity(instanceName, className)
                     .modifyComponent(TransformComp.class, comp -> comp.setPosition(transComp.position));
         });
     }

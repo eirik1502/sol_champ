@@ -56,7 +56,7 @@ class AbilitySystem : SystemBase() {
 //        val position = characterPos.add(offset, Vector2f())
         val impulse: Vector2f = cursorDir.mul(ability.initialImpulse, Vector2f())
 
-        val abEntity = world.instanciateEntityClass(ability.abilityEntityClass, ability.abilityEntityClass)
+        val abEntity = world.addEntity(ability.abilityEntityClass, ability.abilityEntityClass)
                 .modifyIfHasComponent(HitboxComp::class.java) { comp -> comp.owner = owner }
                 .modifyIfHasComponent(PhysicsBodyComp::class.java) { comp -> comp.impulse.add(impulse) }
                 .modifyIfHasComponent(SceneChildComp::class.java) { comp -> comp.parent = owner }

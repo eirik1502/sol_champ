@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class Entity {
-
     public final String name;
+    public final String className;  // null if no class was used to create this entity
 
     private World world;
 
@@ -19,8 +19,13 @@ public class Entity {
 
 
     Entity(World world, String name) {
+        this(world, name, null);
+    }
+
+    Entity(World world, String name, String className) {
         this.world = world;
         this.name = name;
+        this.className = className;
     }
 
 

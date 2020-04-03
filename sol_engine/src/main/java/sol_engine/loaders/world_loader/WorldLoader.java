@@ -198,7 +198,7 @@ public class WorldLoader {
         String useClass = initEntityNode.get(WorldLoaderFields.INIT_ENTITIES_USE_CLASS_FIELD).asText();
 
         // create the entity from the class
-        final Entity entity = world.instanciateEntityClass(useClass, entityName);
+        final Entity entity = world.addEntity(entityName, useClass);
 
         // override components: optional
         withFieldIfExists(initEntityNode, WorldLoaderFields.INIT_ENTITIES_COMPONENTS_FIELD, compsNode ->
