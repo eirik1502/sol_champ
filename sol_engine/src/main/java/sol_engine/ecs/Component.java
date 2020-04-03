@@ -1,10 +1,21 @@
 package sol_engine.ecs;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public abstract class Component implements Cloneable {
-
+    private static Logger logger = LoggerFactory.getLogger(Component.class);
     private static Gson gson = new Gson();
+    private static ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
 
     /**
      * check equality by gson conversion. Field order should be consistent
@@ -25,6 +36,31 @@ public abstract class Component implements Cloneable {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Copys the given component values into this one.
+     * This default method uses json serialization and deserialisation, and is thus slow.
+     * OVerride this method to improve performance in often copied components
+     *
+     * @param fromComp component with values to be copied
+     */
+    public void copy(Component fromComp) {
+        if (getClass().equals(fromComp.getClass())) {
+            JsonNode fromCompTree = objectMapper.valueToTree(fromComp);
+            try {
+                objectMapper.readerForUpdating(this).readValue(fromCompTree);
+                return;
+            } catch (IOException e) {
+                logger.warn("Could not copy the given component into this using default method of json (de)serializing." +
+                        " From component: " + fromComp + ", this: " + this
+                        + ". Because " + e);
+                return;
+            }
+        }
+
+        logger.warn("Trying to copy a component of another type into this using default method of json (de)serializing." +
+                " From component: " + fromComp + ", this: " + this);
     }
 
     public Component clone() {
