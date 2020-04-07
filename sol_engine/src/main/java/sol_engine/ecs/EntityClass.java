@@ -51,8 +51,7 @@ public class EntityClass {
 
     // TODO: use overriding classes
     public Entity instantiate(World world, String entityName) {
-        Entity e = world.createEntity(entityName, className);
-
+        Entity e = new Entity(world, entityName, className);
         baseComponents.stream()
                 .map(Component::clone)
                 .filter(Objects::nonNull)  // may be null if clone failes, should not happen
