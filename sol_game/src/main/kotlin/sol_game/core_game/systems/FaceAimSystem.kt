@@ -5,22 +5,22 @@ import sol_engine.core.TransformComp
 import sol_engine.ecs.SystemBase
 import sol_engine.input_module.InputComp
 import sol_engine.utils.math.MathF
-import sol_game.core_game.components.FaceCursorComp
+import sol_game.core_game.components.FaceAimComp
 
-class FaceCursorSystem : SystemBase() {
+class FaceAimSystem : SystemBase() {
 
     val cursorPosBuf: Vector2f = Vector2f()
     val transPosBuf: Vector2f = Vector2f()
 
     override fun onSetup() {
-        usingComponents(FaceCursorComp::class.java, InputComp::class.java, TransformComp::class.java)
+        usingComponents(FaceAimComp::class.java, InputComp::class.java, TransformComp::class.java)
     }
 
     override fun onUpdate() {
-        forEachWithComponents(FaceCursorComp::class.java, InputComp::class.java, TransformComp::class.java) { entity, faceCursorComp, inputComp, transComp ->
+        forEachWithComponents(FaceAimComp::class.java, InputComp::class.java, TransformComp::class.java) { entity, faceCursorComp, inputComp, transComp ->
             if (faceCursorComp.disabled) return@forEachWithComponents
 
-            cursorPosBuf.set(inputComp.vectorInput("aimXY"));
+            cursorPosBuf.set(inputComp.floatInput("aimX"), inputComp.floatInput("aimY"));
             transPosBuf.set(transComp.x, transComp.y)
             transComp.rotationZ = MathF.pointDirection(transPosBuf, cursorPosBuf)
         }

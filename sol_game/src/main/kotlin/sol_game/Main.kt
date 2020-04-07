@@ -2,17 +2,11 @@
 
 package sol_game
 
-import mu.toKLogger
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.slf4j.impl.SimpleLogger
-import org.slf4j.impl.SimpleLoggerConfiguration
-import sol_engine.network.communication_layer.PacketClassStringConverter
 import sol_engine.network.network_game.game_server.ServerConnectionData
+import sol_game.core_game.AbilityConfig
+import sol_game.core_game.AbilityType
 import sol_game.core_game.CharacterConfig
 import sol_game.game.*
-import sol_game.networked_sol_game.SolGameServerConfig
-import java.util.*
 
 fun main(args: Array<String>) {
     if (args.contains("poolServer")) {
@@ -24,9 +18,47 @@ fun main(args: Array<String>) {
     }
 }
 
+val charactersConfig = listOf(
+        CharacterConfig(
+                name = "Frank",
+                radius = 64f,
+                moveVelocity = 48f,
+                abilities = listOf(
+                        AbilityConfig(
+                                name = "rapid shot",
+                                type = AbilityType.MELEE,
+                                radius = 48f,
+                                distanceFromChar = 128f,
+                                speed = 10f,
+
+                                activeTime = 10,
+                                startupTime = 5,
+                                endlagTime = 3,
+                                rechargeTime = 10,
+
+                                damage = 20f,
+                                baseKnockback = 100f,
+                                knockbackRatio = 1f,
+                                knockbackPoint = 32f,
+                                knockbackTowardPoint = false
+                        ),
+                        AbilityConfig(name = "big blast"),
+                        AbilityConfig(name = "get off")
+                )
+        ),
+        CharacterConfig(
+                name = "Schmatias",
+                abilities = listOf(
+                        AbilityConfig(name = "bam"),
+                        AbilityConfig(name = "hook"),
+                        AbilityConfig(name = "shmack")
+                )
+        )
+)
+
 fun runPoolServer() {
     val poolServer = SimpleSolGameServerPoolServer(headless = false)
-    poolServer.serve(55555, listOf(CharacterConfig(), CharacterConfig()))
+    poolServer.serve(55555, charactersConfig)
 }
 
 fun runConnectClientToPool() {

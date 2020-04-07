@@ -4,6 +4,7 @@ import sol_engine.utils.Function;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class Entity {
@@ -46,6 +47,10 @@ public class Entity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean hasComponents(Set<Class<? extends Component>> compTypes) {
+        return compTypes.stream().allMatch(this::hasComponent);
     }
 
     public boolean hasComponent(Class<? extends Component> compType) {

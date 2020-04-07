@@ -8,6 +8,7 @@ import sol_engine.graphics_module.*
 import sol_engine.input_module.*
 import sol_engine.network.network_ecs.host_managing.EntityHostStartData
 import sol_engine.network.network_ecs.host_managing.NetEcsUtils
+import sol_engine.network.network_ecs.host_managing.NetServerSystem
 import sol_engine.network.network_ecs.world_syncing.NetSyncServerSystem
 import sol_engine.network.network_game.game_server.GameServerConfig
 
@@ -64,14 +65,13 @@ open class SolGameSimulationServer(
                 InputSystem::class.java,
                 MoveByVelocitySystem::class.java,
 
-                FaceCursorSystem::class.java,
+                FaceAimSystem::class.java,
                 CharacterSystem::class.java,
                 AbilitySystem::class.java,
                 EmitterTimedSystem::class.java,
                 DestroySelfTimedSystem::class.java,
 
                 CollisionSystem::class.java,
-                CollisionInteractionSystem::class.java,
                 DamageSystem::class.java,
                 KnockbackSystem::class.java,
                 NaturalCollisionResolutionSystem::class.java,
@@ -79,6 +79,7 @@ open class SolGameSimulationServer(
                 SceneChildSystem::class.java,
                 PhysicsSystem::class.java,
 
+                NetServerSystem::class.java,
                 NetSyncServerSystem::class.java,
 
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
@@ -93,15 +94,15 @@ open class SolGameSimulationServer(
                 .flatMap { createCharacterEntityClass(true, it) }
                 .forEach { world.addEntityClass(it) }
 
-        NetEcsUtils.addNetServerHostSpawner(
+        NetEcsUtils.addNetServerEntity(
                 world,
                 CharactersConfigsPacket(charactersConfigs),
                 listOf(
                         listOf(
-                                EntityHostStartData(charactersConfigs[0].name, listOf(TransformComp(200f, 200f)))
+                                EntityHostStartData(charactersConfigs[0].name, setOf(TransformComp(200f, 200f)))
                         ),
                         listOf(
-                                EntityHostStartData(charactersConfigs[0].name, listOf(TransformComp(700f, 1400f)))
+                                EntityHostStartData(charactersConfigs[0].name, setOf(TransformComp(700f, 1400f)))
                         )
                 )
         )

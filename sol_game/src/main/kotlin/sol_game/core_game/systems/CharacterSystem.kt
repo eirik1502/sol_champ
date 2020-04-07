@@ -7,7 +7,7 @@ import sol_engine.physics_module.PhysicsBodyComp
 import sol_engine.utils.stream.WithIndex
 import sol_game.core_game.components.AbilityComp
 import sol_game.core_game.components.CharacterComp
-import sol_game.core_game.components.FaceCursorComp
+import sol_game.core_game.components.FaceAimComp
 
 class CharacterSystem : SystemBase() {
     override fun onSetup() {
@@ -29,7 +29,7 @@ class CharacterSystem : SystemBase() {
             entity.modifyIfHasComponent(PhysicsBodyComp::class.java)
             { comp -> if (abComp.isExecuting) comp.velocity.mul(0.9f) }
             entity.modifyIfHasComponent(MoveByVelocityComp::class.java) { comp -> comp.disabled = abComp.isExecuting }
-            entity.modifyIfHasComponent(FaceCursorComp::class.java) { comp -> comp.disabled = abComp.isExecuting }
+            entity.modifyIfHasComponent(FaceAimComp::class.java) { comp -> comp.disabled = abComp.isExecuting }
         }
 
 

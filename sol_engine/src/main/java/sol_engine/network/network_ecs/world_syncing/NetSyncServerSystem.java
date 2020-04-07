@@ -6,37 +6,55 @@ import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
+import sol_engine.ecs.listeners.EntityListener;
 import sol_engine.network.network_ecs.host_managing.NetEcsUtils;
 import sol_engine.network.network_ecs.host_managing.NetHostComp;
 import sol_engine.network.network_ecs.host_managing.NetIdComp;
 import sol_engine.network.network_ecs.packets.CreateEntityPacket;
 import sol_engine.network.network_ecs.packets.RemoveEntityPacket;
 import sol_engine.network.network_ecs.packets.UpdateComponentPacket;
+import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_sol_module.NetworkServerModule;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NetSyncServerSystem extends ModuleSystemBase {
     private static Logger logger = LoggerFactory.getLogger(NetSyncServerSystem.class);
 
+    private int nextEntityNetId = 0;
     private Set<Entity> prevEntities = new HashSet<>();
+    private List<GameHost> connectedHosts = new ArrayList<>();
 
     @Override
     protected void onSetup() {
-        usingComponents(NetIdComp.class, NetSyncComp.class);
+        usingComponents(NetSyncComp.class);
         usingModules(NetworkServerModule.class);
     }
 
     @Override
     protected void onSetupEnd() {
-        getModule(NetworkServerModule.class).usePacketTypes(UpdateComponentPacket.class);
+        getModule(NetworkServerModule.class)
+                .usePacketTypes(
+                        UpdateComponentPacket.class,
+                        CreateEntityPacket.class,
+                        RemoveEntityPacket.class
+                );
     }
 
     @Override
     protected void onStart() {
         prevEntities.addAll(entities.copyToList());
+
+        // hack because components can't be added after entity is added
+        world.listeners.addEntityListener(EntityListener.WillBeAdded.class, ((entity, world1) -> {
+            if (entity.hasComponent(NetSyncComp.class)) {
+                entity.addComponent(new NetIdComp());
+            }
+        }));
     }
 
     @Override
@@ -49,25 +67,29 @@ public class NetSyncServerSystem extends ModuleSystemBase {
             Sets.SetView<Entity> removedEntities = Sets.difference(prevEntities, currEntities);
             Sets.SetView<Entity> addedEntities = Sets.difference(currEntities, prevEntities);
 
-            removedEntities.stream()
-                    .filter(entity -> entity.getComponent(NetSyncComp.class).syncRemove)
-                    .filter(entity -> !entity.hasComponent(NetHostComp.class)) // host entities are handled by the ServerSystem for now
-                    .map(entity -> createCreateEntityPacket(
-                            entity,
-                            entity.getComponent(NetIdComp.class).id,
-                            entity.getComponent(NetSyncComp.class).syncComponentTypes
-                    ))
-                    .forEach(serverModule::sendPacketAll);
+            // handle added entities
+            addedEntities.forEach(entity -> handleEntityAdded(entity, entity.getComponent(NetSyncComp.class), serverModule));
 
-            addedEntities.stream()
-                    .filter(entity -> entity.getComponent(NetSyncComp.class).syncAdd)
-                    .filter(entity -> !entity.hasComponent(NetHostComp.class)) // host entities are handled by the ServerSystem for now
-                    .map(entity -> createRemoveEntityPacket(entity.getComponent(NetIdComp.class).id))
-                    .forEach(serverModule::sendPacketAll);
+            // handle removed entities
+            removedEntities.forEach(entity -> handleEntityRemoved(entity, entity.getComponent(NetSyncComp.class), serverModule));
+
+            // send all entities to new Host entities (including itself)
+            // should happen after added and removed entites so new entities are not sendt twice
+            List<Entity> newHostEntities = addedEntities.stream()
+                    .filter(entity -> entity.hasComponent(NetHostComp.class))
+                    .collect(Collectors.toList());
+
+            List<Entity> removedHostEntities = removedEntities.stream()
+                    .filter(entity -> entity.hasComponent(NetHostComp.class))
+                    .collect(Collectors.toList());
+
+            handleHostEntitiesAdded(newHostEntities, serverModule);
+            handleHostEntitiesRemoved(removedHostEntities);
 
             prevEntities = currEntities;
         }
 
+        // handle components to be updated
         forEachWithComponents(
                 NetIdComp.class,
                 NetSyncComp.class,
@@ -76,28 +98,48 @@ public class NetSyncServerSystem extends ModuleSystemBase {
                 });
     }
 
-    private RemoveEntityPacket createRemoveEntityPacket(int netId) {
-        return new RemoveEntityPacket(netId);
+    private void handleEntityAdded(Entity entity, NetSyncComp netSyncComp, NetworkServerModule serverModule) {
+        // add a netIdComp
+        int newNetId = createEntityNetId();
+
+        // we would like to create the component here, but we fall abck on a hack to add the component when an entity is added, then update it here
+//        entity.addComponent(new NetIdComp(newNetId));
+        entity.modifyComponent(NetIdComp.class, comp -> comp.id = newNetId);
+
+        if (netSyncComp.syncAdd) {
+            CreateEntityPacket createEntityPacket = NetEcsUtils.createAddEntityPacket(entity);
+            serverModule.sendPacket(createEntityPacket, connectedHosts);
+        }
     }
 
-    private CreateEntityPacket createCreateEntityPacket(
-            Entity entity,
-            int netId,
-            Set<Class<? extends Component>> syncComponents
-    ) {
-        String className = entity.className;
-        if (className == null) {
-            logger.error("creating createEntityPacket for an entity with no className");
+    private void handleEntityRemoved(Entity entity, NetSyncComp netSyncComp, NetworkServerModule serverModule) {
+        if (netSyncComp.syncRemove) {
+            int netId = entity.getComponent(NetIdComp.class).id;
+            RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket(netId);
+            serverModule.sendPacket(removeEntityPacket, connectedHosts);
         }
+    }
 
-        Set<Component> updateComponents = NetEcsUtils.componentsToBeSynced(entity, syncComponents, logger);
+    private void handleHostEntitiesAdded(List<Entity> newHostEntities, NetworkServerModule serverModule) {
+        if (!newHostEntities.isEmpty()) {
+            List<CreateEntityPacket> allEntitiesCreatePackets = entitiesStream()
+                    .filter(entity -> entity.getComponent(NetSyncComp.class).syncAdd)
+                    .map(NetEcsUtils::createAddEntityPacket)
+                    .collect(Collectors.toList());
 
-        return new CreateEntityPacket(
-                netId,
-                entity.className,
-                new ArrayList<>(),
-                new ArrayList<>(updateComponents)
-        );
+            newHostEntities.stream()
+                    .map(entity -> entity.getComponent(NetHostComp.class).host)
+                    .peek(newHost -> allEntitiesCreatePackets
+                            .forEach(createEntityPacket -> serverModule.sendPacket(createEntityPacket, newHost))
+                    )
+                    .forEach(connectedHosts::add);
+        }
+    }
+
+    private void handleHostEntitiesRemoved(List<Entity> removedHostEntities) {
+        removedHostEntities.stream()
+                .map(removedHostEntity -> removedHostEntity.getComponent(NetHostComp.class).host)
+                .forEach(connectedHosts::remove);
     }
 
     private void syncComponents(
@@ -117,7 +159,11 @@ public class NetSyncServerSystem extends ModuleSystemBase {
                 })
                 .map(entity::getComponent)
                 .forEach(comp -> {
-                    serverModule.sendPacketAll(new UpdateComponentPacket(netId, comp));
+                    serverModule.sendPacket(new UpdateComponentPacket(netId, comp), connectedHosts);
                 });
+    }
+
+    private int createEntityNetId() {
+        return nextEntityNetId++;
     }
 }

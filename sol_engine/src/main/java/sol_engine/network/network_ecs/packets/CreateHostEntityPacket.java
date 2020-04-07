@@ -6,6 +6,7 @@ import sol_engine.network.network_game.GameHost;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class CreateHostEntityPacket extends CreateEntityPacket {
 
@@ -16,12 +17,12 @@ public class CreateHostEntityPacket extends CreateEntityPacket {
         super();
     }
 
-    public CreateHostEntityPacket(GameHost host, int netId, String entityClass) {
-        this(host, netId, entityClass, Collections.emptyList(), Collections.emptyList());
+    public CreateHostEntityPacket(GameHost host, String name, int netId, String entityClass) {
+        this(host, netId, name, entityClass, Collections.emptySet(), Collections.emptySet());
     }
 
-    public CreateHostEntityPacket(GameHost host, int netId, String entityClass, List<Component> createComponents, List<Component> updateComponents) {
-        super(netId, entityClass, new ArrayList<>(createComponents), new ArrayList<>(updateComponents));
+    public CreateHostEntityPacket(GameHost host, int netId, String name, String entityClass, Set<Component> createComponents, Set<Component> updateComponents) {
+        super(netId, name, entityClass, createComponents, updateComponents);
         this.host = host;
     }
 

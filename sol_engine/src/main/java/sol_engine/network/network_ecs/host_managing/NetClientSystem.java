@@ -21,8 +21,8 @@ public class NetClientSystem extends ModuleSystemBase {
 
     @Override
     protected void onSetupEnd() {
-        NetworkClientModule clientModule = getModule(NetworkClientModule.class);
-        clientModule.usePacketTypes(CreateHostEntityPacket.class);
+//        NetworkClientModule clientModule = getModule(NetworkClientModule.class);
+//        clientModule.usePacketTypes(CreateHostEntityPacket.class);
 
 //        List<Class<? extends NetworkPacket>> staticConnectPacketTypes = entitiesStream()
 //                .map(entity -> entity.getComponent(NetClientComp.class))
@@ -41,6 +41,8 @@ public class NetClientSystem extends ModuleSystemBase {
     protected void onUpdate() {
         NetworkClientModule clientModule = getModule(NetworkClientModule.class);
         forEachWithComponents(NetClientComp.class, (entity, clientComp) -> {
+
+            // handle static connect packets
             if (clientComp.staticConnectionPacketType != null && clientComp.staticConnectionPacketHandler != null) {
                 clientModule.peekPacketsOfType(clientComp.staticConnectionPacketType).forEach(packet -> {
                     ClassUtils.instanciateNoarg(clientComp.staticConnectionPacketHandler)
@@ -49,18 +51,18 @@ public class NetClientSystem extends ModuleSystemBase {
                 });
             }
 
-            clientModule.peekPacketsOfType(CreateHostEntityPacket.class)
-                    .forEach(connectPacket -> {
-                        Entity newHostEntity = NetEcsUtils.addEntityForHost(
-                                false,
-                                connectPacket.host,
-                                connectPacket.netId,
-                                connectPacket.entityClass,
-                                connectPacket.updateComponents,
-                                world
-                        );
-                        logger.info("Entiity created for a HostConnectedPacket, entity: " + newHostEntity + " packet: " + connectPacket);
-                    });
+//            clientModule.peekPacketsOfType(CreateHostEntityPacket.class)
+//                    .forEach(connectPacket -> {
+//                        Entity newHostEntity = NetEcsUtils.addEntityForHost(
+//                                false,
+//                                connectPacket.host,
+//                                connectPacket.netId,
+//                                connectPacket.entityClass,
+//                                connectPacket.updateComponents,
+//                                world
+//                        );
+//                        logger.info("Entiity created for a HostConnectedPacket, entity: " + newHostEntity + " packet: " + connectPacket);
+//                    });
         });
     }
 }

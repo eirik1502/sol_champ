@@ -5,12 +5,16 @@ import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
+import sol_engine.network.network_ecs.host_managing.NetEcsUtils;
 import sol_engine.network.network_ecs.host_managing.NetIdComp;
+import sol_engine.network.network_ecs.packets.CreateEntityPacket;
+import sol_engine.network.network_ecs.packets.RemoveEntityPacket;
 import sol_engine.network.network_ecs.packets.UpdateComponentPacket;
 import sol_engine.network.network_sol_module.NetworkClientModule;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NetSyncClientSystem extends ModuleSystemBase {
     private final static List<UpdateComponentPacket> EMPTY_PACKET_LIST = Collections.emptyList();
@@ -26,38 +30,39 @@ public class NetSyncClientSystem extends ModuleSystemBase {
 
     @Override
     protected void onSetupEnd() {
-        getModule(NetworkClientModule.class).usePacketTypes(UpdateComponentPacket.class);
+        getModule(NetworkClientModule.class)
+                .usePacketTypes(
+                        UpdateComponentPacket.class,
+                        CreateEntityPacket.class,
+                        RemoveEntityPacket.class
+                );
     }
 
     @Override
     protected void onUpdate() {
         NetworkClientModule clientModule = getModule(NetworkClientModule.class);
 
+        Deque<CreateEntityPacket> createEntityPackets = clientModule.peekPacketsOfType(CreateEntityPacket.class);
+        Deque<RemoveEntityPacket> removeEntityPackets = clientModule.peekPacketsOfType(RemoveEntityPacket.class);
+        Set<Integer> removeEntitiesNetIds = removeEntityPackets.stream().map(packet -> packet.netId).collect(Collectors.toSet());
         Deque<UpdateComponentPacket> updateComponentPackets = clientModule.peekPacketsOfType(UpdateComponentPacket.class);
-
         Map<Integer, List<UpdateComponentPacket>> updateCompPacketsByNetId = updateComponentPackets.stream()
                 .collect(Collectors.groupingBy(packet -> packet.netId));
 
-        forEachWithComponents(
-                NetIdComp.class,
-                NetSyncComp.class,
-                (entity, netIdComp, netSyncComp) -> {
+        // create new entities
+        Stream<Entity> newHostEntitiesStream = createEntityPackets.stream()
+                .map(packet -> NetEcsUtils.addEntityFromPacket(packet, world));
 
-                    int netId = netIdComp.id;
-                    Set<Class<? extends Component>> acceptedSyncComponents = netSyncComp.syncComponentTypes;
+        // update components and remove existing entities and new host entities
+        Stream.concat(entitiesStream(), newHostEntitiesStream).forEach(entity -> {
+            int netId = entity.getComponent(NetIdComp.class).id;
+            updateCompPacketsByNetId.getOrDefault(netId, EMPTY_PACKET_LIST).forEach(packet -> {
+                NetEcsUtils.updateComponentsFromPacket(packet, entity);
+            });
 
-                    updateCompPacketsByNetId.getOrDefault(netId, EMPTY_PACKET_LIST).forEach(packet -> {
-                        Component targetComp = packet.component;
-                        Class<? extends Component> compType = targetComp.getClass();
-
-                        if (acceptedSyncComponents.contains(compType)) {
-                            entity.modifyIfHasComponent(compType, comp -> comp.copy(targetComp));
-                        } else {
-                            logger.warn("Trying to sync a component that is not present in NetSyncComp." +
-                                    " CompType: " + targetComp + ", Entity: " + entity);
-                        }
-                    });
-                }
-        );
+            if (removeEntitiesNetIds.contains(netId)) {
+                world.removeEntity(entity);
+            }
+        });
     }
 }

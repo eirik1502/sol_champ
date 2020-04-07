@@ -43,7 +43,9 @@ class AbilitySystem : SystemBase() {
     private fun handleExecutingAbility(entity: Entity, abilityComp: AbilityComp, transformComp: TransformComp, inputComp: InputComp) {
         val ability = abilityComp.executingAbility!!
         if (abilityComp.executingAbilityStartupDelayTimer-- == 0) {
-            instanciateAbilityEntity(ability, entity, transformComp.position, inputComp.vectorInput("aimXY"))
+            instanciateAbilityEntity(ability, entity, transformComp.position,
+                    Vector2f(inputComp.floatInput("aimX"), inputComp.floatInput("aimY"))
+            )
         }
         if (abilityComp.executingAbilityExecutionTimer-- == 0) {
             resetExecutingAbility(abilityComp)

@@ -3,20 +3,18 @@ package sol_game.core_game
 import org.joml.Vector2f
 import sol_engine.creator.CreatorSystem
 import sol_engine.engine_interface.SolSimulation
-import sol_engine.game_utils.CollisionInteractionSystem
 import sol_engine.game_utils.DestroySelfTimedSystem
 import sol_engine.game_utils.EmitterTimedSystem
 import sol_engine.game_utils.MoveByVelocitySystem
 import sol_engine.graphics_module.*
 import sol_engine.input_module.*
+import sol_engine.network.network_ecs.host_managing.NetClientSystem
 import sol_engine.network.network_ecs.host_managing.NetEcsUtils
 import sol_engine.network.network_ecs.world_syncing.NetSyncClientSystem
 import sol_engine.network.network_game.game_client.ClientConfig
 import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.network.network_sol_module.NetworkClientModuleConfig
 import sol_engine.physics_module.CollisionSystem
-import sol_engine.physics_module.NaturalCollisionResolutionSystem
-import sol_engine.physics_module.PhysicsSystem
 import sol_game.core_game.components.SolActionsPacketComp
 import sol_game.core_game.components.SolStatePacketComp
 import sol_game.core_game.systems.*
@@ -80,24 +78,24 @@ class SolGameSimulationClient(
     override fun onSetupWorld() {
         world.addSystems(
                 ClientNetworkInputSystem::class.java,  // retrieves game state from server
+                NetClientSystem::class.java,
                 NetSyncClientSystem::class.java,
 
                 MoveByVelocitySystem::class.java,
 
-                FaceCursorSystem::class.java,
+                FaceAimSystem::class.java,
                 CharacterSystem::class.java,
                 AbilitySystem::class.java,
                 EmitterTimedSystem::class.java,
                 DestroySelfTimedSystem::class.java,
 
                 CollisionSystem::class.java,
-                CollisionInteractionSystem::class.java,
                 DamageSystem::class.java,
                 KnockbackSystem::class.java,
-                NaturalCollisionResolutionSystem::class.java,
+//                NaturalCollisionResolutionSystem::class.java,
 
                 SceneChildSystem::class.java,
-                PhysicsSystem::class.java,
+//                PhysicsSystem::class.java,
 
                 // rendering
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
@@ -112,7 +110,7 @@ class SolGameSimulationClient(
                 ClientNetworkOutputSystem::class.java  // send the inputs to the server
         )
 
-        NetEcsUtils.addNetClientHostSpawner(world,
+        NetEcsUtils.addNetClientEntity(world,
                 CharactersConfigsPacket::class.java,
                 ClientCharacterConfigsHandler::class.java
         );

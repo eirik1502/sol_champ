@@ -31,6 +31,6 @@ data class CharacterConfig(
         val characterId: String = NetworkUtils.uuid(),
         val name: String = "default-name",
         val radius: Float = 32f,
-        val moveAccel: Float = 500f,
+        val moveVelocity: Float = 32f,
         val abilities: List<AbilityConfig> = listOf(AbilityConfig(), AbilityConfig(), AbilityConfig())
 )

@@ -4,6 +4,7 @@ import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.utils.collections.Pair;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiConsumer;
 import java.util.stream.Collector;
@@ -50,7 +51,7 @@ public class PacketsQueue {
     }
 
     public void add(GameHost host, NetworkPacket packet) {
-        queueByType.computeIfAbsent(getType(packet), type_ -> new HashMap<>())
+        queueByType.computeIfAbsent(getType(packet), type_ -> new ConcurrentHashMap<>())
                 .computeIfAbsent(host, queueByHost -> new ConcurrentLinkedDeque<>())
                 .add(packet);
     }
