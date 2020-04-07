@@ -66,11 +66,11 @@ public enum GuiWindowFlags implements GuiFlags {
      */
     NoBringToFrontOnFocus(WindowFlag.NoBringToFrontOnFocus.i),
     /**
-     * Always show vertical scrollbar (even if ContentSize.y < Size.y)
+     * Always show vertical scrollbar (even if ContentSize.y lessThan Size.y)
      */
     AlwaysVerticalScrollbar(WindowFlag.AlwaysVerticalScrollbar.i),
     /**
-     * Always show horizontal scrollbar (even if ContentSize.x < Size.x)
+     * Always show horizontal scrollbar (even if ContentSize.x lessThan Size.x)
      */
     AlwaysHorizontalScrollbar(WindowFlag.AlwaysHorizontalScrollbar.i),
     /**

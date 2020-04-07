@@ -18,7 +18,11 @@ public abstract class Component implements Cloneable {
             .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
 
     /**
-     * check equality by gson conversion. Field order should be consistent
+     * check equality by json serialization conversion. Using Gson, field order should be consistent, otherwise this method will fail.
+     *
+     * @param comp1 first Component.
+     * @param comp2 second component.
+     * @return true if the components are equal, fals otherwise.
      */
     public static boolean areEqual(Component comp1, Component comp2) {
         return gson.toJson(comp1).equals(gson.toJson(comp2));

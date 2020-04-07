@@ -149,7 +149,7 @@ public class WorldProfiler implements CreatorFrame, WorldUpdateListener {
 
     @Override
     public void onUpdateStart(World world) {
-        totalWorkTimer.setTime();
+        totalWorkTimer.setTimeReference();
     }
 
     @Override
@@ -159,7 +159,7 @@ public class WorldProfiler implements CreatorFrame, WorldUpdateListener {
 
     @Override
     public void onInternalWorkStart(World world) {
-        partialWorkTimer.setTime();
+        partialWorkTimer.setTimeReference();
     }
 
     @Override
@@ -169,7 +169,7 @@ public class WorldProfiler implements CreatorFrame, WorldUpdateListener {
 
     @Override
     public void onSystemUpdateStart(World world, SystemBase system) {
-        partialWorkTimer.setTime();
+        partialWorkTimer.setTimeReference();
     }
 
     @Override

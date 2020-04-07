@@ -41,7 +41,7 @@ public class LinearTicker implements Ticker {
     @Override
     public void start() {
         running = true;
-        this.deltaTimer.setTime();
+        this.deltaTimer.setTimeReference();
 
         float deltaTime = 0;
         float timeSinceUpdate = 0;

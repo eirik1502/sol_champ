@@ -4,20 +4,17 @@ public class DeltaTimer {
 
     private long lastTime;
 
-
     /**
-     * Sets time point to now.
-     *
-     * @return
+     * Sets the time reference point to now.
      */
-    public void setTime() {
+    public void setTimeReference() {
         lastTime = System.nanoTime();
     }
 
     /**
-     * Returns the delta time without reseting the time point.
+     * Get the time since the last delta time reference point without updating the reference point.
      *
-     * @return
+     * @return time since last reference point
      */
     public float getTime() {
         long newTime = System.nanoTime();
@@ -27,10 +24,10 @@ public class DeltaTimer {
     }
 
     /**
-     * Retrievs the time passed since last time point.
-     * This sets the timepoint to now.
+     * Retrieves the time passed since last reference time point.
+     * This sets the new delta reference to now.
      *
-     * @return
+     * @return time since last reference point
      */
     public float deltaTime() {
         long newTime = System.nanoTime();
