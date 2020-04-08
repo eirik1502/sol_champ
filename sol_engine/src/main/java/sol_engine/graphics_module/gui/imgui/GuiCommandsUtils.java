@@ -21,7 +21,7 @@ public class GuiCommandsUtils {
     private static final MutableProperty0<Float> imguiMPropFloat = new MutableProperty0<>();
     //    private static final MutableProperty0<String> imguiMPropString = new MutableProperty0<>();
     private static final MutableProperty0<?> imguiMPropObject = new MutableProperty0<>();
-    private static final char[] imguiMPropString = new char[INPUT_STRING_MAX_LENGTH];
+    private static final byte[] imguiMPropBytes = new byte[INPUT_STRING_MAX_LENGTH];
 
     private static final Vec2 imguiVec2Zero = new Vec2();
     private static final Vec2 imguiVec2 = new Vec2();
@@ -57,11 +57,12 @@ public class GuiCommandsUtils {
         return ret;
     }
 
-    static boolean withConvertedMString(MString value, Function.OneArgReturn<char[], Boolean> withConvertedValue) {
-        char[] valueChars = value.value.toCharArray();
-        System.arraycopy(valueChars, 0, imguiMPropString, 0, valueChars.length);
-        boolean ret = withConvertedValue.invoke(imguiMPropString);
-        value.value = Arrays.toString(imguiMPropString).stripTrailing();
+    static boolean withConvertedMString(MString value, Function.OneArgReturn<byte[], Boolean> withConvertedValue) {
+        byte[] valueCharsBytes = value.value.getBytes();
+        System.arraycopy(valueCharsBytes, 0, imguiMPropBytes, 0, valueCharsBytes.length);
+        boolean ret = withConvertedValue.invoke(imguiMPropBytes);
+//        value.value = Arrays.toString(imguiMPropString).stripTrailing();
+        value.value = new String(imguiMPropBytes).stripTrailing();
         return ret;
     }
 
@@ -89,7 +90,7 @@ public class GuiCommandsUtils {
         return imguiMPropBooleanArray[0];
     }
 
-    static String withConvertedMString(String value, Function.OneArgReturn<char[], Boolean> withConvertedValue) {
+    static String withConvertedMString(String value, Function.OneArgReturn<byte[], Boolean> withConvertedValue) {
         MString mstring = new MString(value);
         withConvertedMString(mstring, withConvertedValue);
         return mstring.value;
