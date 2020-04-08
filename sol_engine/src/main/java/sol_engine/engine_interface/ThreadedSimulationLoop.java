@@ -2,6 +2,8 @@ package sol_engine.engine_interface;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.utils.Function;
+import sol_engine.utils.mutable_primitives.MObject;
 import sol_engine.utils.tickers.Ticker;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,6 +23,7 @@ public class ThreadedSimulationLoop {
 
     private final Object waitStartLock = new Object();
     private AtomicBoolean setupComplete = new AtomicBoolean(false);
+    private AtomicBoolean waitForNextStepFinished = new AtomicBoolean(false);
 
     private TerminationCallback terminationCallback = (a, b, c) -> {
     };
@@ -83,6 +86,27 @@ public class ThreadedSimulationLoop {
         synchronized (waitStartLock) {
             waitStartLock.notify();  // notify the thread so it startst the simulation
         }
+    }
+
+    public void onNextStepFinished(OnStepFinishListener callback) {
+        simulationLoop.onNextStepFinished(callback);
+    }
+
+    public <T> T waitForNextStepFinish(Function.OneArgReturn<SolSimulation, T> producer) {
+        MObject<T> retVal = new MObject<>();
+        waitForNextStepFinished.set(true);
+        simulationLoop.onNextStepFinished(simulation -> {
+            retVal.value = producer.invoke(simulation);
+            waitForNextStepFinished.set(false);
+        });
+        while (waitForNextStepFinished.get()) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return retVal.value;
     }
 
     public void startAndWaitUntilFinished() {

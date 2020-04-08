@@ -5,6 +5,10 @@ import org.slf4j.LoggerFactory;
 import sol_engine.utils.tickers.LinearTicker;
 import sol_engine.utils.tickers.Ticker;
 
+import java.util.Deque;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 public class SimulationLoop {
     private final Logger logger = LoggerFactory.getLogger(SimulationLoop.class);
 
@@ -14,6 +18,8 @@ public class SimulationLoop {
     private SolSimulation simulation;
     private Ticker ticker;
     private boolean shouldTerminate = false;
+
+    private Deque<OnStepFinishListener> nextStepFinsishedCallbacks = new ConcurrentLinkedDeque<>();
 
 
     public SimulationLoop(SolSimulation simulation) {
@@ -40,6 +46,10 @@ public class SimulationLoop {
         runBlocking();
     }
 
+    public void onNextStepFinished(OnStepFinishListener callback) {
+        nextStepFinsishedCallbacks.add(callback);
+    }
+
     private void runBlocking() {
         ticker.setListener(deltaTime -> {
             if (shouldTerminate) {
@@ -51,6 +61,10 @@ public class SimulationLoop {
             // simulation may be terminated by another condition, so this has to be checked as well
             if (simulation.isTerminated()) {
                 ticker.stop();
+            }
+
+            while (!nextStepFinsishedCallbacks.isEmpty()) {
+                nextStepFinsishedCallbacks.poll().stepFinished(simulation);
             }
         });
         ticker.start();
