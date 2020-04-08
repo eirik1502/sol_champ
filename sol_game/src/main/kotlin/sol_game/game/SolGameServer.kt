@@ -3,6 +3,7 @@ package sol_game.game
 import org.slf4j.LoggerFactory
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.engine_interface.ThreadedSimulationLoop
+import sol_engine.network.network_game.game_client.ClientConnectionData
 import sol_engine.network.network_game.game_server.GameServerConfig
 import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_engine.network.network_sol_module.NetworkServerModule
@@ -14,13 +15,15 @@ typealias TerminationCallback = (gameServer: SolGameServer) -> Unit
 
 class SolGameServer(
         charactersConfigs: List<CharacterConfig> = listOf(),
-        requestPort: Int = DEFAULT_PORT,
+        requestPort: Int = -1,
         allowObservers: Boolean = true,
         headless: Boolean = false,
         debugUI: Boolean = false,  // cannot be set in headless mode
         // gui is not supported when running multiple instances of SolGameServer / Client on multiple threads
         allowGui: Boolean = true
 ) {
+
+    private lateinit var connectionData: ServerConnectionData
 
     private val serverSim: SolGameSimulationServer = SolGameSimulationServer(
             charactersConfigs,
@@ -39,7 +42,8 @@ class SolGameServer(
 
     fun setup(): ServerConnectionData {
         threadedLoop.setup();
-        return serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
+        connectionData = serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
+        return connectionData
     }
 
     fun start() {
@@ -47,7 +51,15 @@ class SolGameServer(
     }
 
     fun getConnectionData(): ServerConnectionData {
-        return serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
+        return connectionData
+    }
+
+    fun getPlayersConnectedCount(): Int {
+        return -1
+    }
+
+    fun getPlayersConnectionData(): ClientConnectionData {
+        return ClientConnectionData(false)
     }
 
     fun waitUntilFinished() {

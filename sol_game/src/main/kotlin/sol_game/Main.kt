@@ -7,8 +7,6 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import sol_engine.network.network_game.game_server.ServerConnectionData
-import sol_game.core_game.AbilityConfig
-import sol_game.core_game.AbilityType
 import sol_game.core_game.CharacterConfig
 import sol_game.game.*
 
@@ -69,7 +67,7 @@ fun main(args: Array<String>) = mainBody {
 }
 
 val jsonMapper = jacksonObjectMapper()
-val frankConfig: CharacterConfig = CharacterJsonDeserializer.fromFile("exampleFrankConfig.json")
+val frankConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("exampleFrankConfig.json")
 
 val charactersConfig = listOf(
         frankConfig,

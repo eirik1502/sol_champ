@@ -101,11 +101,11 @@ public class ThreadedSimulationLoop {
         } else {
             logger.warn("Trying to wait for simulation before it is started");
         }
+        terminationCallback.onTermination(this, simulationLoop, simulationLoop.getSimulation());
     }
 
     public void terminate() {
         simulationLoop.terminate();  // should make the thread stop
         waitUntilFinished();
-        terminationCallback.onTermination(this, simulationLoop, simulationLoop.getSimulation());
     }
 }

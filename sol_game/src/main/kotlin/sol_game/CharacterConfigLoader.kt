@@ -8,11 +8,11 @@ import sol_game.core_game.CharacterConfig
 import java.io.File
 
 
-class CharacterJsonDeserializer {
+class CharacterConfigLoader {
     companion object {
 
 
-        fun fromFile(filename: String): CharacterConfig {
+        fun fromResourceFile(filename: String): CharacterConfig {
 
             val configStr = ResourceUtils.loadResourceAsString(filename)
             val mapper = jacksonObjectMapper()
@@ -20,6 +20,11 @@ class CharacterJsonDeserializer {
             return config
         }
 
+        fun fromStr(configJson: String): CharacterConfig {
+            val mapper = jacksonObjectMapper()
+            val config: CharacterConfig = mapper.readValue(configJson)
+            return config
+        }
 
     }
 }
