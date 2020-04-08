@@ -6,6 +6,7 @@ import sol_engine.ecs.Entity
 import sol_engine.ecs.SystemBase
 import sol_engine.input_module.InputComp
 import sol_engine.physics_module.PhysicsBodyComp
+import sol_engine.utils.math.MathF
 import sol_game.core_game.Ability
 import sol_game.core_game.components.AbilityComp
 import sol_game.core_game.components.HitboxComp
@@ -54,25 +55,28 @@ class AbilitySystem : SystemBase() {
     }
 
     private fun instanciateAbilityEntity(ability: Ability, owner: Entity, characterPos: Vector2f, targetPos: Vector2f) {
-        val cursorDir: Vector2f = targetPos.sub(characterPos, Vector2f())
+        val aimDirVec: Vector2f = targetPos.sub(characterPos, Vector2f())
+        val normAimDirVec = aimDirVec.normalize(Vector2f())
 //        val position = characterPos.add(offset, Vector2f())
-        val impulse: Vector2f = cursorDir.mul(ability.initialImpulse, Vector2f())
+        val impulse: Vector2f = normAimDirVec.mul(ability.initialImpulse, Vector2f())
 
         val abEntity = world.addEntity(ability.abilityEntityClass, ability.abilityEntityClass)
                 .modifyIfHasComponent(HitboxComp::class.java) { comp -> comp.owner = owner }
-                .modifyIfHasComponent(PhysicsBodyComp::class.java) { comp -> comp.impulse.add(impulse) }
-                .modifyIfHasComponent(SceneChildComp::class.java) { comp -> comp.parent = owner }
-        val initialPosition =
-                if (abEntity.hasComponent(SceneChildComp::class.java))
-                // local offset position
-                    Vector2f(ability.initialOffset, 0f)
-                else
-                // global offset position
-                    characterPos.add(
-                            cursorDir.normalize(Vector2f()).mul(ability.initialOffset),
-                            Vector2f()
-                    )
-        abEntity.modifyIfHasComponent(TransformComp::class.java) { comp -> comp.setPosition(initialPosition) }
+                .modifyIfHasComponent(PhysicsBodyComp::class.java) { comp -> comp.velocity.add(impulse) }
+
+        if (abEntity.hasComponent(SceneChildComp::class.java)) {
+            // position relative to parent
+            val initialRelativePos = Vector2f(ability.initialOffset, 0f)
+            abEntity
+                    .modifyIfHasComponent(TransformComp::class.java) { comp -> comp.setPosition(initialRelativePos) }
+                    .modifyComponent(SceneChildComp::class.java) { comp -> comp.parent = owner }
+        } else {
+            val initialPosition = normAimDirVec.mul(ability.initialOffset, Vector2f()).add(characterPos)
+            val pointDirection: Float = MathF.pointDirection(Vector2f(), normAimDirVec)
+            abEntity.modifyIfHasComponent(TransformComp::class.java) { comp ->
+                comp.setPosition(initialPosition).setRotationZ(pointDirection)
+            }
+        }
     }
 
     private fun resetExecutingAbility(abilityComp: AbilityComp) {

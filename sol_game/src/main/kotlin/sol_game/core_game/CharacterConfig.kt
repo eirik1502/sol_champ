@@ -17,6 +17,7 @@ data class AbilityConfig(
 
         val activeTime: Int = 10,
         val startupTime: Int = 5,
+        val executionTime: Int = 10,
         val endlagTime: Int = 3,
         val rechargeTime: Int = 10,
 

@@ -26,6 +26,7 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
                     DestroySelfTimedComp(abConfig.activeTime),
                     CollisionComp(PhysicsBodyShape.Circ(abConfig.radius)),
                     HitboxComp(abConfig.damage, abConfig.baseKnockback, abConfig.knockbackRatio),
+                    PhysicsBodyComp(1f, 0f, 0.5f),
 //                    SceneChildComp(),
                     NetSyncComp(true, true, setOf(TransformComp::class.java))
             )
@@ -34,7 +35,7 @@ private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<
             abConfig.rechargeTime,
             abConfig.distanceFromChar,
             abConfig.speed,
-            abConfig.startupTime + abConfig.activeTime + abConfig.endlagTime,
+            abConfig.startupTime + abConfig.executionTime + abConfig.endlagTime,
             abConfig.startupTime
     )
     return Pair(abEntityClass, ab)
@@ -55,11 +56,11 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
     val characterEntityClass = EntityClass(config.name)
             .addBaseComponents(
                     TransformComp(),
-                    RenderShapeComp(RenderableShape.CirclePointing(32f, MattMaterial.RED())),
+                    RenderShapeComp(RenderableShape.CirclePointing(config.radius, MattMaterial.RED())),
                     PhysicsBodyComp(10f, 0.05f, 0.5f),
                     MoveByVelocityComp(config.moveVelocity, "mvLeft", "mvRight", "mvUp", "mvDown"),
                     AbilityComp(abAbilities.map { it.second }),
-                    CollisionComp(PhysicsBodyShape.Circ(32f)),
+                    CollisionComp(PhysicsBodyShape.Circ(config.radius)),
                     NaturalCollisionResolutionComp(),
                     CharacterComp("ability1", "ability2", "ability3"),
                     FaceAimComp(),

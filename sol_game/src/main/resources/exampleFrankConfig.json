@@ -1,0 +1,58 @@
+{
+  "name": "Frank",
+  "radius": 48,
+  "moveVelocity": 48,
+  "abilities": [
+    {
+      "name": "rapid shot",
+      "type": "PROJECTILE",
+      "radius": 10,
+      "distanceFromChar": 48,
+      "speed": 600,
+      "activeTime": 100,
+      "startupTime": 1,
+      "executionTime": 0,
+      "endlagTime": 0,
+      "rechargeTime": 10,
+      "damage": 20,
+      "baseKnockback": 100,
+      "knockbackRatio": 1,
+      "knockbackPoint": 32,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "mega shot",
+      "type": "PROJECTILE",
+      "radius": 64,
+      "distanceFromChar": 128,
+      "speed": 1000,
+      "activeTime": 100,
+      "startupTime": 15,
+      "executionTime": 1,
+      "endlagTime": 5,
+      "rechargeTime": 10,
+      "damage": 20,
+      "baseKnockback": 100,
+      "knockbackRatio": 1,
+      "knockbackPoint": 32,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "get off",
+      "type": "MELEE",
+      "radius": 256,
+      "distanceFromChar": 0,
+      "speed": 0,
+      "activeTime": 1,
+      "startupTime": 3,
+      "executionTime": 3,
+      "endlagTime": 7,
+      "rechargeTime": 10,
+      "damage": 20,
+      "baseKnockback": 100,
+      "knockbackRatio": 1,
+      "knockbackPoint": 32,
+      "knockbackTowardPoint": false
+    }
+  ]
+}

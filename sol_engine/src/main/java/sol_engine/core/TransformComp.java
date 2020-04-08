@@ -51,6 +51,15 @@ public class TransformComp extends Component {
         return position;
     }
 
+    public float getRotationZ() {
+        return rotationZ;
+    }
+
+    public TransformComp setRotationZ(float value) {
+        this.rotationZ = value;
+        return this;
+    }
+
     public TransformComp clone() {
         TransformComp transComp = new TransformComp();
         transComp.position.set(position);
