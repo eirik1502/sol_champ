@@ -11,4 +11,3 @@ rootProject.name = "sol_champ"
 
 include("sol_engine")
 include("sol_game")
-include("sol_examples")
