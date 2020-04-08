@@ -13,9 +13,14 @@ sourceSets {
     }
     test {
         java {
-            exclude("sol_engine/loaders/**", "sol_engine/ecs/**")
+            exclude("sol_engine/archive/**", "sol_engine/loaders/**", "sol_engine/ecs/**")
         }
     }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
