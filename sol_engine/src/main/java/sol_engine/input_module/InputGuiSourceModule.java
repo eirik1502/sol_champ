@@ -1,5 +1,6 @@
 package sol_engine.input_module;
 
+import imgui.classes.IO;
 import org.joml.Vector2f;
 import sol_engine.graphics_module.GraphicsModule;
 import sol_engine.graphics_module.Window;
@@ -134,7 +135,7 @@ public class InputGuiSourceModule extends InputSourceModule {
                 this.keysHeld[key] = false;
             }
 
-            if (renderer.getGui().io.getWantCaptureKeyboard()) {
+            if (renderer.getGuiRenderer().getIO().getWantCaptureKeyboard()) {
                 this.keysHeld[key] = false;
             }
         });
@@ -146,19 +147,19 @@ public class InputGuiSourceModule extends InputSourceModule {
                 this.mouseButtonsHeld[button] = false;
             }
 
-            if (renderer.getGui().io.getWantCaptureMouse()) {
+            if (renderer.getGuiRenderer().getIO().getWantCaptureMouse()) {
                 this.mouseButtonsHeld[button] = false;
             }
         });
 
         window.setCursorPosCallback((window1, xpos, ypos) -> {
-            if (!renderer.getGui().io.getWantCaptureMouse()) {
+            if (!renderer.getGuiRenderer().getIO().getWantCaptureMouse()) {
                 this.cursorPosition.set(xpos, ypos).mul(cursorPosScale);
             }
         });
 
         window.setMouseScrollCallback((window1, offsetX, offsetY) -> {
-            renderer.getGui().scroll = offsetY;
+            renderer.getGuiRenderer().setScroll(offsetY);
         });
     }
 

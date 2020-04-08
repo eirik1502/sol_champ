@@ -3,6 +3,7 @@ package sol_engine.utils.collections;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class ImmutableListView<T> implements Iterable<T> {
@@ -11,6 +12,10 @@ public class ImmutableListView<T> implements Iterable<T> {
 
     public ImmutableListView(List<T> forList) {
         this.list = forList;
+    }
+
+    public int size() {
+        return list.size();
     }
 
     @Override
@@ -29,6 +34,15 @@ public class ImmutableListView<T> implements Iterable<T> {
     public List<T> copyToList(List<T> copyTo) {
         copyTo.addAll(this.list);
         return copyTo;
+    }
+
+    public Set<T> copyToSet(Set<T> copyTo) {
+        copyTo.addAll(this.list);
+        return copyTo;
+    }
+
+    public boolean equalsList(List<T> o) {
+        return list.equals(o);
     }
 
     public boolean equals(Object o) {

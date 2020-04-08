@@ -3,9 +3,9 @@ package sol_engine.utils.tickers;
 public interface Ticker {
 
     /**
-     * Sets the listener t be called on tick
+     * Sets the listener to be called on tick
      *
-     * @param listener
+     * @param listener the listener to be called
      */
     void setListener(Tickable listener);
 
@@ -15,7 +15,7 @@ public interface Ticker {
     void start();
 
     /**
-     * Stops the ticker on next instruction cycle.
+     * Stops the ticker on next tick.
      */
     void stop();
 }

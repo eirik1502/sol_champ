@@ -1,5 +1,6 @@
 package sol_game.networked_sol_game
 
+import mu.KotlinLogging
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.utils.Repeat
 import java.util.*
@@ -21,14 +22,16 @@ fun errorGameInfo(): NetworkedSolGameInfo {
     )
 }
 
-class SolGameNetworked {
+private val logger = KotlinLogging.logger { }
+
+class SolGameServer {
 
     lateinit var server: Server
-    lateinit var game: SolGameExternalIO
+    var game: SolGameExternalIO? = null
     lateinit var gameLoop: SimulationLoop
 
-    fun networkSetup(config: NetworkedSolGameConfig): NetworkedSolGameInfo {
-        val gameServerPort = findFreeNetPort()
+    fun networkSetup(config: SolGameServerConfig): NetworkedSolGameInfo {
+        val gameServerPort = findFreeSocketPort()
         if (gameServerPort == -1) {
             return errorGameInfo()
         }
@@ -52,12 +55,16 @@ class SolGameNetworked {
         )
     }
 
-    fun start() {
+    fun start(headless: Boolean = true) {
         server.start()
+        logger.info { "Sol server started, waiting for connections" }
+
         if (server.waitForPlayerConnections()) {
+            logger.info { "all players connected, starting game" }
             game = SolGameExternalIO(
                     server::pollPlayersInput,
-                    server::pushGameState
+                    server::pushGameState,
+                    headless = headless
             )
             gameLoop = SimulationLoop(game)
             gameLoop.start() // blocking until game ends
@@ -65,6 +72,15 @@ class SolGameNetworked {
             println("ERROR, server timed out without getting player connections")
         }
 
+        stop()
+    }
+
+    fun stop() {
+        game?.let { game ->
+            if (!game.isTerminated) {
+                game.terminate()
+            }
+        }
         server.stop()
     }
 }

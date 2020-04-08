@@ -1,6 +1,9 @@
 package sol_engine.ecs;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sol_engine.ecs.listeners.EntityListener;
 import sol_engine.utils.collections.ImmutableListView;
 
 import java.lang.reflect.Constructor;
@@ -9,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class World {
+    private final Logger logger = LoggerFactory.getLogger(World.class);
 
     private static List<Entity> EMPTY_ENTITIES_LIST = new ArrayList<>();
     private static ImmutableListView<Entity> EMPTY_ENTITIES_LIST_VIEW = new ImmutableListView<>(EMPTY_ENTITIES_LIST);
@@ -79,9 +83,10 @@ public class World {
     public <T extends SystemBase> T addSystemInstance(T sys) {
         Class<T> systemType = (Class<T>) sys.getClass();
         systems.put(systemType, sys);
+        sys.internalSetup(this); // component families must be set here
         listeners.systemAddedListeners.forEach(l -> l.onSystemAdded(sys.getClass(), sys));
-        sys.internalSetup(); // component families must be set here
-        sys.internalStart(this, familyHandler.getEntitiesOfFamily(sys.compFamily));
+        sys.internalSetupEnd(familyHandler.getEntitiesOfFamily(sys.compFamily));
+        sys.internalStart();
         return sys;
     }
 
@@ -100,24 +105,36 @@ public class World {
         return entity;
     }
 
-    public Entity instanciateEntityClass(String className, String name) {
-        Entity e = entityClasses.get(className).instanciate(this, name);
-        addEntity(e);
-
-        listeners.entityClassInstanciateListeners.forEach(l -> l.onEntityClassInstanciated(className, e));
+    public Entity createEntity(String name, String className) {
+        Entity e = entityClasses.get(className).instantiate(this, name);
         return e;
     }
 
-    public void addEntity(final Entity e) {
-        entitiesScheduledForAdd.add(e);
+    public Entity addEntity(String name) {
+        Entity entity = createEntity(name);
+        return addEntity(entity);
     }
+
+    public Entity addEntity(String name, String className) {
+        Entity e = createEntity(name, className);
+        return addEntity(e);
+    }
+
+    public Entity addEntity(final Entity e) {
+        listeners.entityWillBeAddedListeners.forEach(listener -> listener.onEntityWillBeAdded(e, this));
+        entitiesScheduledForAdd.add(e);
+        return e;
+    }
+
 
     public EntityClass getEntityClass(String name) {
         return entityClasses.get(name);
     }
 
-    public void removeEntity(Entity e) {
+    public Entity removeEntity(Entity e) {
         entitiesScheduledForRemove.add(e);
+        listeners.entityWillBeRemovedListeners.forEach(listener -> listener.onEntityWillBeRemoved(e, this));
+        return e;
     }
 
     public void removeEntityByName(String name) {
@@ -138,8 +155,13 @@ public class World {
 
     private void addScheduledEntities() {
         entitiesScheduledForAdd.forEach(entity -> {
-            familyHandler.addEntity(entity);
-            entities.add(entity);
+            if (!entities.contains(entity)) {
+                familyHandler.addEntity(entity);
+                entities.add(entity);
+                listeners.entityAddedListeners.forEach(listener -> listener.onEntityAdded(entity, this));
+            } else {
+                logger.warn("Trying to add an entity that is already present. Nothing happens");
+            }
         });
         entitiesScheduledForAdd.clear();
     }
@@ -148,6 +170,7 @@ public class World {
         entitiesScheduledForRemove.forEach(entity -> {
             familyHandler.removeEntity(entity);
             entities.remove(entity);
+            listeners.entityRemovedListeners.forEach(listener -> listener.onEntityRemoved(entity, this));
         });
         entitiesScheduledForRemove.clear();
     }

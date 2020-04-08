@@ -22,6 +22,6 @@ data class PlayerStateOutput(
         val rotation: Float = 0f
 )
 
-data class StateOutput(
+data class GameState(
         val playersState: List<PlayerStateOutput> = listOf()
 )

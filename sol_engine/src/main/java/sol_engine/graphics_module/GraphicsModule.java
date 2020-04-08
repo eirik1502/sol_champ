@@ -4,12 +4,13 @@ import sol_engine.graphics_module.render.Renderer;
 import sol_engine.module.Module;
 
 public class GraphicsModule extends Module {
+    private GraphicsModuleConfig config;
+
     private Window window;
     private Renderer renderer;
 
     public GraphicsModule(GraphicsModuleConfig config) {
-        window = new Window(config.windowConfig);
-        renderer = new Renderer(config.renderConfig, window.getRenderingContext());
+        this.config = config;
     }
 
     public Window getWindow() {
@@ -22,11 +23,14 @@ public class GraphicsModule extends Module {
 
     @Override
     public void onSetup() {
-
+        window = new Window(config.windowConfig);
+        renderer = new Renderer(config.renderConfig, window.getRenderingContext());
     }
 
     @Override
     public void onStart() {
+        window.show();
+        window.focus();
     }
 
     @Override

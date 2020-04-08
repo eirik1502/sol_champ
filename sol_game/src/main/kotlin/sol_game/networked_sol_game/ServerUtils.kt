@@ -5,7 +5,7 @@ import java.net.ServerSocket
 import java.net.URL
 
 
-fun findFreeNetPort(): Int {
+fun findFreeSocketPort(): Int {
     var socket: ServerSocket? = null
     try {
         socket = ServerSocket(0)

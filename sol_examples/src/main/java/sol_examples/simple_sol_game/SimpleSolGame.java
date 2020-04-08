@@ -50,7 +50,7 @@ public class SimpleSolGame extends SolSimulation {
 
         // at the onEnd of the game, the state may be retrieved
         // this may be used for AI agents that want to learn from the simulation outcome
-        World world = game.getGameState();
+        World world = game.getWorld();
     }
 
     /**
@@ -78,7 +78,7 @@ public class SimpleSolGame extends SolSimulation {
 
         // at the onEnd of the game, the state may be retrieved
         // this may be used for AI agents that want to learn from the simulation outcome
-        World world = game.getGameState();
+        World world = game.getWorld();
     }
 
     /**
@@ -96,12 +96,12 @@ public class SimpleSolGame extends SolSimulation {
         game.step();
 
         // you may retrieve the game state after a step
-        World world = game.getGameState();
+        World world = game.getWorld();
 
         // or look at the game state after 10 more simulation steps
         for (int i = 0; i < 10; i++) {
             game.step();
         }
-        world = game.getGameState();
+        world = game.getWorld();
     }
 }

@@ -100,7 +100,11 @@ public class MathF {
     }
 
     /**
-     * returns a normalized vector in the direction specified by points
+     * calculate the direction between two {@link Vector2f} that represents two points.
+     *
+     * @param p1 from point.
+     * @param p2 to point.
+     * @return a normalized vector with the calculated direction.
      */
     public static Vector2f pointDirectionVec(Vector2f p1, Vector2f p2) {
         Vector2f v = new Vector2f();

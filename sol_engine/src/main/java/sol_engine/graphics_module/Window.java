@@ -2,9 +2,14 @@ package sol_engine.graphics_module;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -12,8 +17,10 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
+    private static final Logger logger = LoggerFactory.getLogger(Window.class);
 
     private static boolean GLFW_intied = false;
+    private static final Object GLFW_set_inited_lock = new Object();
 
     private long windowId;
     private RenderingContext context;
@@ -35,9 +42,6 @@ public class Window {
         centerWindow();
 
         createRenderingContext(config.vsync);
-        show();
-        focus();
-
     }
 
     public long getNativeWindowId() {
@@ -89,22 +93,37 @@ public class Window {
         context = new RenderingContext(this, vsync);
     }
 
-    private void initGLFW() {
-        if (GLFW_intied) return;
+    private static void initGLFW() {
+        synchronized (GLFW_set_inited_lock) {
+            if (GLFW_intied) {
+                logger.info("Initing GLFW, GLFW already inited. Nothing happens");
+            } else {
+                logger.info("Initing GLFW");
 
-        // inits GLFW and GL
-        boolean glfwInited = glfwInit();
+                // inits GLFW and GL
+                boolean glfwInited = glfwInit();
 
-        if (!glfwInited) {
-            throw new IllegalStateException("Could not initialize GLFW!");
+                if (!glfwInited) {
+                    logger.error("Could not initialize GLFW");
+                    throw new IllegalStateException("Could not initialize GLFW!");
+                }
+
+                GLFWErrorCallback.createPrint(System.err).set();  // TODO: should be connected to slf4j logger
+
+                glfwDefaultWindowHints(); // optional, the current window hints are already the default
+                glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+                glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
+
+                GLFW_intied = true;
+            }
         }
-        GLFWErrorCallback.createPrint(System.err).set();
+    }
 
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
-
-        GLFW_intied = true;
+    private void destroyGLFW() {
+        synchronized (GLFW_set_inited_lock) {
+            glfwTerminate();
+            GLFW_intied = false;
+        }
     }
 
     public RenderingContext getRenderingContext() {
@@ -160,6 +179,6 @@ public class Window {
 
     public void terminate() {
         glfwDestroyWindow(windowId);
-        glfwTerminate();
+        destroyGLFW();
     }
 }

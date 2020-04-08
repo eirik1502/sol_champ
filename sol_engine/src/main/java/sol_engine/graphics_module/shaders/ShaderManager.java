@@ -1,6 +1,6 @@
 package sol_engine.graphics_module.shaders;
 
-import sol_engine.utils.ClassUtils;
+import sol_engine.utils.reflection_utils.ClassUtils;
 
 import java.util.HashMap;
 import java.util.Map;

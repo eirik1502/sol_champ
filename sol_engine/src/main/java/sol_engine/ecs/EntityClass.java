@@ -49,14 +49,13 @@ public class EntityClass {
         return new ImmutableSetView<>(baseComponents);
     }
 
-
-    public Entity instanciate(World world, String entityName) {
-        Entity e = world.createEntity(entityName);
-
+    // TODO: use overriding classes
+    public Entity instantiate(World world, String entityName) {
+        Entity e = new Entity(world, entityName, className);
         baseComponents.stream()
-                .map(baseComp -> baseComp.clone())
+                .map(Component::clone)
                 .filter(Objects::nonNull)  // may be null if clone failes, should not happen
-                .forEach(comp -> e.addComponent(comp));
+                .forEach(e::addComponent);
 
         return e;
     }

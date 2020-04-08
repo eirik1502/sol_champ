@@ -6,10 +6,10 @@ import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.SystemBase;
 import sol_engine.ecs.World;
-import sol_engine.ecs.WorldUpdateListener;
+import sol_engine.ecs.listeners.WorldUpdateListener;
 import sol_engine.graphics_module.GraphicsModule;
-import sol_engine.graphics_module.imgui.GuiCommands;
-import sol_engine.graphics_module.imgui.GuiWindowFlags;
+import sol_engine.graphics_module.gui.imgui.GuiCommands;
+import sol_engine.graphics_module.gui.imgui.GuiWindowFlags;
 import sol_engine.utils.mutable_primitives.MBoolean;
 import sol_engine.utils.stream.WithIndex;
 import sol_engine.utils.tickers.DeltaTimer;
@@ -55,7 +55,7 @@ public class WorldProfilerSystem_dont_use extends ModuleSystemBase implements Wo
     protected void onUpdate() {
         GraphicsModule graphicsModule = getModule(GraphicsModule.class);
 
-        graphicsModule.getRenderer().getGui().draw(cmds -> {
+        graphicsModule.getRenderer().getGuiRenderer().draw(cmds -> {
             if (cmds.begin("Profiler", true,
                     GuiWindowFlags.AlwaysAutoResize, GuiWindowFlags.MenuBar)) {
 
@@ -157,7 +157,7 @@ public class WorldProfilerSystem_dont_use extends ModuleSystemBase implements Wo
 
     @Override
     public void onUpdateStart(World world) {
-        totalWorkTimer.setTime();
+        totalWorkTimer.setTimeReference();
     }
 
     @Override
@@ -167,7 +167,7 @@ public class WorldProfilerSystem_dont_use extends ModuleSystemBase implements Wo
 
     @Override
     public void onInternalWorkStart(World world) {
-        partialWorkTimer.setTime();
+        partialWorkTimer.setTimeReference();
     }
 
     @Override
@@ -177,7 +177,7 @@ public class WorldProfilerSystem_dont_use extends ModuleSystemBase implements Wo
 
     @Override
     public void onSystemUpdateStart(World world, SystemBase system) {
-        partialWorkTimer.setTime();
+        partialWorkTimer.setTimeReference();
     }
 
     @Override

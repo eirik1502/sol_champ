@@ -2,15 +2,21 @@ package sol_game.networked_sol_game
 
 import sol_engine.core.TransformComp
 import sol_engine.input_module.ExternalInputSourceModule
-import sol_game.CharacterComp
-import sol_game.SolGame
+import sol_game.core_game.CharacterConfig
+import sol_game.core_game.SolGameSimulationServer
+import sol_game.core_game.components.CharacterComp
 
 class SolGameExternalIO(
         val pollPlayersInput: () -> PlayersInput,
-        val pushGameState: (gameState: StateOutput) -> Unit,
+        val pushGameState: (gameState: GameState) -> Unit,
         private val headless: Boolean = false,
-        private val debugMode: Boolean = false
-) : SolGame(headless, false, debugMode) {
+        private val debugUI: Boolean = false
+) : SolGameSimulationServer(
+        listOf(CharacterConfig(), CharacterConfig()),
+        headless = headless,
+        debugUI = debugUI,
+        allowGui = true
+) {
 
 
     override fun onStepStart() {
@@ -43,7 +49,7 @@ class SolGameExternalIO(
                     PlayerStateOutput(transformComp.x, transformComp.y, transformComp.rotationZ)
                 }
                 .toList()
-        val gameState = StateOutput(playersState)
+        val gameState = GameState(playersState)
         pushGameState(gameState)
     }
 

@@ -5,7 +5,6 @@ import sol_engine.ecs.Component;
 
 public class TransformComp extends Component {
 
-
     public final Vector2f position;
     public final Vector2f scale;
     public float rotationZ;
@@ -50,6 +49,15 @@ public class TransformComp extends Component {
 
     public Vector2f getPosition() {
         return position;
+    }
+
+    public float getRotationZ() {
+        return rotationZ;
+    }
+
+    public TransformComp setRotationZ(float value) {
+        this.rotationZ = value;
+        return this;
     }
 
     public TransformComp clone() {

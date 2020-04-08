@@ -63,14 +63,17 @@ public abstract class SystemBase {
 
     // INTERNALS
 
-    void internalSetup() {
+    void internalSetup(World world) {
         onSetup();
+        this.world = world;
+    }
+
+    void internalSetupEnd(ImmutableListView<Entity> entitiesOfFamily) {
+        this.entities = entitiesOfFamily;
     }
 
     // must be protected as of now, as ModuleSystemBase uses this
-    protected void internalStart(World world, ImmutableListView<Entity> entitiesOfFamily) {
-        this.world = world;
-        this.entities = entitiesOfFamily;
+    protected void internalStart() {
         onStart();
     }
 

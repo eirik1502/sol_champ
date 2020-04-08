@@ -1,5 +1,6 @@
 package sol_engine.creator;
 
+import glm_.vec2.Vec2;
 import glm_.vec4.Vec4;
 import imgui.Col;
 import imgui.Cond;
@@ -9,7 +10,8 @@ import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.World;
 import sol_engine.graphics_module.GraphicsModule;
-import sol_engine.graphics_module.imgui.*;
+import sol_engine.graphics_module.gui.imgui.*;
+import sol_engine.utils.mutable_primitives.MBoolean;
 import sol_engine.utils.stream.WithIndex;
 
 import java.lang.reflect.Field;
@@ -46,29 +48,44 @@ public class WorldEditor implements CreatorFrame {
 //                    GuiWindowFlags.NoBringToFrontOnFocus,
                 GuiWindowFlags.HorizontalScrollbar
         )) {
-            if (imgui.menu.beginMenuBar()) {
-                if (imgui.menu.beginMenu("entities", true)) {
+//            if (imgui.menu.beginMenuBar()) {
+//                if (imgui.menu.beginMenu("entities", true)) {
+//
+//                    entities.forEach(entity -> {
+//                        boolean entityWasWatched = entitiesWatching.contains(entity);
+//                        boolean entityShouldBeWatched = imgui.menu.menuItem(entity.name, "", entityWasWatched, true);
+//                        if (!entityWasWatched && entityShouldBeWatched) {
+//                            entitiesWatching.add(entity);
+//                        } else if (entityWasWatched && !entityShouldBeWatched) {
+//                            entitiesWatching.remove(entity);
+//                        }
+//                    });
+//
+//                    imgui.menu.endMenu();
+//                }
+//                imgui.menu.endMenuBar();
+//            }
+            entities.forEach(entity -> {
+                String className = entity.className == null ? "" : entity.className;
+                if (imgui.getNative().button(entity.name + " (" + className + ")", new Vec2(0, 0))) {
+                    if (!entitiesWatching.contains(entity)) {
+                        entitiesWatching.add(entity);
+                    }
+                }
+            });
+            new ArrayList<>(entitiesWatching).stream()
+                    .forEach(entity -> {
+                        String className = entity.className == null ? "" : entity.className;
+                        MBoolean windowOpen = new MBoolean(true);
+                        if (imgui.begin(entity.name + " (" + className + ")", windowOpen)) {
+                            final Set<Class<? extends Component>> compTypes = entity.getComponentTypeGroup().stream().collect(Collectors.toSet());
+                            compTypes.stream().forEach(compType -> drawComponent(imgui, entity, compType));
 
-                    entities.forEach(entity -> {
-                        boolean entityWasWatched = entitiesWatching.contains(entity);
-                        boolean entityShouldBeWatched = imgui.menu.menuItem(entity.name, "", entityWasWatched, true);
-                        if (!entityWasWatched && entityShouldBeWatched) {
-                            entitiesWatching.add(entity);
-                        } else if (entityWasWatched && !entityShouldBeWatched) {
+                            imgui.end();
+                        }
+                        if (!windowOpen.value) {
                             entitiesWatching.remove(entity);
                         }
-                    });
-
-                    imgui.menu.endMenu();
-                }
-                imgui.menu.endMenuBar();
-            }
-            entitiesWatching.stream()
-                    .forEach(entity -> {
-                        imgui.core.text(entity.name);
-
-                        final Set<Class<? extends Component>> compTypes = entity.getComponentTypeGroup().stream().collect(Collectors.toSet());
-                        compTypes.stream().forEach(compType -> drawComponent(imgui, entity, compType));
                     });
             imgui.end();
         }
@@ -110,7 +127,7 @@ public class WorldEditor implements CreatorFrame {
         boolean fieldDeactivated = fieldIsPrimitive && fieldIsFinal;
 
         String indentationStr = new String(new char[indentationCount * 3]).replace('\0', ' ');
-        System.out.println(field.getName() + " " + field.getType());
+//        System.out.println(field.getName() + " " + field.getType());
         try {
             imgui.core.text(indentationStr + fieldName + " ");
             imgui.format.sameLine();

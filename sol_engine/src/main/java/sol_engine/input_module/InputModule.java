@@ -1,8 +1,9 @@
 package sol_engine.input_module;
 
 import org.joml.Vector2f;
+import sol_engine.module.Module;
 
-public class InputModule extends InputSourceModule {
+public class InputModule extends Module {
 
     private InputModuleConfig config;
     private InputSourceModule inputSourceModule;

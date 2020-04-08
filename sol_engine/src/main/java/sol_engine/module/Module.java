@@ -1,10 +1,14 @@
 package sol_engine.module;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Module {
+    private final Logger logger = LoggerFactory.getLogger(Module.class);
 
     private ModulesHandler modulesHandeler = null;
     Set<Class<? extends Module>> usingModules = new HashSet<>();
@@ -13,6 +17,9 @@ public abstract class Module {
     abstract public void onSetup();
 
     abstract public void onStart();
+
+//    protected void onStartEnd() {
+//    }
 
     abstract public void onEnd();
 
@@ -23,14 +30,18 @@ public abstract class Module {
         usingModules.addAll(Arrays.asList(moduleTypes));
     }
 
-    final void internalSetup() {
+    public final void internalSetup(ModulesHandler modulesHandler) {
+        this.modulesHandeler = modulesHandler;
         onSetup();
     }
 
-    public final void internalStart(ModulesHandler modulesHandler) {
-        this.modulesHandeler = modulesHandler;
+    public final void internalStart() {
         onStart();
     }
+
+//    public final void internalStartEnd() {
+//        onStartEnd();
+//    }
 
     public final void internalUpdate() {
         onUpdate();
