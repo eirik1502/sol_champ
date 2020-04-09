@@ -45,6 +45,23 @@ public class Entity {
         return this;
     }
 
+    public <T extends Component> Entity addComponentIfAbsent(Class<T> compType, Function.NoArgReturn<T> producer) {
+        return addComponentIfAbsent(compType, producer, (comp) -> {
+        });
+    }
+
+    public <T extends Component> Entity addComponentIfAbsent(
+            Class<T> compType,
+            Function.NoArgReturn<T> producer,
+            Consumer<T> modifyFunc
+    ) {
+        if (!hasComponent(compType)) {
+            addComponent(producer.invoke());
+        }
+        modifyComponent(compType, modifyFunc);
+        return this;
+    }
+
     public String getName() {
         return name;
     }
