@@ -16,10 +16,7 @@ import sol_engine.utils.stream.WithIndex;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -67,11 +64,16 @@ public class WorldEditor implements CreatorFrame {
 //            }
             entities.forEach(entity -> {
                 String className = entity.className == null ? "" : entity.className;
+                boolean active = entitiesWatching.contains(entity);
+                if (active) imgui.getNative().pushStyleColor(Col.Button, new Vec4(1, 1, 1, 0));
                 if (imgui.getNative().button(entity.name + " (" + className + ")", new Vec2(0, 0))) {
-                    if (!entitiesWatching.contains(entity)) {
+                    if (!active) {
                         entitiesWatching.add(entity);
+                    } else {
+                        entitiesWatching.remove(entity);
                     }
                 }
+                if (active) imgui.getNative().popStyleColor(1);
             });
             new ArrayList<>(entitiesWatching).stream()
                     .forEach(entity -> {
@@ -104,106 +106,138 @@ public class WorldEditor implements CreatorFrame {
     }
 
     private void drawFieldsOf(GuiCommands imgui, Object obj, int indentationCount) {
-        Field[] fields = obj.getClass().getFields();
+        Field[] fields = obj.getClass().getDeclaredFields();
         if (fields.length == 0) {
-            imgui.core.text("{ no data }");
+            imgui.core.text(indentationStr(indentationCount) + "{ no data to show }");
         } else {
             Arrays.stream(fields)
                     .filter(field -> !Modifier.isStatic(field.getModifiers()))
-                    .forEach(WithIndex.consumer((field, i) -> drawInputOfField(imgui, field, obj, indentationCount)));
+                    .forEach(WithIndex.consumer((field, i) -> drawInputOfFieldWithValue(imgui, field, obj, indentationCount)));
         }
 
     }
 
-    private void drawInputOfField(GuiCommands imgui, Field field, Object obj) {
-        drawInputOfField(imgui, field, obj, 0);
+    private void drawInputOfFieldWithValue(GuiCommands imgui, Field field, Object obj) {
+        drawInputOfFieldWithValue(imgui, field, obj, 0);
     }
 
-    private void drawInputOfField(GuiCommands imgui, Field field, Object obj, int indentationCount) {
+    private void drawInputOfFieldWithValue(GuiCommands imgui, Field field, Object obj, int indentationCount) {
+        field.setAccessible(true);
         Class<?> fieldType = field.getType();
         String fieldName = field.getName();
-        boolean fieldIsFinal = Modifier.isFinal(field.getModifiers());
-        boolean fieldIsPrimitive = fieldType.isPrimitive();
-        boolean fieldDeactivated = fieldIsPrimitive && fieldIsFinal;
-
-        String indentationStr = new String(new char[indentationCount * 3]).replace('\0', ' ');
-//        System.out.println(field.getName() + " " + field.getType());
         try {
-            imgui.core.text(indentationStr + fieldName + " ");
-            imgui.format.sameLine();
+            Object value = field.get(obj);
+            boolean fieldIsFinal = Modifier.isFinal(field.getModifiers());
+            boolean fieldIsPrimitive = fieldType.isPrimitive();
+            boolean fieldDeactivated = fieldIsPrimitive && fieldIsFinal;
 
+            drawInputOfValue(imgui, fieldName, value, "" + field.hashCode(), fieldDeactivated, indentationCount);
 
-            List<GuiItemStatusFlag> itemStatusFlags = new ArrayList<>();
-            if (fieldDeactivated) {
-                itemStatusFlags.add(GuiItemStatusFlag.Deactivated);
-                imgui.format.pushStyleVar(GuiStyleVar.Alpha, 0.5f);
-            }
-
-            GuiItemStatusFlag[] itemStatusFlagsArr = itemStatusFlags.toArray(new GuiItemStatusFlag[0]);
-            String label = "##" + fieldName + obj.hashCode();
-            Object val = null;
-
-            if (fieldType.equals(float.class)) {
-                val = imgui.input.inputFloat(label, field.getFloat(obj), 1f, 10f, "%.3f", itemStatusFlagsArr);
-            } else if (fieldType.equals(int.class)) {
-                val = imgui.input.inputInt(label, field.getInt(obj), 1, 10, itemStatusFlagsArr);
-            } else if (fieldType.equals(boolean.class)) {
-                val = imgui.core.checkbox(label, field.getBoolean(obj), itemStatusFlagsArr);
-            } else if (fieldType.equals(String.class)) {
-                val = imgui.input.inputText(label, (String) field.get(obj), itemStatusFlagsArr);
-//            } else if (fieldType instanceof List) {
-
-            } else if (fieldIsPrimitive) {
-                imgui.core.text(field.get(obj).toString() + label);
-            } else {
-                boolean noCollapse = field.get(obj).getClass().getFields().length <= 3;
-                if (noCollapse) imgui.getNative().setNextItemOpen(true, Cond.Once);
-                imgui.getNative().pushStyleColor(Col.Header, new Vec4(1, 1, 1, 0));
-                boolean showChild = imgui.container.collapsingHeader(label);
-                imgui.getNative().popStyleColor(1);
-                if (showChild) {
-                    drawFieldsOf(imgui, field.get(obj), indentationCount + 1);
-                }
-            }
-
-//            if (val != null) field.set(obj, val);
-
-            if (fieldDeactivated) imgui.format.popStyleVar();
-        } catch (
-                IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-
     }
 
-    private <T> T asMutable(T value, Consumer<MutableProperty0<T>> withMutable) {
-        MutableProperty0<T> mval = new MutableProperty0<>(value);
-        withMutable.accept(mval);
-        return mval.get();
+    private void drawInputOfValue(GuiCommands imgui, String fieldName, Object value, String fieldLabel, boolean deactivated, int indentationCount) {
+        String indentationStr = indentationStr(indentationCount);
+
+        if (indentationCount > 5) {
+            imgui.core.text(indentationStr + "{ max depth }");
+            return;
+        }
+
+        imgui.core.text(indentationStr + fieldName + " ");
+        imgui.format.sameLine();
+
+        if (value == null) {
+            imgui.core.text("null");
+        } else {
+            try {
+                List<GuiItemStatusFlag> itemStatusFlags = new ArrayList<>();
+                if (deactivated) {
+                    itemStatusFlags.add(GuiItemStatusFlag.Deactivated);
+                    imgui.format.pushStyleVar(GuiStyleVar.Alpha, 0.5f);
+                }
+
+                GuiItemStatusFlag[] itemStatusFlagsArr = itemStatusFlags.toArray(new GuiItemStatusFlag[0]);
+                String label = "##" + fieldName + value.getClass().hashCode() + fieldLabel;
+                Object newValue = null;
+
+                if (value instanceof Float) {
+                    newValue = imgui.input.inputFloat(label, (Float) value, 1f, 10f, "%.3f", itemStatusFlagsArr);
+                } else if (value instanceof Integer) {
+                    newValue = imgui.input.inputInt(label, (Integer) value, 1, 10, itemStatusFlagsArr);
+                } else if (value instanceof Boolean) {
+                    newValue = imgui.core.checkbox(label, (Boolean) value, itemStatusFlagsArr);
+                } else if (value instanceof String) {
+                    newValue = imgui.input.inputText(label, (String) value, itemStatusFlagsArr);
+                } else if (value instanceof Number) {
+                    newValue = imgui.input.inputFloat(label, ((Number) value).floatValue(), 1f, 10f, "%.3f", itemStatusFlagsArr);
+//                } else if (fieldIsPrimitive) {
+//                    imgui.core.text(value.toString() + label);
+                } else if (value instanceof Entity) {
+                    imgui.input.inputText(label, ((Entity) value).getName(), itemStatusFlagsArr);
+                } else if (value instanceof Class) {
+                    imgui.input.inputText(label, ((Class<?>) value).getName(), itemStatusFlagsArr);
+                } else if (value instanceof Collection) {
+                    drawCollectionCollapsed(imgui, label, (Collection<?>) value, indentationCount);
+                } else if (value instanceof Map) {
+                    drawMapCollapsed(imgui, label, (Map<?, ?>) value, indentationCount);
+//                } else if (fieldType.isArray()) {
+//                    drawCollapsingFields(imgui, label, Arrays.asList((Object[]) value), false, indentationCount);
+                } else {
+                    boolean noCollapse = value.getClass().getDeclaredFields().length <= 3;
+                    drawFieldsCollapsed(imgui, label, value, noCollapse, indentationCount);
+                }
+
+//            if (val != null) field.set(obj, val);
+            } catch (Exception e) {
+//                System.err.println("Somthing went wrong when drawing field: " + fieldName + " of type: " + value.getClass() + " value: " + value);
+//                e.printStackTrace();
+
+                imgui.core.text("{ could not read value }");
+            } finally {
+                if (deactivated) imgui.format.popStyleVar();
+            }
+        }
     }
 
+    private String indentationStr(int indentationCount) {
+        return new String(new char[indentationCount * 3]).replace('\0', ' ');
+    }
 
-//    @SuppressWarnings("unchecked")
-    //    private Map<Type, Function.FourArg<GuiCommands, String, MVal, Integer>> mapTypeToImguiInput = Map.of(
-//            float.class, (imgui, label, mval, itemFlags) -> imgui.input.inputFloat(label, (MVal<Float>) mval, 1f, 10f, "%.3f", itemFlags),
-//            int.class, (imgui, label, mval, itemFlags) -> imgui.inputInt(label, (MutableProperty0<Integer>) mval, 1, 10, itemFlags),
-//            boolean.class, (imgui, label, mval, itemFlags) -> {
-//                MutableProperty0<Boolean> mvalBool = ((MutableProperty0<Boolean>) mval);
-//                boolean[] mvalBoolArr = {mvalBool.get()};
-//                imgui.core.checkbox(label, mvalBoolArr, itemFlags);
-//                mvalBool.set(mvalBoolArr[0]);
-//            },
-//            String.class, (imgui, label, mval, itemFlags) -> {
-//                MutableProperty0<String> stringMval = (MutableProperty0<String>) mval;
-//                char[] inputBuf = Arrays.copyOf(stringMval.get().toCharArray(), 100);
-//                imgui.inputText(label, inputBuf, 0, null, null);
-//                stringMval.set(new String(inputBuf).trim());
-//            },
-//            Vector2f.class, (imgui, label, mval, itemFlags) -> {
-//                MutableProperty0<Vector2f> vecMVal = (MutableProperty0<Vector2f>) mval;
-//                Vec2 imguiVec2 = new Vec2(vecMVal.get().x, vecMVal.get().y);
-//                imgui.inputVec2(label, imguiVec2, "%.3f", 0);
-//                vecMVal.get().set(imguiVec2.getX(), imguiVec2.getY());
-//            }
-//    );
+    private void drawFieldsCollapsed(GuiCommands imgui, String label, Object value, boolean startOpen, int indentationCount) {
+        if (startOpen) imgui.getNative().setNextItemOpen(true, Cond.Once);
+        imgui.getNative().pushStyleColor(Col.Header, new Vec4(1, 1, 1, 0));
+        boolean showChildren = imgui.container.collapsingHeader(label);
+        imgui.getNative().popStyleColor(1);
+        if (showChildren) {
+            drawFieldsOf(imgui, value, indentationCount + 1);
+        }
+    }
+
+    private void drawCollectionCollapsed(GuiCommands imgui, String label, Collection<?> values, int indentationCount) {
+        if (values.size() == 1) imgui.getNative().setNextItemOpen(true, Cond.Once);
+        imgui.getNative().pushStyleColor(Col.Header, new Vec4(1, 1, 1, 0));
+        boolean showChildren = imgui.container.collapsingHeader("(" + values.size() + ")" + label);
+        imgui.getNative().popStyleColor(1);
+        if (showChildren) {
+            values.forEach(WithIndex.consumer((val, i) ->
+                    drawInputOfValue(imgui, "" + i, val, label + i, false, indentationCount + 1)
+            ));
+        }
+    }
+
+    private void drawMapCollapsed(GuiCommands imgui, String label, Map<?, ?> values, int indentationCount) {
+        if (values.size() == 1) imgui.getNative().setNextItemOpen(true, Cond.Once);
+        imgui.getNative().pushStyleColor(Col.Header, new Vec4(1, 1, 1, 0));
+        boolean showChildren = imgui.container.collapsingHeader("(" + values.size() + ")" + label);
+        imgui.getNative().popStyleColor(1);
+        if (showChildren) {
+            values.entrySet().forEach(WithIndex.consumer((entry, i) -> {
+                drawInputOfValue(imgui, "key" + i, entry.getKey(), label, false, indentationCount + 1);
+                drawInputOfValue(imgui, "value" + i, entry.getValue(), label, false, indentationCount + 2);
+            }));
+        }
+    }
 }

@@ -17,11 +17,10 @@ public class GuiCommandsUtils {
 
     private static final MutableProperty0<Integer> imguiMPropInt = new MutableProperty0<>();
     private static final MutableProperty0<Boolean> imguiMPropBoolean = new MutableProperty0<>();
-    private static final boolean[] imguiMPropBooleanArray = {false};
+    private static final boolean[] imguiMPropBooleanArray = new boolean[100]; // make it large due to internal imgui bug
     private static final MutableProperty0<Float> imguiMPropFloat = new MutableProperty0<>();
     //    private static final MutableProperty0<String> imguiMPropString = new MutableProperty0<>();
     private static final MutableProperty0<?> imguiMPropObject = new MutableProperty0<>();
-    private static final byte[] imguiMPropBytes = new byte[INPUT_STRING_MAX_LENGTH];
 
     private static final Vec2 imguiVec2Zero = new Vec2();
     private static final Vec2 imguiVec2 = new Vec2();
@@ -51,7 +50,8 @@ public class GuiCommandsUtils {
     }
 
     static boolean withConvertedMBooleanArray(MBoolean value, Function.OneArgReturn<boolean[], Boolean> withConvertedValue) {
-        imguiMPropBooleanArray[0] = value.value;
+//        imguiMPropBooleanArray[0] = value.value;
+        Arrays.fill(imguiMPropBooleanArray, value.value);
         boolean ret = withConvertedValue.invoke(imguiMPropBooleanArray);
         value.value = imguiMPropBooleanArray[0];
         return ret;
@@ -59,6 +59,7 @@ public class GuiCommandsUtils {
 
     static boolean withConvertedMString(MString value, Function.OneArgReturn<byte[], Boolean> withConvertedValue) {
         byte[] valueCharsBytes = value.value.getBytes();
+        byte[] imguiMPropBytes = new byte[INPUT_STRING_MAX_LENGTH];
         System.arraycopy(valueCharsBytes, 0, imguiMPropBytes, 0, valueCharsBytes.length);
         boolean ret = withConvertedValue.invoke(imguiMPropBytes);
 //        value.value = Arrays.toString(imguiMPropString).stripTrailing();
@@ -85,7 +86,8 @@ public class GuiCommandsUtils {
     }
 
     static boolean withConvertedBooleanArray(boolean value, Function.OneArgReturn<boolean[], Boolean> withConvertedValue) {
-        imguiMPropBooleanArray[0] = value;
+//        imguiMPropBooleanArray[0] = value;
+        Arrays.fill(imguiMPropBooleanArray, value);
         withConvertedValue.invoke(imguiMPropBooleanArray);
         return imguiMPropBooleanArray[0];
     }
