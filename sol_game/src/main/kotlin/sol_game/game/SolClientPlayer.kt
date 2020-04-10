@@ -1,7 +1,6 @@
 package sol_game.game
 
 import sol_engine.ecs.World
-import sol_game.core_game.SolGameStatePacket
 import sol_game.core_game.SolActionsPacket
 
 interface SolClientPlayer {
@@ -10,13 +9,12 @@ interface SolClientPlayer {
 
     fun onStart(
             world: World,
-            teamIndex: Int,
-            playerIndex: Int
+            gameState: SolGameState
     )
 
     fun onUpdate(
             world: World,
-            solGameStatePacket: SolGameStatePacket
+            gameState: SolGameState
     ): SolActionsPacket
 
     fun onEnd(

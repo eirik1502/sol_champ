@@ -10,7 +10,7 @@ class SolGameClient(
         gameId: String,
         connectionKey: String,
         isObserver: Boolean,
-        player: SolClientPlayer? = null,
+        player: Class<out SolClientPlayer>? = null,
         headless: Boolean = false,
         debugUI: Boolean = false,  // cannot be set in headless mode
         allowGui: Boolean = true
