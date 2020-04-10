@@ -57,13 +57,6 @@ fun main(args: Array<String>) = mainBody {
             runConnectClientToPool(headless = this.headlessClient)
         }
     }
-//    if (args.contains("poolServer")) {
-//        runPoolServer()
-//    } else if (args.contains("server")) {
-//        runServer()
-//    } else if (args.contains("client")) {
-//        runConnectClientToPool()
-//    }
 }
 
 val jsonMapper = jacksonObjectMapper()
@@ -121,6 +114,7 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean): So
             serverConnectionData.gameId,
             serverConnectionData.teamsPlayersKeys[0][0],
             false,
+            player = SolRandomTestPlayer::class.java,
             headless = headless,
             debugUI = !headless,
             allowGui = !headless

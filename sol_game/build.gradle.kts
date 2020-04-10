@@ -36,24 +36,36 @@ application {
     )
 }
 
-tasks.register<JavaExec>("runPoolServer") {
-    classpath = sourceSets["main"].runtimeClasspath
-    this.main = "sol_game.Main"
-    this.group = "application"
-    this.args = listOf("-P")
-    this.jvmArgs = listOf(
+fun setRunSolProps(
+        task: JavaExec,
+        withArgs: List<String> = emptyList(),
+        withJvmArgs: List<String> = emptyList(),
+        debugLevel: String = "warn"
+) {
+    task.classpath = sourceSets["main"].runtimeClasspath
+    task.main = "sol_game.Main"
+    task.group = "application"
+    task.args = withArgs
+    task.jvmArgs = listOf(
             "-Dorg.lwjgl.util.Debug=false",
-            "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug"
+            "-Dorg.slf4j.simpleLogger.defaultLogLevel=$debugLevel"
+    ) + withJvmArgs
+}
+
+tasks.register<JavaExec>("runPoolServer") {
+    setRunSolProps(
+            this,
+            withArgs = listOf("-P", "--headlessServer"),
+            withJvmArgs = listOf(),
+            debugLevel = "warn"
     )
 }
 tasks.register<JavaExec>("runClient") {
-    classpath = sourceSets["main"].runtimeClasspath
-    this.main = "sol_game.Main"
-    this.group = "application"
-    this.args = listOf("-c")
-    this.jvmArgs = listOf(
-            "-Dorg.lwjgl.util.Debug=false",
-            "-Dorg.slf4j.simpleLogger.defaultLogLevel=warn"
+    setRunSolProps(
+            this,
+            withArgs = listOf("-c"),
+            withJvmArgs = listOf(),
+            debugLevel = "warn"
     )
 }
 
