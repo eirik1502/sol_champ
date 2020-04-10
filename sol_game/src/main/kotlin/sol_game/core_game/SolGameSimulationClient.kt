@@ -16,7 +16,8 @@ import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.network.network_sol_module.NetworkClientModuleConfig
 import sol_engine.physics_module.CollisionSystem
 import sol_game.core_game.components.SolActionsPacketComp
-import sol_game.core_game.components.SolStatePacketComp
+import sol_game.core_game.modules.SolClientPlayerModule
+import sol_game.core_game.modules.SolClientPlayerModuleConfig
 import sol_game.core_game.systems.*
 import sol_game.game.SolClientPlayer
 
@@ -27,7 +28,7 @@ class SolGameSimulationClient(
         val connectionKey: String,
         val isObserver: Boolean,
         // if player is set, it will control the client, and graphical input will be disabled
-        val player: SolClientPlayer? = null,
+        val playerClass: Class<out SolClientPlayer>? = null,
         val headless: Boolean = false,
         val debugUI: Boolean = false,  // cannot be set in headless mode
         val allowGui: Boolean = true
@@ -40,7 +41,7 @@ class SolGameSimulationClient(
                     RenderConfig(800f, 450f, 1600f, 900f)
             )))
         }
-        if (!headless && player == null) {
+        if (!headless && playerClass == null) {
             addModule(InputGuiSourceModule(InputGuiSourceModuleConfig(
                     Vector2f(1600f, 900f),
                     mapOf(
@@ -55,6 +56,10 @@ class SolGameSimulationClient(
                             "aimY" to InputConsts.CURSOR_Y
                     )
             )))
+        }
+
+        if (playerClass != null) {
+            addModule(SolClientPlayerModule(SolClientPlayerModuleConfig(playerClass)))
         }
 
         addModule(InputModule(InputModuleConfig(
@@ -77,7 +82,6 @@ class SolGameSimulationClient(
 
     override fun onSetupWorld() {
         world.addSystems(
-                ClientNetworkInputSystem::class.java,  // retrieves game state from server
                 NetClientSystem::class.java,
                 NetSyncClientSystem::class.java,
 
@@ -97,18 +101,20 @@ class SolGameSimulationClient(
                 SceneChildSystem::class.java,
 //                PhysicsSystem::class.java,
 
+                // Regular inputs are not used to update game state, only the server state input
+                // Take input as a result of the state update, hence put it last
+                if (playerClass != null) SolClientPlayerSystem::class.java else null,  // takes input from the player
+                InputSystem::class.java,  // retrieves input from the registered InputSourceModule
+                InputToSolActionsSystem::class.java,
+                ClientNetworkOutputSystem::class.java,  // send the inputs to the server
+
                 // rendering
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,
                 if (!headless && allowGui) SolGuiSystem::class.java else null,
-                if (!headless) RenderSystem::class.java else null,
-
-                // Regular inputs are not used to update game state, only the server state input
-                // Take input as a result of the state update, hence put it last
-                InputSystem::class.java,  // retrieves input from the registered InputSourceModule
-                InputToSolActionsSystem::class.java,
-                if (player != null) SolPlayerSystem::class.java else null,  // takes input from the player
-                ClientNetworkOutputSystem::class.java  // send the inputs to the server
+                if (!headless) RenderSystem::class.java else null
         )
+
+        addGameEntity(false, world)
 
         NetEcsUtils.addNetClientEntity(world,
                 CharactersConfigsPacket::class.java,
@@ -116,8 +122,7 @@ class SolGameSimulationClient(
         );
 
         world.addEntity(
-                world.createEntity("server_communication")
-                        .addComponent(SolStatePacketComp())
+                world.createEntity("client-actions-output")
                         .addComponent(InputComp(
                                 setOf("mvLeft", "mvRight", "mvUp", "mvDown", "ability1", "ability2", "ability3"),
                                 setOf("aimX", "aimY"),

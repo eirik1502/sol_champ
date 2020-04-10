@@ -17,6 +17,7 @@ import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_engine.physics_module.*
+import sol_game.core_game.components.SolGameComp
 import sol_game.core_game.systems.*
 
 open class SolGameSimulationServer(
@@ -87,6 +88,8 @@ open class SolGameSimulationServer(
 
                 RenderSystem::class.java
         )
+
+        addGameEntity(true, world)
 
         createWalls(world)
 

@@ -1,6 +1,7 @@
 package sol_game.core_game
 
 import sol_engine.core.TransformComp
+import sol_engine.ecs.Entity
 import sol_engine.ecs.EntityClass
 import sol_engine.ecs.World
 import sol_engine.game_utils.DestroySelfTimedComp
@@ -16,6 +17,21 @@ import sol_engine.physics_module.PhysicsBodyComp
 import sol_engine.physics_module.PhysicsBodyShape
 import sol_game.core_game.components.*
 
+
+fun addGameEntity(isServer: Boolean, world: World): Entity? {
+    world.addEntityClass(
+            EntityClass("sol-game-status").addBaseComponents(
+                    SolGameComp(gameStarted = false, gameEnded = false),
+                    NetSyncComp(setOf(SolGameComp::class.java))
+            )
+
+    )
+    if (isServer) {
+        return world.addEntity("sol-game-status", "sol-game-status")
+    } else {
+        return null;
+    }
+}
 
 private fun createAbility(characterName: String, abConfig: AbilityConfig): Pair<EntityClass, Ability> {
     val abEntityClassName = "${characterName}:${abConfig.name}"

@@ -5,6 +5,7 @@ import sol_engine.core.TransformComp
 import sol_engine.ecs.Entity
 import sol_engine.ecs.SystemBase
 import sol_engine.input_module.InputComp
+import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
 import sol_engine.physics_module.PhysicsBodyComp
 import sol_engine.utils.math.MathF
 import sol_game.core_game.Ability
@@ -63,6 +64,13 @@ class AbilitySystem : SystemBase() {
         val abEntity = world.addEntity(ability.abilityEntityClass, ability.abilityEntityClass)
                 .modifyIfHasComponent(HitboxComp::class.java) { comp -> comp.owner = owner }
                 .modifyIfHasComponent(PhysicsBodyComp::class.java) { comp -> comp.velocity.add(impulse) }
+
+        owner.modifyIfHasComponent(TeamPlayerComp::class.java) { ownerTeamPlayerComp ->
+            abEntity.addComponentIfAbsent(TeamPlayerComp::class.java,
+                    { TeamPlayerComp() },
+                    { comp -> comp.copy(ownerTeamPlayerComp) }
+            )
+        }
 
         if (abEntity.hasComponent(SceneChildComp::class.java)) {
             // position relative to parent
