@@ -1,5 +1,6 @@
 package sol_engine.network.network_ecs.host_managing;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.ecs.Component;
@@ -14,6 +15,7 @@ import sol_engine.network.network_ecs.world_syncing.NetSyncServerSystem;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.packet_handling.NetworkPacket;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -99,6 +101,10 @@ public class NetEcsUtils {
     }
 
     public static CreateEntityPacket createAddEntityPacket(Entity entity) {
+        return createAddEntityPacket(entity, Collections.emptySet());
+    }
+
+    public static CreateEntityPacket createAddEntityPacket(Entity entity, Set<Component> createExtraComponents) {
         String className = entity.className;
         if (className == null) {
             logger.warn("cannot sync entities that are not created from an EtityClass for an entity with no className");
@@ -118,15 +124,15 @@ public class NetEcsUtils {
 
         NetIdComp netIdComp = entity.getComponent(NetIdComp.class);
 
-        Set<Component> updateComponents = NetEcsUtils.getComponentsOfTypes(entity, netSyncComp.syncComponentTypes, logger);
-        Set<Component> createComponents = NetEcsUtils.getComponentsOfTypes(entity, netSyncComp.createComponentTypesOnAdd, logger);
+        Set<Component> updateSyncedComponents = NetEcsUtils.getComponentsOfTypes(entity, netSyncComp.syncComponentTypes, logger);
+        Set<Component> createSyncedComponents = NetEcsUtils.getComponentsOfTypes(entity, netSyncComp.createComponentTypesOnAdd, logger);
 
         return new CreateEntityPacket(
                 netIdComp.id,
                 entity.name,
                 className,
-                createComponents,
-                updateComponents
+                Sets.union(createSyncedComponents, createExtraComponents),
+                updateSyncedComponents
         );
     }
 

@@ -67,7 +67,6 @@ public class NetServerSystem extends ModuleSystemBase {
     }
 
     private void handleNewHosts(NetworkServerModule serverModule, NetServerComp netServerComp) {
-        //TODO: if multiple clients connects in the same cycle, existing clients broadcasts may be missed
         serverModule.getNewConnectedHosts().forEach(newHost -> {
             if (netServerComp.staticConnectionPacket != null) {
                 // reply with the static connect packet
@@ -77,12 +76,11 @@ public class NetServerSystem extends ModuleSystemBase {
             EntityHostStartData newEntityData = netServerComp.hostEntitiesStartData
                     .get(newHost.teamIndex).get(newHost.playerIndex);
             String entityClass = newEntityData.entityClass;
-//            int newNetId = createEntityNetId();
-//            Set<Class<? extends Component>> modifyComponentTypes = newEntityData.modifyComponents.stream()
-//                    .map(comp -> comp.getClass())
-//                    .collect(Collectors.toSet());
             Set<Component> modifyComponents = newEntityData.modifyComponents;
-            Set<Component> createComponents = Set.of(new NetHostComp(newHost));
+            Set<Component> createComponents = Set.of(
+                    new NetHostComp(newHost),
+                    new TeamPlayerComp(newHost.teamIndex, newHost.playerIndex)
+            );
             Entity newHostEntity = NetEcsUtils.addEntityForHost(
                     true,
                     newHost,
@@ -93,7 +91,12 @@ public class NetServerSystem extends ModuleSystemBase {
             );
 
             // let NetSyncServerSystem create a NetHostComp on the client side
-            newHostEntity.modifyIfHasComponent(NetSyncComp.class, comp -> comp.createComponentTypesOnAdd.add(NetHostComp.class));
+            newHostEntity.modifyIfHasComponent(NetSyncComp.class, comp ->
+                    comp.createComponentTypesOnAdd.addAll(Set.of(
+                            NetHostComp.class,
+                            TeamPlayerComp.class
+                    ))
+            );
 
 
 //            // send the new client to all previously connected hosts

@@ -7,6 +7,7 @@ import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
 import sol_engine.ecs.listeners.EntityListener;
+import sol_engine.network.network_ecs.host_managing.ClientControlledComp;
 import sol_engine.network.network_ecs.host_managing.NetEcsUtils;
 import sol_engine.network.network_ecs.host_managing.NetHostComp;
 import sol_engine.network.network_ecs.host_managing.NetIdComp;
@@ -84,7 +85,15 @@ public class NetSyncServerSystem extends ModuleSystemBase {
                     .collect(Collectors.toList());
 
             handleHostEntitiesAdded(newHostEntities, serverModule);
-            handleHostEntitiesRemoved(removedHostEntities);
+
+            connectedHosts.addAll(newHostEntities.stream()
+                    .map(entity -> entity.getComponent(NetHostComp.class).host)
+                    .collect(Collectors.toSet()));
+
+            connectedHosts.removeAll(removedHostEntities.stream()
+                    .map(removedHostEntity -> removedHostEntity.getComponent(NetHostComp.class).host)
+                    .collect(Collectors.toSet()));
+
 
             prevEntities = currEntities;
         }
@@ -121,25 +130,21 @@ public class NetSyncServerSystem extends ModuleSystemBase {
     }
 
     private void handleHostEntitiesAdded(List<Entity> newHostEntities, NetworkServerModule serverModule) {
-        if (!newHostEntities.isEmpty()) {
-            List<CreateEntityPacket> allEntitiesCreatePackets = entitiesStream()
+        newHostEntities.forEach(newHostEntity -> {
+            GameHost newHost = newHostEntity.getComponent(NetHostComp.class).host;
+
+            List<CreateEntityPacket> allEntitiesPackets = entitiesStream()
                     .filter(entity -> entity.getComponent(NetSyncComp.class).syncAdd)
-                    .map(NetEcsUtils::createAddEntityPacket)
+                    .map(entity -> (entity == newHostEntity)
+                            ? NetEcsUtils.createAddEntityPacket(entity, Set.of(new ClientControlledComp()))
+                            : NetEcsUtils.createAddEntityPacket(entity)
+                    )
                     .collect(Collectors.toList());
 
-            newHostEntities.stream()
-                    .map(entity -> entity.getComponent(NetHostComp.class).host)
-                    .peek(newHost -> allEntitiesCreatePackets
-                            .forEach(createEntityPacket -> serverModule.sendPacket(createEntityPacket, newHost))
-                    )
-                    .forEach(connectedHosts::add);
-        }
-    }
+            allEntitiesPackets
+                    .forEach(createEntityPacket -> serverModule.sendPacket(createEntityPacket, newHost));
+        });
 
-    private void handleHostEntitiesRemoved(List<Entity> removedHostEntities) {
-        removedHostEntities.stream()
-                .map(removedHostEntity -> removedHostEntity.getComponent(NetHostComp.class).host)
-                .forEach(connectedHosts::remove);
     }
 
     private void syncComponents(
