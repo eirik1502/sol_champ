@@ -18,7 +18,7 @@ class SolGameSystem : SystemBase() {
                         .filter { it.hasComponent(CharacterComp::class.java) }
                         .count()
 
-                if (charactersCount == 2) {
+                if (charactersCount == 1) {
                     solGameComp.gameStarted = true
                 }
             }

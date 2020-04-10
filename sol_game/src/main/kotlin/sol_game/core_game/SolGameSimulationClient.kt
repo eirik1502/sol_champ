@@ -41,31 +41,33 @@ class SolGameSimulationClient(
                     RenderConfig(800f, 450f, 1600f, 900f)
             )))
         }
-        if (!headless && playerClass == null) {
-            addModule(InputGuiSourceModule(InputGuiSourceModuleConfig(
-                    Vector2f(1600f, 900f),
-                    mapOf(
-                            "mvLeft" to InputConsts.KEY_A,
-                            "mvRight" to InputConsts.KEY_D,
-                            "mvUp" to InputConsts.KEY_W,
-                            "mvDown" to InputConsts.KEY_S,
-                            "ability1" to InputConsts.MOUSE_BUTTON_LEFT,
-                            "ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
-                            "ability3" to InputConsts.KEY_SPACE,
-                            "aimX" to InputConsts.CURSOR_X,
-                            "aimY" to InputConsts.CURSOR_Y
-                    )
-            )))
+        val inputSourceModule = when (playerClass) {
+            null -> when (headless) {
+                false -> InputGuiSourceModule(InputGuiSourceModuleConfig(
+                        Vector2f(1600f, 900f),
+                        mapOf(
+                                "mvLeft" to InputConsts.KEY_A,
+                                "mvRight" to InputConsts.KEY_D,
+                                "mvUp" to InputConsts.KEY_W,
+                                "mvDown" to InputConsts.KEY_S,
+                                "ability1" to InputConsts.MOUSE_BUTTON_LEFT,
+                                "ability2" to InputConsts.MOUSE_BUTTON_RIGHT,
+                                "ability3" to InputConsts.KEY_SPACE,
+                                "aimX" to InputConsts.CURSOR_X,
+                                "aimY" to InputConsts.CURSOR_Y
+                        )
+                ))
+                else -> null
+            }
+            else -> SolClientPlayerModule(SolClientPlayerModuleConfig(playerClass))
         }
-
-        if (playerClass != null) {
-            addModule(SolClientPlayerModule(SolClientPlayerModuleConfig(playerClass)))
+        inputSourceModule?.let {
+            addModule(inputSourceModule)
+            addModule(InputModule(InputModuleConfig(
+                    inputSourceModule::class.java
+            )));
         }
-
-        addModule(InputModule(InputModuleConfig(
-                InputGuiSourceModule::class.java
-        )));
-
+        
         addModule(NetworkClientModule(NetworkClientModuleConfig(
                 ClientConfig(
                         connectAddress,

@@ -64,6 +64,8 @@ open class SolGameSimulationServer(
     override fun onSetupWorld() {
         world.addSystems(
                 InputSystem::class.java,
+                SolGameSystem::class.java,
+
                 MoveByVelocitySystem::class.java,
 
                 FaceAimSystem::class.java,
