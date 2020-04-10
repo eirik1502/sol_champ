@@ -17,15 +17,30 @@ class SolRandomTestPlayer : SolClientPlayer {
     }
 
     override fun onUpdate(world: World, gameState: SolGameState): SolActionsPacket {
-        if (MathF.random() < 0.01f) {
-            moveDirection = MathF.floori(MathF.random() * 5)
+        val myChar = gameState.charactersState[gameState.controlledPlayerIndex]
+        val otherChar = gameState.charactersState.getOrNull((gameState.controlledPlayerIndex + 1) % 2)
+
+        val aimX: Float = otherChar?.position?.x ?: MathF.randRange(0f, 1600f)
+        val aimY: Float = otherChar?.position?.y ?: MathF.randRange(0f, 900f)
+
+        if (MathF.random() < 0.1f) {
+            moveDirection = MathF.randInt(0, 4)
         }
+
+        val useAb1 = MathF.randInt(0, 60) == 0
+        val useAb2 = MathF.randInt(0, 60 * 3) == 0
+        val useAb3 = MathF.randInt(0, 60 * 5) == 0
 
         return SolActionsPacket(
                 mvLeft = moveDirection == 0,
                 mvRight = moveDirection == 1,
                 mvUp = moveDirection == 2,
-                mvDown = moveDirection == 3
+                mvDown = moveDirection == 3,
+                ability1 = useAb1,
+                ability2 = useAb2,
+                ability3 = useAb3,
+                aimX = aimX,
+                aimY = aimY
         )
     }
 

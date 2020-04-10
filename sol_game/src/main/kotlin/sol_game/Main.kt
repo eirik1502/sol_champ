@@ -2,7 +2,6 @@
 
 package sol_game
 
-import com.fasterxml.jackson.module.kotlin.*
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
@@ -10,56 +9,55 @@ import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_game.core_game.CharacterConfig
 import sol_game.game.*
 
-data class PoolServerParams(
+
+data class ServerConfig(
+        val use: Boolean = false,
+        val headless: Boolean = false
+)
+
+data class ClientConfig(
+        val teamIndex: Int,
         val headless: Boolean
 )
 
 class Args(parser: ArgParser) {
-    //    val poolServer by parser.option<PoolServerParams>(
-//            "-p", "--poolServer",
-//            argNames = listOf("HEADLESS"),
-//            help = "run a simple pool server"
-//    ) {
-//        PoolServerParams(
-//                arguments.getOrElse(0) { "true" }.toBoolean())
-//    }
-    val poolServer by parser.flagging(
-            "-P", "--poolServer",
-            help = "run a simple pool server")
+    val poolServer by parser.storing(
+            "--poolServer",
+            help = "run a simple pool server. Followed by comma separated options: [headless?]"
+    ) {
+        val options = this.split(",")
+        val headless = options.contains("headless")
+        ServerConfig(true, headless)
+    }.default(ServerConfig())
 
-    val headlessServer by parser.flagging(
-            "-S", "--headlessServer",
-            help = "run server with graphics. Default is headless")
-
-    val client by parser.flagging(
-            "-c", "--client",
-            help = "run a client connecting to a pool server")
-
-    val clientTeam by parser.storing(
-            "-t", "--clientTeam",
-            help = "What team the client should connect as (0 or 1)"
-    ).default(0)
-
-    val headlessClient by parser.flagging(
-            "-s", "--headlessClient",
-            help = "run server with graphics. Default is headless")
+    val clients by parser.adding(
+            "--client",
+            help = "Clients to connect to the pool server. Followed by comma separated options: [teamIndex?=(int = 0),headless?]"
+    ) {
+        val args = this.split(",")
+        val teamIndex = args.find { arg -> arg.startsWith("teamindex") }?.split("=")?.getOrNull(1)
+                ?.toInt()
+                ?: 0
+        val headless = args.contains("headless")
+        ClientConfig(teamIndex, headless)
+    }
 }
 
 fun main(args: Array<String>) = mainBody {
-
     ArgParser(args).parseInto(::Args).run {
-        println(this.poolServer)
-        if (this.poolServer) {
-            runPoolServer(headless = this.headlessServer)
+        if (this.poolServer.use) {
+            println("Running pool server: $poolServer")
+            runPoolServer(headless = this.poolServer.headless)
         }
 
-        if (this.client) {
-            runConnectClientToPool(headless = this.headlessClient)
+        clients.forEach {
+            println("Running client: $it")
+            runConnectClientToPool(it.headless, it.teamIndex)
+            Thread.sleep(500)
         }
     }
 }
 
-val jsonMapper = jacksonObjectMapper()
 val frankConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("exampleFrankConfig.json")
 
 val charactersConfig = listOf(
@@ -72,11 +70,11 @@ fun runPoolServer(headless: Boolean) {
     poolServer.serve(55555, charactersConfig)
 }
 
-fun runConnectClientToPool(headless: Boolean) {
+fun runConnectClientToPool(headless: Boolean, teamIndex: Int) {
     val serverConnectionData = requestGameServerInstance(
             "localhost", 55555)
     if (serverConnectionData != null) {
-        runClient(serverConnectionData, headless)
+        runClient(serverConnectionData, headless, teamIndex)
     } else {
         println("Could not connect to server")
     }
@@ -87,7 +85,7 @@ fun runServerClient() {
 
     val serverConnectionData = serverPool.createServer(listOf(CharacterConfig(), CharacterConfig()))
 
-    val client = runClient(serverConnectionData, true)
+    val client = runClient(serverConnectionData, true, 0)
 
     client.waitUntilFinished()
     serverPool.stopAll()
@@ -107,14 +105,14 @@ fun runServer(): SolGameServer {
     return server
 }
 
-fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean): SolGameClient {
+fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, teamIndex: Int): SolGameClient {
     val client = SolGameClient(
             serverConnectionData.address,
             serverConnectionData.port,
             serverConnectionData.gameId,
-            serverConnectionData.teamsPlayersKeys[0][0],
+            serverConnectionData.teamsPlayersKeys[teamIndex][0],
             false,
-            player = SolRandomTestPlayer::class.java,
+            player = null, //SolRandomTestPlayer::class.java,
             headless = headless,
             debugUI = !headless,
             allowGui = !headless

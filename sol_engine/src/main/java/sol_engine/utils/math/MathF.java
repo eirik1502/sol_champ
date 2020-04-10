@@ -55,6 +55,14 @@ public class MathF {
         return (float) Math.random();
     }
 
+    public static float randRange(float minIncluded, float maxExcluded) {
+        return random() * (maxExcluded - minIncluded) + minIncluded;
+    }
+
+    public static int randInt(int lowIncluded, int highIncluded) {
+        return floori(random() * (highIncluded - lowIncluded + 1)) + lowIncluded;
+    }
+
     public static float cos(float angle) {
         return (float) Math.cos((double) angle);
     }

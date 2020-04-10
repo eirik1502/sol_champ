@@ -73,6 +73,7 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
         hostPackets.forEach((host, packets) -> {
             NetInputPacket packet = packets.peek();
+            System.out.println("input packet: " + packet + " host: " + host);
             parseAndPutInputsFromPacket(packet, host.teamIndex, host.playerIndex);
         });
     }
@@ -93,9 +94,11 @@ public class NetworkInputSourceModule extends InputSourceModule {
                     logger.warn("Registered NetInputPacket type has a field with no effect." +
                             "Name: " + fieldName + " type: " + fieldType);
                 }
+                System.out.println("Setting input: " + label + " to: " + field.get(packet));
             } catch (IllegalAccessException e) {
                 logger.warn("Could not parse field: " + fieldName + ", because: " + e);
             }
         });
+        System.out.println("Net inputs: " + triggerActions);
     }
 }

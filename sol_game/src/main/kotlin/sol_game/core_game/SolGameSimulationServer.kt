@@ -107,7 +107,7 @@ open class SolGameSimulationServer(
                                 EntityHostStartData(charactersConfigs[0].name, setOf(TransformComp(200f, 200f)))
                         ),
                         listOf(
-                                EntityHostStartData(charactersConfigs[0].name, setOf(TransformComp(700f, 1400f)))
+                                EntityHostStartData(charactersConfigs[1].name, setOf(TransformComp(1400f, 700f)))
                         )
                 )
         )

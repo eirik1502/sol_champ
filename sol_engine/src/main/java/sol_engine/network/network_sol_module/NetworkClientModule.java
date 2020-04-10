@@ -63,8 +63,6 @@ public class NetworkClientModule extends Module {
     public void onSetup() {
         client = new NetworkGameClient();
         client.usePacketTypes(config.packetTypes);
-
-
     }
 
     @Override

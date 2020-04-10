@@ -31,7 +31,8 @@ public class WorldEditor implements CreatorFrame {
         float leftMenuWidth = windowSize.x * menuSizePercent;
         float topMenuHeight = windowSize.y * menuSizePercent;
 
-        Set<Entity> entities = world.insight.getEntities();
+        List<Entity> entities = new ArrayList<>(world.insight.getEntities());
+        entities.sort((e1, e2) -> e2.name.compareTo(e1.getName()));
 
         float mainMenuBarHeight = imgui.getNative().getTextLineHeightWithSpacing();
         imgui.format.setNextWindowPos(new Vector2f(0, mainMenuBarHeight), GuiCond.Once);
@@ -45,28 +46,11 @@ public class WorldEditor implements CreatorFrame {
 //                    GuiWindowFlags.NoBringToFrontOnFocus,
                 GuiWindowFlags.HorizontalScrollbar
         )) {
-//            if (imgui.menu.beginMenuBar()) {
-//                if (imgui.menu.beginMenu("entities", true)) {
-//
-//                    entities.forEach(entity -> {
-//                        boolean entityWasWatched = entitiesWatching.contains(entity);
-//                        boolean entityShouldBeWatched = imgui.menu.menuItem(entity.name, "", entityWasWatched, true);
-//                        if (!entityWasWatched && entityShouldBeWatched) {
-//                            entitiesWatching.add(entity);
-//                        } else if (entityWasWatched && !entityShouldBeWatched) {
-//                            entitiesWatching.remove(entity);
-//                        }
-//                    });
-//
-//                    imgui.menu.endMenu();
-//                }
-//                imgui.menu.endMenuBar();
-//            }
             entities.forEach(entity -> {
                 String className = entity.className == null ? "" : entity.className;
                 boolean active = entitiesWatching.contains(entity);
                 if (active) imgui.getNative().pushStyleColor(Col.Button, new Vec4(1, 1, 1, 0));
-                if (imgui.getNative().button(entity.name + " (" + className + ")", new Vec2(0, 0))) {
+                if (imgui.getNative().button(entity.name + " (" + className + ")" + "##" + entity.hashCode(), new Vec2(0, 0))) {
                     if (!active) {
                         entitiesWatching.add(entity);
                     } else {
@@ -79,7 +63,7 @@ public class WorldEditor implements CreatorFrame {
                     .forEach(entity -> {
                         String className = entity.className == null ? "" : entity.className;
                         MBoolean windowOpen = new MBoolean(true);
-                        if (imgui.begin(entity.name + " (" + className + ")", windowOpen)) {
+                        if (imgui.begin(entity.name + " (" + className + ")" + "##" + entity.hashCode(), windowOpen)) {
                             final Set<Class<? extends Component>> compTypes = entity.getComponentTypeGroup().stream().collect(Collectors.toSet());
                             compTypes.stream().forEach(compType -> drawComponent(imgui, entity, compType));
 

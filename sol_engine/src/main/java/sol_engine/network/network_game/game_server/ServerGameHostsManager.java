@@ -163,6 +163,8 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         }
         openHosts.put(host, gameHost);
         newConnectedHosts.add(gameHost);  // add as new connection to be retrieved
+
+        logger.info("Connection opened for GameHost: " + gameHost);
         return true;
     }
 

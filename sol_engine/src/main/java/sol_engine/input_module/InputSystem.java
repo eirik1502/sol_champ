@@ -17,7 +17,7 @@ public class InputSystem extends ModuleSystemBase {
         forEachWithComponents(InputComp.class, (entity, inputComp) -> {
             String inputGroup = inputComp.inputGroup;
             String inputLabelPrefix = inputGroup.isEmpty() ? "" : inputGroup + INPUT_GROUP_DELIMITER;
-
+            System.out.println("Input system getting inputs of group: " + inputGroup);
             inputComp.triggers.keySet()
                     .forEach(label -> inputComp.triggers.replace(label, inpModule.checkAction(inputLabelPrefix + label)));
 

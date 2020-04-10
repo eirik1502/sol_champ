@@ -2,12 +2,13 @@ package sol_game.game
 
 import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_game.core_game.CharacterConfig
+import java.util.concurrent.ConcurrentHashMap
 
 class SolGameServerPool(
         val headless: Boolean = true
 ) {
 
-    private val runningServers: MutableMap<String, SolGameServer> = HashMap()
+    private val runningServers: MutableMap<String, SolGameServer> = ConcurrentHashMap()
 
 
     fun createServer(
@@ -28,6 +29,14 @@ class SolGameServerPool(
         server.start()
         runningServers[serverConnectData.gameId] = server
         return serverConnectData
+    }
+
+    fun getRunningServer(): List<String> {
+        return runningServers.keys.toList()
+    }
+
+    fun getConnectionDataOfServer(gameId: String): ServerConnectionData? {
+        return runningServers[gameId]?.getConnectionData()
     }
 
     fun stopAll() {

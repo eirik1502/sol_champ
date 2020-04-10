@@ -12,7 +12,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2")
 
     implementation("io.github.microutils:kotlin-logging:1.7.7")
-//    runtimeOnly("org.slf4j:slf4j-simple:1.7.26")
+    runtimeOnly("org.slf4j:slf4j-simple:1.7.26")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 }
 
@@ -55,17 +55,45 @@ fun setRunSolProps(
 tasks.register<JavaExec>("runPoolServer") {
     setRunSolProps(
             this,
-            withArgs = listOf("-P", "--headlessServer"),
+            withArgs = listOf("--poolServer", "true"),
             withJvmArgs = listOf(),
             debugLevel = "warn"
     )
 }
-tasks.register<JavaExec>("runClient") {
+
+tasks.register<JavaExec>("runPoolServerHeadless") {
     setRunSolProps(
             this,
-            withArgs = listOf("-c"),
+            withArgs = listOf("--poolServer", "headless"),
             withJvmArgs = listOf(),
             debugLevel = "warn"
+    )
+}
+
+tasks.register<JavaExec>("runClient1") {
+    setRunSolProps(
+            this,
+            withArgs = listOf("--client", "teamindex=0"),
+            withJvmArgs = listOf(),
+            debugLevel = "warn"
+    )
+}
+
+tasks.register<JavaExec>("runClient2") {
+    setRunSolProps(
+            this,
+            withArgs = listOf("--client", "teamindex=1"),
+            withJvmArgs = listOf(),
+            debugLevel = "warn"
+    )
+}
+
+tasks.register<JavaExec>("runServerWithTwoClients") {
+    setRunSolProps(
+            this,
+            withArgs = listOf("--poolServer", "true", "--client", "teamindex=0,headless", "--client", "teamindex=1,headless"),
+            withJvmArgs = listOf(),
+            debugLevel = "info"
     )
 }
 
