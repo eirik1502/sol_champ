@@ -55,4 +55,14 @@ public class InputComp extends Component implements InputSource {
     public Vector2f vectorInput(String label) {
         return vectorInputs.getOrDefault(label, ZERO_VEC);
     }
+
+    @Override
+    public Component clone() {
+        InputComp o = (InputComp) super.clone();
+
+        o.triggers = new HashMap<>(triggers);
+        o.floatInputs = new HashMap<>(floatInputs);
+        o.vectorInputs = new HashMap<>(vectorInputs);
+        return o;
+    }
 }

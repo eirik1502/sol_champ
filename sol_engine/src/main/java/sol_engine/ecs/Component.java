@@ -1,9 +1,9 @@
 package sol_engine.ecs;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,7 @@ public abstract class Component implements Cloneable {
     private static Gson gson = new Gson();
     private static ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
             .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS);
 
     /**
@@ -28,7 +29,7 @@ public abstract class Component implements Cloneable {
         return gson.toJson(comp1).equals(gson.toJson(comp2));
     }
 
-    private Component internalClone() {
+    private Component shallowClone() {
         try {
             return (Component) super.clone();
         } catch (ClassCastException e) {
@@ -54,26 +55,31 @@ public abstract class Component implements Cloneable {
             JsonNode fromCompTree = objectMapper.valueToTree(fromComp);
             try {
                 objectMapper.readerForUpdating(this).readValue(fromCompTree);
-                return;
             } catch (IOException e) {
-                logger.warn("Could not copy the given component into this using default method of json (de)serializing." +
+                String msg = "Could not copy the given component into this using default method of json (de)serializing." +
                         " From component: " + fromComp + ", this: " + this
-                        + ". Because " + e);
-                return;
+                        + ". Because " + e;
+                logger.error(msg);
+                throw new IllegalStateException(msg);
             }
+        } else {
+            String msg = "Trying to copy a component of another type into this using default method of json (de)serializing." +
+                    " From component: " + fromComp + ", this: " + this;
+            logger.error(msg);
+            throw new IllegalArgumentException(msg);
         }
-
-        logger.warn("Trying to copy a component of another type into this using default method of json (de)serializing." +
-                " From component: " + fromComp + ", this: " + this);
     }
 
     public Component clone() {
-        return internalClone();
+        Component cloneComp = shallowClone();
+        assert cloneComp != null;
+        cloneComp.copy(this);
+        return cloneComp;
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Component> T cloneAs(Class<T> compType) {
-        return (T) this.internalClone();
+        return (T) this.shallowClone();
     }
 
     // Don't think that cloning to class is necessary

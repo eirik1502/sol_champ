@@ -10,8 +10,6 @@ public class CollisionComp extends Component {
 
     public PhysicsBodyShape bodyShape;
 
-
-    //    public Map<String, >
     public Map<Entity, CollisionData> collidingEntities = new HashMap<>();
 
 
@@ -29,5 +27,12 @@ public class CollisionComp extends Component {
         comp.bodyShape = bodyShape.clone();
         comp.collidingEntities = new HashMap<>();
         return comp;
+    }
+
+    @Override
+    public void copy(Component other) {
+        CollisionComp otherComp = (CollisionComp) other;
+        bodyShape = otherComp.bodyShape.clone();
+        collidingEntities = new HashMap<>();
     }
 }
