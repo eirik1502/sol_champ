@@ -7,10 +7,7 @@ import sol_engine.ecs.Entity;
 import sol_engine.graphics_module.GraphicsModule;
 import sol_engine.utils.mutable_primitives.MBoolean;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class CreatorSystem extends ModuleSystemBase {
@@ -26,16 +23,14 @@ public class CreatorSystem extends ModuleSystemBase {
         }
     }
 
-    //    private Map<Entity, WatchData> entityData = new HashMap<>();
-    private Map<Entity, boolean[]> entitiesWatched = new HashMap<>();
-    private final boolean[] tempBoolArr = {false};
-
-    private Set<CreatorFrameEntry> creatorFramesEntries = new HashSet<>();
+    private List<CreatorFrameEntry> creatorFramesEntries = new ArrayList<>();
 
     public CreatorSystem() {
-        creatorFramesEntries = Set.of(
-                new CreatorFrameEntry(new WorldEditor(), false, "World-editor"),
-                new CreatorFrameEntry(new WorldProfiler(), false, "World-profiler")
+        creatorFramesEntries = List.of(
+                new CreatorFrameEntry(new WorldEditor(), false, "Entities"),
+                new CreatorFrameEntry(new SystemsView(), false, "Systems"),
+                new CreatorFrameEntry(new EntitiesFlowView(), false, "Entities-Flow"),
+                new CreatorFrameEntry(new WorldProfiler(), false, "Systems-Profiler")
         );
     }
 
