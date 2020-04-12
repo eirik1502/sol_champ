@@ -5,14 +5,18 @@ plugins {
 }
 
 
+val loggerImplementation by configurations.creating
+
 dependencies {
+
+
     implementation("org.java-websocket:Java-WebSocket:1.4.0")
     api(project(":sol_engine"))
     implementation(kotlin("stdlib"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2")
 
     implementation("io.github.microutils:kotlin-logging:1.7.7")
-    runtimeOnly("org.slf4j:slf4j-simple:1.7.26")
+    loggerImplementation("org.slf4j:slf4j-simple:1.7.26")
     implementation("com.xenomachina:kotlin-argparser:2.0.7")
 }
 
@@ -42,6 +46,7 @@ fun setRunSolProps(
         withJvmArgs: List<String> = emptyList(),
         debugLevel: String = "warn"
 ) {
+    configurations["runtimeOnly"].extendsFrom(loggerImplementation)
     task.classpath = sourceSets["main"].runtimeClasspath
     task.main = "sol_game.Main"
     task.group = "application"
