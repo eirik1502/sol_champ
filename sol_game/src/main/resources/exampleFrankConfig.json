@@ -1,7 +1,7 @@
 {
   "name": "Frank",
   "radius": 48,
-  "moveVelocity": 48,
+  "moveVelocity": 500,
   "abilities": [
     {
       "name": "rapid shot",

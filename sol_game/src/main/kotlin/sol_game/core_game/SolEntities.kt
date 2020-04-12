@@ -73,15 +73,17 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
             .addBaseComponents(
                     TransformComp(),
                     RenderShapeComp(RenderableShape.CirclePointing(config.radius, MattMaterial.RED())),
-                    PhysicsBodyComp(10f, 0.05f, 0.5f),
-                    MoveByVelocityComp(config.moveVelocity, "mvLeft", "mvRight", "mvUp", "mvDown"),
+                    PhysicsBodyComp(10f, 0.9f, 0.5f),
+//                    MoveByVelocityComp(config.moveVelocity, "mvLeft", "mvRight", "mvUp", "mvDown"),
+                    MovementComp(listOf("mvLeft", "mvRight", "mvUp", "mvDown"), maxSpeed = config.moveVelocity, acceleration = config.moveVelocity / 5),
                     AbilityComp(abAbilities.map { it.second }),
                     CollisionComp(PhysicsBodyShape.Circ(config.radius)),
                     NaturalCollisionResolutionComp(),
                     CharacterComp("ability1", "ability2", "ability3"),
                     FaceAimComp(),
                     HurtboxComp(),
-                    NetSyncComp(setOf(TransformComp::class.java))
+                    NetSyncComp(setOf(TransformComp::class.java)),
+                    ControlDisabledComp()
             )
     if (isServer) {
         characterEntityClass.addBaseComponents(

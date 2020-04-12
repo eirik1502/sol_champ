@@ -28,7 +28,7 @@ class SolGameClient(
             allowGui
     )
 
-    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(clientSim)
+    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(clientSim, 0f)
 
     fun setup() {
         threadedLoop.setup();

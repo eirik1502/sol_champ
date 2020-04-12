@@ -67,7 +67,7 @@ class SolGameSimulationClient(
                     inputSourceModule::class.java
             )));
         }
-        
+
         addModule(NetworkClientModule(NetworkClientModuleConfig(
                 ClientConfig(
                         connectAddress,
@@ -86,18 +86,16 @@ class SolGameSimulationClient(
         world.addSystems(
                 NetClientSystem::class.java,
                 NetSyncClientSystem::class.java,
+                
+//                FaceAimSystem::class.java,
+//                CharacterSystem::class.java,
+//                AbilitySystem::class.java,
+//                EmitterTimedSystem::class.java,
+//                DestroySelfTimedSystem::class.java,
 
-                MoveByVelocitySystem::class.java,
-
-                FaceAimSystem::class.java,
-                CharacterSystem::class.java,
-                AbilitySystem::class.java,
-                EmitterTimedSystem::class.java,
-                DestroySelfTimedSystem::class.java,
-
-                CollisionSystem::class.java,
-                DamageSystem::class.java,
-                KnockbackSystem::class.java,
+//                CollisionSystem::class.java,
+//                DamageSystem::class.java,
+//                KnockbackSystem::class.java,
 //                NaturalCollisionResolutionSystem::class.java,
 
                 SceneChildSystem::class.java,

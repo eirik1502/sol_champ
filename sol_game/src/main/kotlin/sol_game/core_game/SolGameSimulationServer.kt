@@ -38,7 +38,7 @@ open class SolGameSimulationServer(
     override fun onSetupModules() {
         if (!headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
-                    WindowConfig(0.5f, 0.5f, "sol server", true),
+                    WindowConfig(0.5f, 0.5f, "sol server", false),
                     RenderConfig(800f, 450f, 1600f, 900f)
             )))
         }
@@ -66,7 +66,8 @@ open class SolGameSimulationServer(
                 InputSystem::class.java,
                 SolGameSystem::class.java,
 
-                MoveByVelocitySystem::class.java,
+//                MoveByVelocitySystem::class.java,
+                MovementSystem::class.java,
 
                 FaceAimSystem::class.java,
                 CharacterSystem::class.java,
@@ -77,6 +78,7 @@ open class SolGameSimulationServer(
                 CollisionSystem::class.java,
                 DamageSystem::class.java,
                 KnockbackSystem::class.java,
+                ControlDisabledSystem::class.java,
                 NaturalCollisionResolutionSystem::class.java,
 
                 SceneChildSystem::class.java,

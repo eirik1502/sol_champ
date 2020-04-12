@@ -10,4 +10,14 @@ class HitboxComp(
         var owner: Entity? = null
 ) : Component() {
     var currDamageDealt: Float = 0f
+
+    override fun copy(fromComp: Component?) {
+        val otherComp = fromComp as HitboxComp
+        
+        damage = otherComp.damage
+        baseKnockback = otherComp.baseKnockback
+        knockbackRatio = otherComp.knockbackRatio
+        owner = otherComp.owner
+        currDamageDealt = otherComp.currDamageDealt
+    }
 }

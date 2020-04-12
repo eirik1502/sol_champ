@@ -26,7 +26,8 @@ public class PhysicsSystem extends SystemBase {
             physComp.velocity.add(physComp.acceleration.mul(PhysicsConstants.FIXED_UPDATE_TIME, tempVec));
             physComp.velocity.add(physComp.impulse);
 
-            physComp.velocity.mul(1 - physComp.frictionConst);
+            // apply friction
+            physComp.velocity.mul(1 - physComp.frictionConst * PhysicsConstants.FIXED_UPDATE_TIME);
 
             physComp.velocity.mul(PhysicsConstants.FIXED_UPDATE_TIME, tempVec);
 
