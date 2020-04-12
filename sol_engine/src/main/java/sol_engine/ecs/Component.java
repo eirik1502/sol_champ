@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sol_engine.utils.reflection_utils.ClassUtils;
 
 import java.io.IOException;
 
@@ -27,20 +29,6 @@ public abstract class Component implements Cloneable {
      */
     public static boolean areEqual(Component comp1, Component comp2) {
         return gson.toJson(comp1).equals(gson.toJson(comp2));
-    }
-
-    private Component shallowClone() {
-        try {
-            return (Component) super.clone();
-        } catch (ClassCastException e) {
-            // this should not happen as every descending class is a component
-            e.printStackTrace();
-            return null;
-        } catch (CloneNotSupportedException e) {
-            // this should not happen as we implement cloneable
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**
@@ -71,15 +59,31 @@ public abstract class Component implements Cloneable {
     }
 
     public Component clone() {
-        Component cloneComp = shallowClone();
-        assert cloneComp != null;
-        cloneComp.copy(this);
-        return cloneComp;
+        Component clone = ClassUtils.instantiateNoargs(getClass());
+        if (clone == null) {
+            throw new IllegalStateException("Could not clone component of type: " + getClass().getName());
+        }
+        clone.copy(this);
+        return clone;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Component> T cloneAs(Class<T> compType) {
-        return (T) this.shallowClone();
+    public final <T extends Component> T shallowCloneAs(Class<T> compType) {
+        return (T) shallowClone();
+    }
+
+    public final Component shallowClone() {
+        try {
+            return (Component) super.clone();
+        } catch (ClassCastException e) {
+            // this should not happen as every descending class is a component
+            e.printStackTrace();
+            return null;
+        } catch (CloneNotSupportedException e) {
+            // this should not happen as we implement cloneable
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // Don't think that cloning to class is necessary

@@ -29,6 +29,7 @@ public class GuiRenderer {
         implGlfw = new ImplGlfw(unoWindow, false);
         implGl3 = new ImplGL3();
         io = imgui.getIo();
+        io.setWantSaveIniSettings(false);
         guiCommands = new GuiCommands(imgui);
     }
 

@@ -57,12 +57,17 @@ public class InputComp extends Component implements InputSource {
     }
 
     @Override
-    public Component clone() {
-        InputComp o = (InputComp) super.clone();
-
-        o.triggers = new HashMap<>(triggers);
-        o.floatInputs = new HashMap<>(floatInputs);
-        o.vectorInputs = new HashMap<>(vectorInputs);
-        return o;
+    public void copy(Component other) {
+        InputComp otherComp = (InputComp) other;
+        inputGroup = otherComp.inputGroup;
+        triggers = new HashMap<>(otherComp.triggers);
+        floatInputs = new HashMap<>(otherComp.floatInputs);
+        vectorInputs = new HashMap<>(
+                otherComp.vectorInputs.entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> new Vector2f(entry.getValue())
+                        ))
+        );
     }
 }

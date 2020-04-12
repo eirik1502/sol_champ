@@ -21,18 +21,11 @@ public class CollisionComp extends Component {
         this.bodyShape = bodyShape;
     }
 
-    @Override
-    public Component clone() {
-        CollisionComp comp = (CollisionComp) super.clone();
-        comp.bodyShape = bodyShape.clone();
-        comp.collidingEntities = new HashMap<>();
-        return comp;
-    }
 
     @Override
     public void copy(Component other) {
         CollisionComp otherComp = (CollisionComp) other;
         bodyShape = otherComp.bodyShape.clone();
-        collidingEntities = new HashMap<>();
+        collidingEntities = new HashMap<>(otherComp.collidingEntities);
     }
 }

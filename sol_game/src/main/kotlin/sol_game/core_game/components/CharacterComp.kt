@@ -12,9 +12,9 @@ class CharacterComp(
         this.abilityInputActions.addAll(abilityInputActions)
     }
 
-    override fun clone(): CharacterComp {
-        val comp = CharacterComp()
-        comp.abilityInputActions.addAll(abilityInputActions)
-        return comp
+    override fun copy(other: Component) {
+        val otherComp = other as CharacterComp
+        abilityInputActions.clear()
+        abilityInputActions.addAll(otherComp.abilityInputActions)
     }
 }

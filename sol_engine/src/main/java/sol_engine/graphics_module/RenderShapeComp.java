@@ -25,9 +25,10 @@ public class RenderShapeComp extends Component {
     }
 
     @Override
-    public Component clone() {
-        RenderShapeComp comp = (RenderShapeComp) super.clone();
-        comp.renderable = renderable.clone();
-        return comp;
+    public void copy(Component other) {
+        RenderShapeComp otherComp = (RenderShapeComp) other;
+        renderable = otherComp.renderable == null ? null : otherComp.renderable.clone();
+        offsetX = otherComp.offsetX;
+        offsetY = otherComp.offsetY;
     }
 }

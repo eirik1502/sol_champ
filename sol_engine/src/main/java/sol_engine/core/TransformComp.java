@@ -5,18 +5,16 @@ import sol_engine.ecs.Component;
 
 public class TransformComp extends Component {
 
-    public final Vector2f position;
-    public final Vector2f scale;
+    public final Vector2f position = new Vector2f(0, 0);
+    public final Vector2f scale = new Vector2f(1, 1);
     public float rotationZ;
 
 
     public TransformComp() {
-        this(0, 0);
     }
 
     public TransformComp(float x, float y) {
-        position = new Vector2f(x, y);
-        scale = new Vector2f(1, 1);
+        position.set(x, y);
     }
 
     public TransformComp setX(float x) {
@@ -60,11 +58,16 @@ public class TransformComp extends Component {
         return this;
     }
 
-    public TransformComp clone() {
-        TransformComp transComp = new TransformComp();
-        transComp.position.set(position);
-        transComp.scale.set(scale);
-        transComp.rotationZ = rotationZ;
-        return transComp;
+//    public Component clone() {
+//        TransformComp newComp = new TransformComp();
+//        newComp.copy(this);
+//        return newComp;
+//    }
+
+    public void copy(Component other) {
+        TransformComp otherComp = (TransformComp) other;
+        position.set(otherComp.position);
+        scale.set(otherComp.scale);
+        rotationZ = otherComp.rotationZ;
     }
 }

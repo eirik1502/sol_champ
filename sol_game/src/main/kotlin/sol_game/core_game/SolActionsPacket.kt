@@ -2,7 +2,7 @@ package sol_game.core_game
 
 import sol_engine.network.network_input.NetInputPacket
 
-class SolActionsPacket(
+data class SolActionsPacket(
         val mvLeft: Boolean = false,
         val mvRight: Boolean = false,
         val mvUp: Boolean = false,
@@ -14,7 +14,7 @@ class SolActionsPacket(
         val aimY: Float = 0f
 ) : NetInputPacket() {
 
-    override fun toString(): String {
-        return "SolInputPacket(mvLeft=$mvLeft, mvRight=$mvRight, mvUp=$mvUp, mvDown=$mvDown, ability1=$ability1, ability2=$ability2, ability3=$ability3, aimX=$aimX, aimY=$aimY)"
-    }
+//    override fun toString(): String {
+//        return "SolInputPacket(mvLeft=$mvLeft, mvRight=$mvRight, mvUp=$mvUp, mvDown=$mvDown, ability1=$ability1, ability2=$ability2, ability3=$ability3, aimX=$aimX, aimY=$aimY)"
+//    }
 }

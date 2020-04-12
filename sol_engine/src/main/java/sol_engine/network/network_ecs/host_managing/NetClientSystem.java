@@ -1,12 +1,8 @@
 package sol_engine.network.network_ecs.host_managing;
 
-import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
-import sol_engine.ecs.Entity;
-import sol_engine.network.network_ecs.packets.CreateHostEntityPacket;
-import sol_engine.network.network_ecs.packets.HostConnectedPacket;
 import sol_engine.network.network_sol_module.NetworkClientModule;
 import sol_engine.utils.reflection_utils.ClassUtils;
 
@@ -45,7 +41,7 @@ public class NetClientSystem extends ModuleSystemBase {
             // handle static connect packets
             if (clientComp.staticConnectionPacketType != null && clientComp.staticConnectionPacketHandler != null) {
                 clientModule.peekPacketsOfType(clientComp.staticConnectionPacketType).forEach(packet -> {
-                    ClassUtils.instanciateNoarg(clientComp.staticConnectionPacketHandler)
+                    ClassUtils.instantiateNoargs(clientComp.staticConnectionPacketHandler)
                             .handleConnectionPacket(packet, world);
                     logger.info("Static connection packet handled");
                 });

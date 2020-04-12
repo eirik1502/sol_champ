@@ -35,10 +35,9 @@ public class CollisionInteractionComp extends Component {
 
 
     @Override
-    public Component clone() {
-        CollisionInteractionComp newComp = (CollisionInteractionComp) super.clone();
-        newComp.tags = new HashSet<>(this.tags);
-        newComp.interactionByTag = new HashMap<>(this.interactionByTag);
-        return newComp;
+    public void copy(Component other) {
+        CollisionInteractionComp otherComp = (CollisionInteractionComp) other;
+        tags = new HashSet<>(otherComp.tags);
+        interactionByTag = new HashMap<>(otherComp.interactionByTag);
     }
 }

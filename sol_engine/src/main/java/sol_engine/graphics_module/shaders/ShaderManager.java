@@ -12,7 +12,7 @@ public class ShaderManager {
     @SuppressWarnings("unchecked")
     public <T extends Shader> T get(Class<T> shaderType) {
         return (T) shaderInstances.computeIfAbsent(shaderType, key -> {
-            Shader s = ClassUtils.instanciateNoarg(key);
+            Shader s = ClassUtils.instantiateNoargs(key);
             return s;
         });
     }

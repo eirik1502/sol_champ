@@ -5,4 +5,10 @@ import sol_game.core_game.SolActionsPacket
 
 data class SolActionsPacketComp(
         var actionsPacket: SolActionsPacket = SolActionsPacket()
-) : Component()
+) : Component() {
+
+    override fun copy(fromComp: Component) {
+        val otherComp = fromComp as SolActionsPacketComp
+        actionsPacket = otherComp.actionsPacket.copy()
+    }
+}

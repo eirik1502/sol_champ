@@ -38,11 +38,14 @@ public class PhysicsBodyComp extends Component {
     }
 
     @Override
-    public Component clone() {
-        PhysicsBodyComp comp = (PhysicsBodyComp) super.clone();
-        comp.velocity = new Vector2f(velocity);
-        comp.acceleration = new Vector2f(acceleration);
-        comp.impulse = new Vector2f(impulse);
-        return comp;
+    public void copy(Component other) {
+        PhysicsBodyComp otherComp = (PhysicsBodyComp) other;
+        velocity.set(otherComp.velocity);
+        acceleration.set(otherComp.acceleration);
+        impulse.set(otherComp.impulse);
+
+        mass = otherComp.mass;
+        frictionConst = otherComp.frictionConst;
+        elasticity = otherComp.elasticity;
     }
 }

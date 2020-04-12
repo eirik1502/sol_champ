@@ -14,4 +14,12 @@ public class NetHostComp extends Component {
     public NetHostComp(GameHost host) {
         this.host = host;
     }
+
+    @Override
+    public void copy(Component other) {
+        NetHostComp otherComp = (NetHostComp) other;
+
+        // we shouldl use the same game host reference
+        host = otherComp.host;
+    }
 }

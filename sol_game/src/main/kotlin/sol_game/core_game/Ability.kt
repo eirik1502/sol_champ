@@ -1,6 +1,6 @@
 package sol_game.core_game
 
-class Ability(
+data class Ability(
         var abilityEntityClass: String = "",
         var cooldown: Int = 60,
         var initialOffset: Float = 0f,

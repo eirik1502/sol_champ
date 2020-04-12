@@ -12,10 +12,11 @@ class HurtboxComp : Component() {
     val currHitsTaken: MutableList<Hit> = ArrayList()
     var totalDamageTaken: Float = 0f
 
-    override fun clone(): HurtboxComp {
-        val comp = HurtboxComp()
-        comp.currHitsTaken.addAll(currHitsTaken)
-        comp.totalDamageTaken = totalDamageTaken
-        return comp
+    override fun copy(other: Component) {
+        val otherComp = other as HurtboxComp
+
+        currHitsTaken.clear()
+        currHitsTaken.addAll(otherComp.currHitsTaken.map { it.copy() })
+        totalDamageTaken = otherComp.totalDamageTaken
     }
 }

@@ -112,7 +112,7 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
             serverConnectionData.gameId,
             serverConnectionData.teamsPlayersKeys[teamIndex][0],
             false,
-            player = null, //SolRandomTestPlayer::class.java,
+            player = SolRandomTestPlayer::class.java,
             headless = headless,
             debugUI = !headless,
             allowGui = !headless

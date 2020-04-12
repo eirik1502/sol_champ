@@ -18,11 +18,16 @@ class AbilityComp(
         this.abilities.addAll(abilities);
     }
 
-    override fun clone(): AbilityComp {
-        val comp = AbilityComp()
-        comp.abilities.addAll(abilities)
-        comp.isExecuting = isExecuting;
-        comp.executingAbility = executingAbility
-        return comp
+    override fun copy(other: Component) {
+        val otherComp = other as AbilityComp
+
+        val executingAbilityIndex = otherComp.abilities.indexOf(otherComp.executingAbility)
+        abilities.clear()
+        abilities.addAll(otherComp.abilities.map { it.copy() })
+
+        isExecuting = otherComp.isExecuting;
+        executingAbility = if (executingAbilityIndex == -1) null else abilities[executingAbilityIndex]
+        executingAbilityExecutionTimer = otherComp.executingAbilityExecutionTimer
+        executingAbilityStartupDelayTimer = otherComp.executingAbilityStartupDelayTimer
     }
 }

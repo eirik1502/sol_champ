@@ -1,16 +1,32 @@
 package sol_engine.utils.reflection_utils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 public class ClassUtils {
 
-//    public static <T extends B, B> T instanciateNoargOf(Class<T> clazz, Class<B> of) {
-//        return instanciateNoarg(clazz);
-//    }
-
-    public static <T> T instanciateNoarg(Class<T> clazz) {
+    @SuppressWarnings("unchecked")
+    public static <T> T instantiateNoargs(Class<T> clazz) {
         try {
-            return clazz.getConstructor().newInstance();
+            Constructor<?>[] constructors = clazz.getConstructors();
+            boolean hasNoArgConstructor = Arrays.stream(constructors)
+                    .anyMatch(constructor -> constructor.getParameterCount() == 0);
+            if (hasNoArgConstructor) {
+                return clazz.getConstructor().newInstance();
+            }
+
+            // handle potential vararg constructor (this is not registered as no-arg, in kotlin at least)
+            Constructor<?> singleArrayArgConstructor = Arrays.stream(constructors)
+                    .filter(constructor -> constructor.getParameterCount() == 1)
+                    .filter(constructor -> constructor.getParameterTypes()[0].isArray())
+                    .findFirst().orElse(null);
+            if (singleArrayArgConstructor != null) {
+                Class<?> arrayType = singleArrayArgConstructor.getParameterTypes()[0];
+                Object emptyArray = Array.newInstance(arrayType.getComponentType(), 0);
+                return (T) singleArrayArgConstructor.newInstance(emptyArray);
+            }
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -27,13 +43,13 @@ public class ClassUtils {
     public static <T> T instanciateNoargOf(String classPath, Class<T> of) {
         Class<? extends T> classOf = toClassOf(classPath, of);
         if (classOf == null) return null;
-        return instanciateNoarg(classOf);
+        return instantiateNoargs(classOf);
     }
 
-    public static Object instanciateNoarg(String classPath) {
+    public static Object instantiateNoargs(String classPath) {
         Class<?> genericClass = toClass(classPath);
         if (genericClass == null) return null;
-        return instanciateNoarg(genericClass);
+        return instantiateNoargs(genericClass);
     }
 
     public static Class<?> toClass(String classPath) {

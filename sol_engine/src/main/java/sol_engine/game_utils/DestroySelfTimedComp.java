@@ -9,6 +9,9 @@ public class DestroySelfTimedComp extends Component {
     // system controlled
     public int counter = 0;
 
+    public DestroySelfTimedComp() {
+    }
+
     public DestroySelfTimedComp(int timeFrames) {
         this.timeFrames = timeFrames;
     }

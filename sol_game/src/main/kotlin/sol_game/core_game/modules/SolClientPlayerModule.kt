@@ -9,7 +9,6 @@ import sol_engine.ecs.World
 import sol_engine.input_module.InputSourceModule
 import sol_engine.network.network_ecs.host_managing.ClientControlledComp
 import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
-import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.physics_module.CollisionComp
 import sol_engine.physics_module.PhysicsBodyComp
 import sol_engine.physics_module.PhysicsBodyShape
@@ -45,7 +44,7 @@ class SolClientPlayerModule(
 
 
     override fun onSetup() {
-        ClassUtils.instanciateNoarg(config.playerClass)
+        ClassUtils.instantiateNoargs(config.playerClass)
                 ?.let { player = it }
                 ?: run {
                     logger.error { "Could not instanciate player of class: ${config.playerClass}" }

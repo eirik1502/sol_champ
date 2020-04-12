@@ -12,10 +12,12 @@ class SceneChildComp(
     var parentPrevScale: Vector2f = Vector2f(1f, 1f)
     var parentPrevRotationZ: Float = 0f
 
-    override fun clone(): SceneChildComp {
-        val comp = super.cloneAs(SceneChildComp::class.java)
-        comp.parentPrevPosition = Vector2f(parentPrevPosition)
-        comp.parentPrevScale = Vector2f(parentPrevScale)
-        return comp
+    override fun copy(other: Component) {
+        val otherComp = other as SceneChildComp
+
+        parent = otherComp.parent
+        parentPrevPosition.set(otherComp.parentPrevPosition)
+        parentPrevScale.set(otherComp.parentPrevScale)
+        parentPrevRotationZ = otherComp.parentPrevRotationZ
     }
 }
