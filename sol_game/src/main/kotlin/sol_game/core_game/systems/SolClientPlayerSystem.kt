@@ -23,7 +23,7 @@ class SolClientPlayerSystem : ModuleSystemBase() {
 
     override fun onUpdate() {
         forEachWithComponents(SolGameComp::class.java) { _, gameComp ->
-            if (gameComp.gameStarted) {
+            if (gameComp.gameState == SolGameComp.GameState.RUNNING) {
                 getModule(SolClientPlayerModule::class.java).gameStarted = true
             }
         }

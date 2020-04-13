@@ -86,7 +86,9 @@ class SolGameSimulationClient(
         world.addSystems(
                 NetClientSystem::class.java,
                 NetSyncClientSystem::class.java,
-                
+
+                SolGameClientSystem::class.java,
+
 //                FaceAimSystem::class.java,
 //                CharacterSystem::class.java,
 //                AbilitySystem::class.java,

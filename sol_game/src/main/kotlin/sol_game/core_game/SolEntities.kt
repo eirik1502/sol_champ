@@ -21,7 +21,7 @@ import sol_game.core_game.components.*
 fun addGameEntity(isServer: Boolean, world: World): Entity? {
     world.addEntityClass(
             EntityClass("sol-game-status").addBaseComponents(
-                    SolGameComp(gameStarted = false, gameEnded = false),
+                    SolGameComp(gameState = SolGameComp.GameState.BEFORE_START),
                     NetSyncComp(setOf(SolGameComp::class.java))
             )
 

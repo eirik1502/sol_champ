@@ -17,7 +17,6 @@ import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_engine.physics_module.*
-import sol_game.core_game.components.SolGameComp
 import sol_game.core_game.systems.*
 
 open class SolGameSimulationServer(
@@ -64,7 +63,7 @@ open class SolGameSimulationServer(
     override fun onSetupWorld() {
         world.addSystems(
                 InputSystem::class.java,
-                SolGameSystem::class.java,
+                SolGameServerSystem::class.java,
 
 //                MoveByVelocitySystem::class.java,
                 MovementSystem::class.java,

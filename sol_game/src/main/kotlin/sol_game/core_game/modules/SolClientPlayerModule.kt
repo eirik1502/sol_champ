@@ -61,6 +61,7 @@ class SolClientPlayerModule(
         } else if (gameStarted) {
             val gameState = retrieveSolGameState(world)
             if (gameState.controlledPlayerIndex != -1) {
+                
                 if (!calledPlayerStart) {
                     player.onStart(world, gameState)
                     calledPlayerStart = true
