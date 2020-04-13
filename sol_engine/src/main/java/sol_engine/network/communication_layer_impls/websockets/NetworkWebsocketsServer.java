@@ -97,8 +97,6 @@ public class NetworkWebsocketsServer implements NetworkServer {
                 } else {
                     logger.warn("Disconnecting host was never connected");
                 }
-
-                wsServer = null;
             }
 
             @Override
