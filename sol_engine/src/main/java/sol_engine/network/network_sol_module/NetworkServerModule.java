@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import sol_engine.module.Module;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.PacketsQueue;
-import sol_engine.network.network_game.PacketsQueueByHost;
-import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_game.game_server.NetworkGameServer;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.network_game.game_server.ServerConnectionData;
@@ -22,7 +20,8 @@ public class NetworkServerModule extends Module {
     private NetworkGameServer server;
 
     private PacketsQueue currentPackets = new PacketsQueue();
-    private Set<GameHost> currentNewConnections = new HashSet<>();
+    private Set<GameHost> currentConnections = new HashSet<>();
+    private Set<GameHost> currentDisconnections = new HashSet<>();
 
 
     public NetworkServerModule(NetworkServerModuleConfig config) {
@@ -48,7 +47,11 @@ public class NetworkServerModule extends Module {
     }
 
     public Set<GameHost> getNewConnectedHosts() {
-        return new HashSet<>(currentNewConnections);
+        return new HashSet<>(currentConnections);
+    }
+
+    public Set<GameHost> getNewDisconnectedHosts() {
+        return new HashSet<>(currentDisconnections);
     }
 
     public Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> getCurrentPacketsForHost(GameHost host) {
@@ -112,7 +115,10 @@ public class NetworkServerModule extends Module {
         currentPackets.clear();
         currentPackets.addAll(server.popInputPacketsQueue());
 
-        currentNewConnections.clear();
-        currentNewConnections.addAll(server.popNewConnections());
+        currentConnections.clear();
+        currentConnections.addAll(server.popNewConnections());
+
+        currentDisconnections.clear();
+        currentDisconnections.addAll(server.popNewDisconnections());
     }
 }

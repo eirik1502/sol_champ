@@ -40,7 +40,7 @@ public class NetworkClientModule extends Module {
     }
 
     public boolean isConnected() {
-        return client.isConnected();
+        return client != null && client.isConnected();
     }
 
     public ClientConnectionData getConnectionData() {
@@ -48,6 +48,14 @@ public class NetworkClientModule extends Module {
             logger.warn("Getting connection data that is null");
         }
         return connData;
+    }
+
+    public void disconnect() {
+        if (client != null) {
+            client.disconnect();
+        } else {
+            logger.warn("Calling disconnect before setup");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -82,10 +90,5 @@ public class NetworkClientModule extends Module {
     public void onUpdate() {
         currentPacketsOfType.clear();
         currentPacketsOfType.putAll(client.pollAllPackets());
-//        logger.info("Updating current packets: " + currentPacketsOfType.entrySet().stream()
-//                .filter(entry -> entry.getValue().size() != 0)
-//                .collect(Collectors.toMap(entry -> entry.getKey().getSimpleName(), entry -> entry.getValue().size()))
-//        );
-
     }
 }

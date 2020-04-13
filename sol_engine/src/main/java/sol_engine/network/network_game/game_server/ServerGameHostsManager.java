@@ -28,6 +28,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
     private Set<GameHost> observerHosts = new HashSet<>();  // open observer hosts
 
     private Deque<GameHost> newConnectedHosts = new ArrayDeque<>();  // newly connected hosts to be retrieved
+    private Deque<GameHost> newDisconnectedHosts = new ArrayDeque<>();  // newly disconnected hosts to be retrieved
     private PacketsQueue inputPacketQueue = new PacketsQueue();
 
 
@@ -73,6 +74,16 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         Deque<GameHost> holdNewConnections = peekNewConnectedHosts();
         newConnectedHosts.clear();
         return holdNewConnections;
+    }
+
+    public Deque<GameHost> peekNewDisconnectedHosts() {
+        return new ArrayDeque<>(newDisconnectedHosts);
+    }
+
+    public Deque<GameHost> popNewDisconnectedHosts() {
+        Deque<GameHost> holdNewDisconnections = peekNewDisconnectedHosts();
+        newDisconnectedHosts.clear();
+        return holdNewDisconnections;
     }
 
     public PacketsQueue peekInputPacketQueue() {
@@ -173,7 +184,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         if (unopenedAcceptedHosts.containsKey(host)) {
             GameHost gameHost = unopenedAcceptedHosts.get(host);
             unopenedAcceptedHosts.remove(host);
-            logger.info("Connection closed before client was opened for GameHost: " + gameHost);
+            logger.warn("Connection closed before client was opened for GameHost: " + gameHost);
         } else if (openHosts.containsKey(host)) {
             GameHost gameHost = openHosts.get(host);
 
@@ -183,6 +194,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                 teamPlayerHosts.replaceHost(gameHost, null);
             }
             openHosts.remove(host);
+            newDisconnectedHosts.add(gameHost);
             logger.info("Connection closed for GameHost: " + gameHost);
         } else {
             logger.warn("Disconnecting host was never connected");

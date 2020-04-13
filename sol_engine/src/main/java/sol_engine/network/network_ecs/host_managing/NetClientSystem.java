@@ -17,15 +17,6 @@ public class NetClientSystem extends ModuleSystemBase {
 
     @Override
     protected void onSetupEnd() {
-//        NetworkClientModule clientModule = getModule(NetworkClientModule.class);
-//        clientModule.usePacketTypes(CreateHostEntityPacket.class);
-
-//        List<Class<? extends NetworkPacket>> staticConnectPacketTypes = entitiesStream()
-//                .map(entity -> entity.getComponent(NetClientComp.class))
-//                .map(clientComp -> clientComp.staticConnectionPacketType)
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//        clientModule.usePacketTypes(staticConnectPacketTypes);
     }
 
     @Override
@@ -47,18 +38,10 @@ public class NetClientSystem extends ModuleSystemBase {
                 });
             }
 
-//            clientModule.peekPacketsOfType(CreateHostEntityPacket.class)
-//                    .forEach(connectPacket -> {
-//                        Entity newHostEntity = NetEcsUtils.addEntityForHost(
-//                                false,
-//                                connectPacket.host,
-//                                connectPacket.netId,
-//                                connectPacket.entityClass,
-//                                connectPacket.updateComponents,
-//                                world
-//                        );
-//                        logger.info("Entiity created for a HostConnectedPacket, entity: " + newHostEntity + " packet: " + connectPacket);
-//                    });
+            if (clientComp.requestDisconnect) {
+                clientModule.disconnect();
+                clientComp.requestDisconnect = false;
+            }
         });
     }
 }

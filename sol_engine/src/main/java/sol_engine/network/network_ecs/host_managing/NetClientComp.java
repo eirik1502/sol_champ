@@ -8,6 +8,7 @@ public class NetClientComp extends Component {
     public Class<? extends NetworkPacket> staticConnectionPacketType = null;
     public Class<? extends StaticConnectionPacketHandler> staticConnectionPacketHandler = null;
 
+    public boolean requestDisconnect = false;
 
     public NetClientComp() {
     }

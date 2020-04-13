@@ -53,14 +53,7 @@ public class NetworkGameServer {
     }
 
     public void start() {
-        start(false);
-    }
-
-    public void start(boolean waitForAllPlayerConnections) {
         server.start(connectionData.port);
-        if (waitForAllPlayerConnections) {
-            waitForAllPlayerConnections();
-        }
     }
 
     public boolean waitForAllPlayerConnections() {
@@ -101,6 +94,10 @@ public class NetworkGameServer {
 
     public Deque<GameHost> popNewConnections() {
         return hostsManager.popNewConnectedHosts();
+    }
+
+    public Deque<GameHost> popNewDisconnections() {
+        return hostsManager.popNewDisconnectedHosts();
     }
 
     public PacketsQueue peekInputPacketsQueue() {
