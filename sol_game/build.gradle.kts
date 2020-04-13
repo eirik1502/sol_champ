@@ -98,7 +98,7 @@ tasks.register<JavaExec>("runServerWithTwoClients") {
             this,
             withArgs = listOf("--poolServer", "true", "--client", "teamindex=0,headless", "--client", "teamindex=1,headless"),
             withJvmArgs = listOf(),
-            debugLevel = "warn"
+            debugLevel = "info"
     )
 }
 

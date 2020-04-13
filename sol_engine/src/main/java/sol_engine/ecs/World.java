@@ -26,6 +26,10 @@ public class World {
     final Set<Entity> entitiesScheduledForRemove = new HashSet<>();
     final Set<Entity> entitiesScheduledForAdd = new HashSet<>();
 
+    final Set<Class<? extends SystemBase>> systemsScheduledForRemove = new LinkedHashSet<>();
+    final Set<SystemBase> systemsScheduledForAdd = new LinkedHashSet<>();
+
+
     final WorldFamilyHandler familyHandler = new WorldFamilyHandler();
 
     public final WorldListeners listeners = new WorldListeners();
@@ -45,6 +49,8 @@ public class World {
         listeners.worldUpdateListeners.forEach(listener -> listener.onUpdateStart(this));
 
         listeners.worldUpdateListeners.forEach(listener -> listener.onInternalWorkStart(this));
+        addScheduledSystems();
+        removeScheduledSystems();
         addScheduledEntities();
         removeScheduledEntities();
         listeners.worldUpdateListeners.forEach(listener -> listener.onInternalWorkEnd(this));
@@ -63,7 +69,6 @@ public class World {
     }
 
 
-    @SuppressWarnings("unchecked")
     public <T extends SystemBase> T addSystem(Class<T> systemType) {
         try {
             Constructor<T> constructor = systemType.getConstructor();
@@ -79,25 +84,24 @@ public class World {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends SystemBase> T addSystemInstance(T sys) {
-        Class<T> systemType = (Class<T>) sys.getClass();
-        systems.put(systemType, sys);
+    private <T extends SystemBase> T addSystemInstance(T sys) {
+        // might be better to call setup when the system is actually added,
+        // but we do it here now so world listeners may be setup before entities are added
         sys.internalSetup(this); // component families must be set here
-        listeners.systemAddedListeners.forEach(l -> l.onSystemAdded(sys.getClass(), sys));
-        sys.internalSetupEnd(familyHandler.getEntitiesOfFamily(sys.compFamily));
-        sys.internalStart();
+        systemsScheduledForAdd.add(sys);
         return sys;
     }
 
-    public void addSystems(Class<? extends SystemBase>... systemTypes) {
+    @SafeVarargs
+    public final void addSystems(Class<? extends SystemBase>... systemTypes) {
         Arrays.stream(systemTypes).filter(Objects::nonNull).forEach(this::addSystem);
     }
 
     // TODO: handle removing of systems in familyManager. It works, but system families are never removed
     @SuppressWarnings("unchecked")
     public <T extends SystemBase> T removeSystem(Class<T> systemType) {
-        return (T) systems.remove(systemType);
+        systemsScheduledForRemove.add(systemType);
+        return (T) systems.get(systemType);
     }
 
     public Entity createEntity(String name) {
@@ -151,6 +155,22 @@ public class World {
             EcsLogger.logger.severe("Trying to get an entity by name that is not present.\n\tEntity name: " + name);
             return null;
         });
+    }
+
+    private void addScheduledSystems() {
+        systemsScheduledForAdd.forEach(system -> {
+            Class<? extends SystemBase> systemType = system.getClass();
+            systems.put(systemType, system);
+            listeners.systemAddedListeners.forEach(l -> l.onSystemAdded(systemType, system));
+            system.internalSetupEnd(familyHandler.getEntitiesOfFamily(system.compFamily));
+            system.internalStart();
+        });
+        systemsScheduledForAdd.clear();
+    }
+
+    private void removeScheduledSystems() {
+        systemsScheduledForRemove.forEach(systems::remove);
+        systemsScheduledForRemove.clear();
     }
 
     private void addScheduledEntities() {

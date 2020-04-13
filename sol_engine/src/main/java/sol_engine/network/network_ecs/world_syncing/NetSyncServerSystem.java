@@ -34,6 +34,13 @@ public class NetSyncServerSystem extends ModuleSystemBase {
     protected void onSetup() {
         usingComponents(NetSyncComp.class);
         usingModules(NetworkServerModule.class);
+
+        // hack because components can't be added after entity is added
+        world.listeners.addEntityListener(EntityListener.WillBeAdded.class, ((entity, world1) -> {
+            if (entity.hasComponent(NetSyncComp.class)) {
+                entity.addComponent(new NetIdComp());
+            }
+        }));
     }
 
     @Override
@@ -49,13 +56,6 @@ public class NetSyncServerSystem extends ModuleSystemBase {
     @Override
     protected void onStart() {
         prevEntities.addAll(entities.copyToList());
-
-        // hack because components can't be added after entity is added
-        world.listeners.addEntityListener(EntityListener.WillBeAdded.class, ((entity, world1) -> {
-            if (entity.hasComponent(NetSyncComp.class)) {
-                entity.addComponent(new NetIdComp());
-            }
-        }));
     }
 
     @Override

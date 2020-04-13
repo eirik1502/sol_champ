@@ -84,7 +84,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
 
             @Override
             public void onError(Exception ex) {
-                logger.info("An error occured in WebsocketsClient: " + ex);
+                logger.warn("An error occured in WebsocketsClient: " + ex);
                 ex.printStackTrace();
             }
         };
@@ -129,7 +129,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
             if (packetString != null) {
                 wsClient.send(packetString);
 
-                logger.info("Packet sendt: " + packetString);
+                logger.debug("Packet sendt: " + packetString);
             } else {
                 logger.warn("Packet could not be converted to string: " + packet);
             }

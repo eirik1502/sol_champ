@@ -39,7 +39,7 @@ class SolGameServer(
             allowGui
     )
 
-    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(serverSim, 0f);
+    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(serverSim);
 
     fun onTermination(callback: TerminationCallback) {
         threadedLoop.onTermination() { threadedLoop, loop, sim -> callback(this) }

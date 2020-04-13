@@ -64,8 +64,8 @@ public abstract class SystemBase {
     // INTERNALS
 
     void internalSetup(World world) {
-        onSetup();
         this.world = world;
+        onSetup();
     }
 
     void internalSetupEnd(ImmutableListView<Entity> entitiesOfFamily) {

@@ -10,6 +10,7 @@ class SolGameComp(
     enum class GameState {
         BEFORE_START,
         RUNNING,
+        ENDING,
         ENDED
     }
 }

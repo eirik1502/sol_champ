@@ -54,7 +54,7 @@ public class PacketClassStringConverter {
             return null;
         }
 
-        logger.info("Packet converted: " + packet);
+        logger.debug("Packet converted: " + packet);
         logger.debug("Packet converted as string: " + jsonStringPacket);
 
         return jsonStringPacket;
@@ -103,7 +103,7 @@ public class PacketClassStringConverter {
         }
 
         logger.debug("String packet parsed as object, type: " + packetTypeName + " packet string: " + packetString);
-        logger.info("Packet parsed as object, type: " + packetTypeName + " packet object: " + packet);
+        logger.debug("Packet parsed as object, type: " + packetTypeName + " packet object: " + packet);
 
         return packet;
     }

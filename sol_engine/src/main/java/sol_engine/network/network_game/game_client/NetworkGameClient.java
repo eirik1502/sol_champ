@@ -105,7 +105,7 @@ public class NetworkGameClient
 
 
     public void sendPacket(NetworkPacket packet) {
-        logger.info("Sending packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
+        logger.debug("Sending packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
         client.sendPacket(packet);
     }
 
@@ -142,7 +142,7 @@ public class NetworkGameClient
 
     @Override
     public void handlePacket(NetworkPacket packet) {
-        logger.info("Received packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
+        logger.debug("Received packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
 
         // synchronizing to not interfere with the poll method
         synchronized (pendingPacketsOfType) {

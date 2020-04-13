@@ -190,7 +190,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
             if (packetString != null) {
                 Collection<WebSocket> toSockets = hosts.stream().map(hostToSocket::get).collect(Collectors.toList());
                 wsServer.broadcast(packetString, toSockets);
-                logger.info("Packet broadcasted: " + packet);
+                logger.debug("Packet broadcasted: " + packet);
             } else {
                 logger.warn("Packet could not be broadcasted due to conversion failure");
             }

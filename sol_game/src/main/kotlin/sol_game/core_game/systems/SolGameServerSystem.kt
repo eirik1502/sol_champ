@@ -20,7 +20,8 @@ class SolGameServerSystem : SystemBase() {
             solGameComp.gameState = when (gameState) {
                 SolGameComp.GameState.BEFORE_START -> handleGameBeforeStart()
                 SolGameComp.GameState.RUNNING -> handleGameRunning(solGameComp)
-                SolGameComp.GameState.ENDED -> handleGameAfterEnd()
+                SolGameComp.GameState.ENDING -> handleGameEnding()
+                SolGameComp.GameState.ENDED -> handleGameEnded()
             }
         }
     }
@@ -44,12 +45,17 @@ class SolGameServerSystem : SystemBase() {
         charEntitiesLost
                 ?.let {
                     gameComp.teamIndexWon = 1 - it.getComponent(TeamPlayerComp::class.java).teamIndex
-                    return SolGameComp.GameState.ENDED
+                    return SolGameComp.GameState.ENDING
                 }
                 ?: return SolGameComp.GameState.RUNNING
     }
 
-    private fun handleGameAfterEnd(): SolGameComp.GameState {
+    // One frame where ending is accessible to other systems
+    private fun handleGameEnding(): SolGameComp.GameState {
+        return SolGameComp.GameState.ENDED
+    }
+
+    private fun handleGameEnded(): SolGameComp.GameState {
         val charactersCount = world.insight.entities
                 .filter { it.hasComponent(CharacterComp::class.java) }
                 .count()
