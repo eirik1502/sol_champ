@@ -35,6 +35,7 @@ public class World {
     public final WorldListeners listeners = new WorldListeners();
     public final WorldInsight insight = new WorldInsight(this);
 
+    private boolean isFinished = false;
 
     public World() {
     }
@@ -62,6 +63,14 @@ public class World {
         });
 
         listeners.worldUpdateListeners.forEach(listener -> listener.onUpdateEnd(this));
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
     }
 
     public void addEntityClass(EntityClass entityClass) {

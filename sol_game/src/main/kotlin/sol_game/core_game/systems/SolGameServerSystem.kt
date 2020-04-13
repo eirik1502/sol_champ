@@ -61,7 +61,7 @@ class SolGameServerSystem : SystemBase() {
                 .count()
 
         if (charactersCount == 0) {
-            // terminate
+            world.isFinished = true
         }
 
         return SolGameComp.GameState.ENDED

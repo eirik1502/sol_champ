@@ -100,6 +100,9 @@ public abstract class SolSimulation {
         if (modulesHandler.isSimulationShouldTerminate()) {
             terminate();
         }
+        if (world.isFinished()) {
+            terminate();
+        }
     }
 
     public ModulesHandler getModulesHandler() {

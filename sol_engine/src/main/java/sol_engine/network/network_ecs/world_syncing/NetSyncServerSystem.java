@@ -68,32 +68,34 @@ public class NetSyncServerSystem extends ModuleSystemBase {
             Sets.SetView<Entity> removedEntities = Sets.difference(prevEntities, currEntities);
             Sets.SetView<Entity> addedEntities = Sets.difference(currEntities, prevEntities);
 
-            // handle added entities
-            addedEntities.forEach(entity -> handleEntityAdded(entity, entity.getComponent(NetSyncComp.class), serverModule));
-
-            // handle removed entities
-            removedEntities.forEach(entity -> handleEntityRemoved(entity, entity.getComponent(NetSyncComp.class), serverModule));
-
-            // send all entities to new Host entities (including itself)
-            // should happen after added and removed entites so new entities are not sendt twice
-            List<Entity> newHostEntities = addedEntities.stream()
-                    .filter(entity -> entity.hasComponent(NetHostComp.class))
-                    .collect(Collectors.toList());
-
+            // retrieve all removed entities that are represent hosts
             List<Entity> removedHostEntities = removedEntities.stream()
                     .filter(entity -> entity.hasComponent(NetHostComp.class))
                     .collect(Collectors.toList());
 
-            handleHostEntitiesAdded(newHostEntities, serverModule);
-
-            connectedHosts.addAll(newHostEntities.stream()
-                    .map(entity -> entity.getComponent(NetHostComp.class).host)
-                    .collect(Collectors.toSet()));
-
+            // remove the hosts of removed host entities.
+            // this can be done before adding host entities,
+            // as entities that are added and removed on the same frame will not show up here
             connectedHosts.removeAll(removedHostEntities.stream()
                     .map(removedHostEntity -> removedHostEntity.getComponent(NetHostComp.class).host)
                     .collect(Collectors.toSet()));
 
+            // handle added entities
+            addedEntities.forEach(entity -> handleEntityAdded(entity, entity.getComponent(NetSyncComp.class), serverModule));
+            // handle removed entities
+            removedEntities.forEach(entity -> handleEntityRemoved(entity, entity.getComponent(NetSyncComp.class), serverModule));
+
+            List<Entity> newHostEntities = addedEntities.stream()
+                    .filter(entity -> entity.hasComponent(NetHostComp.class))
+                    .collect(Collectors.toList());
+            // send all entities to new Host entities. The entity representing the host is also sendt
+            handleHostEntitiesAdded(newHostEntities, serverModule);
+
+            // add all new hosts as receivers of all update packets.
+            // This must be done after other new packets are sendt
+            connectedHosts.addAll(newHostEntities.stream()
+                    .map(entity -> entity.getComponent(NetHostComp.class).host)
+                    .collect(Collectors.toSet()));
 
             prevEntities = currEntities;
         }
