@@ -11,6 +11,8 @@ import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.utils.collections.Pair;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,12 +25,12 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
 
     private Map<Host, GameHost> unopenedAcceptedHosts = new HashMap<>();  // hosts passed handshake but not yet opened
 
-    private Map<Host, GameHost> openHosts = new HashMap<>();  // all open hosts
+    private Map<Host, GameHost> openHosts = new ConcurrentHashMap<>();  // all open hosts
     private TeamPlayerHosts teamPlayerHosts;  // open player hosts
-    private Set<GameHost> observerHosts = new HashSet<>();  // open observer hosts
+    private Set<GameHost> observerHosts = Collections.newSetFromMap(new ConcurrentHashMap<>());  // open observer hosts
 
-    private Deque<GameHost> newConnectedHosts = new ArrayDeque<>();  // newly connected hosts to be retrieved
-    private Deque<GameHost> newDisconnectedHosts = new ArrayDeque<>();  // newly disconnected hosts to be retrieved
+    private Deque<GameHost> newConnectedHosts = new ConcurrentLinkedDeque<>();  // newly connected hosts to be retrieved
+    private Deque<GameHost> newDisconnectedHosts = new ConcurrentLinkedDeque<>();  // newly disconnected hosts to be retrieved
     private PacketsQueue inputPacketQueue = new PacketsQueue();
 
 

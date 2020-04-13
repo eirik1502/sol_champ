@@ -25,6 +25,8 @@ class SolClientPlayerSystem : ModuleSystemBase() {
         forEachWithComponents(SolGameComp::class.java) { _, gameComp ->
             if (gameComp.gameState == SolGameComp.GameState.RUNNING) {
                 getModule(SolClientPlayerModule::class.java).gameStarted = true
+            } else if (gameComp.gameState == SolGameComp.GameState.ENDED) {
+                getModule(SolClientPlayerModule::class.java).teamIndexWon = gameComp.teamIndexWon
             }
         }
     }

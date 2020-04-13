@@ -11,6 +11,7 @@ class SolGameClient(
         connectionKey: String,
         isObserver: Boolean,
         player: Class<out SolClientPlayer>? = null,
+        updateFrameTime: Float = 1f / 60f,  // set to run the game at a custom fixed frame times
         headless: Boolean = false,
         debugUI: Boolean = false,  // cannot be set in headless mode
         allowGui: Boolean = true
@@ -28,7 +29,7 @@ class SolGameClient(
             allowGui
     )
 
-    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(clientSim)
+    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(clientSim, updateFrameTime)
 
     fun setup() {
         threadedLoop.setup();

@@ -45,16 +45,17 @@ class Args(parser: ArgParser) {
 
 fun main(args: Array<String>) = mainBody {
     ArgParser(args).parseInto(::Args).run {
-        if (this.poolServer.use) {
-            println("Running pool server: $poolServer")
-            runPoolServer(headless = this.poolServer.headless)
-        }
-
-        clients.forEach {
-            println("Running client: $it")
-            runConnectClientToPool(it.headless, it.teamIndex)
-            Thread.sleep(500)
-        }
+        runManyFastSimulations()
+//        if (this.poolServer.use) {
+//            println("Running pool server: $poolServer")
+//            runPoolServer(headless = this.poolServer.headless)
+//        }
+//
+//        clients.forEach {
+//            println("Running client: $it")
+//            runConnectClientToPool(it.headless, it.teamIndex)
+//            Thread.sleep(500)
+//        }
     }
 }
 
@@ -113,6 +114,7 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
             serverConnectionData.teamsPlayersKeys[teamIndex][0],
             false,
             player = SolRandomTestPlayer::class.java,
+            updateFrameTime = 0f,
             headless = headless,
             debugUI = !headless,
             allowGui = !headless
@@ -121,4 +123,52 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
     client.setup()
     client.start()
     return client
+}
+
+fun runManyFastSimulations() {
+    val teamWins = (0..10)
+            .map {
+                println("running simulation $it")
+                runFastSimulation()
+            }
+    println("player 0 won: ${teamWins.filter { it == 0 }.count()}")
+    println("player 1 won: ${teamWins.filter { it == 1 }.count()}")
+    println("ties: ${teamWins.filter { it == -1 }.count()}")
+}
+
+fun runFastSimulation(): Int {
+    val server = SolGameServer(
+            charactersConfigs = listOf(frankConfig, frankConfig),
+            updateFrameTime = 0f,
+            headless = true
+    )
+    val serverConnectionData: ServerConnectionData = server.setup()
+    println("Server connection: $serverConnectionData")
+    server.start()
+    println("server started")
+
+    val clients = (0..1)
+            .map { teamIndex ->
+                SolGameClient(
+                        serverConnectionData.address,
+                        serverConnectionData.port,
+                        serverConnectionData.gameId,
+                        serverConnectionData.teamsPlayersKeys[teamIndex][0],
+                        false,
+                        player = SolRandomTestPlayer::class.java,
+                        updateFrameTime = 0f,
+                        headless = true
+                )
+            }
+            .onEach { it.setup() }
+            .onEach {
+                Thread.sleep(100)
+                it.start()
+            }
+//    server.waitUntilFinished()
+    Thread.sleep(3000)
+    server.terminate()
+    server.waitUntilFinished()
+    clients.forEach { it.terminate() }
+    return server.getTeamIndexWon()
 }

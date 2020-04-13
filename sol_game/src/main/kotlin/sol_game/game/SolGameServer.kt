@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.engine_interface.ThreadedSimulationLoop
 import sol_engine.network.network_ecs.host_managing.NetHostComp
+import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
 import sol_engine.network.network_game.GameHost
 import sol_engine.network.network_game.game_client.ClientConnectionData
 import sol_engine.network.network_game.game_server.GameServerConfig
@@ -13,6 +14,7 @@ import sol_game.core_game.CharacterConfig
 import sol_game.core_game.SolGameSimulationServer
 import sol_game.core_game.components.CharacterComp
 import sol_game.core_game.components.HurtboxComp
+import sol_game.core_game.components.SolGameComp
 import sol_game.networked_sol_game.Server
 import java.util.*
 
@@ -22,6 +24,7 @@ class SolGameServer(
         charactersConfigs: List<CharacterConfig> = listOf(),
         requestPort: Int = -1,
         allowObservers: Boolean = true,
+        updateFrameTime: Float = 1f / 60f,  // set to run the game at a custom fixed frame time
         headless: Boolean = false,
         debugUI: Boolean = false,  // cannot be set in headless mode
         // gui is not supported when running multiple instances of SolGameServer / Client on multiple threads
@@ -39,7 +42,7 @@ class SolGameServer(
             allowGui
     )
 
-    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(serverSim);
+    private val threadedLoop: ThreadedSimulationLoop = ThreadedSimulationLoop(serverSim, updateFrameTime);
 
     fun onTermination(callback: TerminationCallback) {
         threadedLoop.onTermination() { threadedLoop, loop, sim -> callback(this) }
@@ -82,6 +85,14 @@ class SolGameServer(
                     .filter { it.hasComponent(HurtboxComp::class.java) }
                     .map { it.getComponent(HurtboxComp::class.java).totalDamageTaken }
         }
+    }
+
+    // not thread safe, should only be called after termination
+    fun getTeamIndexWon(): Int {
+        return serverSim.world.insight.entities
+                .find { it.hasComponent(SolGameComp::class.java) }
+                ?.getComponent(SolGameComp::class.java)?.teamIndexWon
+                ?: -1
     }
 
     fun waitUntilFinished() {

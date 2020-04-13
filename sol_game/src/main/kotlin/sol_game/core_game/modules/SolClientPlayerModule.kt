@@ -58,10 +58,11 @@ class SolClientPlayerModule(
     override fun onUpdate() {
         if (teamIndexWon != -1) {
             player.onEnd(world, false, teamIndexWon, 0)
+            simulationShouldTerminate()
         } else if (gameStarted) {
             val gameState = retrieveSolGameState(world)
             if (gameState.controlledPlayerIndex != -1) {
-                
+
                 if (!calledPlayerStart) {
                     player.onStart(world, gameState)
                     calledPlayerStart = true

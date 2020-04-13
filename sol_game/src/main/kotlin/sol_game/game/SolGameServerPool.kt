@@ -19,6 +19,7 @@ class SolGameServerPool(
                 charactersConfigs = charactersConfigs,
                 requestPort = -1,  // let the server find a port
                 allowObservers = allowObservers,
+                updateFrameTime = 0f,
                 headless = headless,
                 debugUI = !headless
         )
