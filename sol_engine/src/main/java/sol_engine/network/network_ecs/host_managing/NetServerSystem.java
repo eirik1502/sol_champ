@@ -1,24 +1,16 @@
 package sol_engine.network.network_ecs.host_managing;
 
-import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
-import sol_engine.core.TransformComp;
 import sol_engine.ecs.Component;
 import sol_engine.ecs.Entity;
-import sol_engine.network.network_ecs.EntityHost;
-import sol_engine.network.network_ecs.packets.CreateHostEntityPacket;
-import sol_engine.network.network_ecs.packets.HostConnectedPacket;
 import sol_engine.network.network_ecs.world_syncing.NetSyncComp;
 import sol_engine.network.network_ecs.world_syncing.NetSyncServerSystem;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_sol_module.NetworkServerModule;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 
 /**
@@ -71,6 +63,10 @@ public class NetServerSystem extends ModuleSystemBase {
                 serverModule.sendPacket(netServerComp.staticConnectionPacket, newHost);
             }
 
+            if (newHost.isObserver) {
+
+            }
+
             EntityHostStartData newEntityData = netServerComp.hostEntitiesStartData
                     .get(newHost.teamIndex).get(newHost.playerIndex);
             String entityClass = newEntityData.entityClass;
@@ -79,8 +75,7 @@ public class NetServerSystem extends ModuleSystemBase {
                     new NetHostComp(newHost),
                     new TeamPlayerComp(newHost.teamIndex, newHost.playerIndex)
             );
-            Entity newHostEntity = NetEcsUtils.addEntityForHost(
-                    true,
+            Entity newHostEntity = NetEcsUtils.addServerEntityForPlayerHost(
                     newHost,
                     entityClass,
                     modifyComponents,
@@ -104,7 +99,6 @@ public class NetServerSystem extends ModuleSystemBase {
     private void handleNewDisconnectedHosts(Set<GameHost> disconnectedHosts) {
         disconnectedHosts.forEach(host -> {
             Entity removeEntityHost = entityHosts.remove(host);
-            System.out.println("host entity removed: " + removeEntityHost);
             if (removeEntityHost != null) {
                 world.removeEntity(removeEntityHost);
             } else {

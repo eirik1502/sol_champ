@@ -20,6 +20,7 @@ public class NetworkGameClient
     private NetworkClient client;
 
     private ClientConnectionData connectionData = null;  // set when client is opened
+    private boolean isObserver;
 
     private final Map<Class<? extends NetworkPacket>, Deque<NetworkPacket>> pendingPacketsOfType = new HashMap<>();
 
@@ -52,19 +53,20 @@ public class NetworkGameClient
         if (!connectSuccessful) {
             logger.warn("Client connection failed");
             client.disconnect();
-            return new ClientConnectionData(false);
-        } else {
-            // wait for connection open or close
-            while (connectionData == null) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    logger.warn("Interrupted while waiting for onOpen. Will keep waiting. Exception: " + e);
-                }
-            }
-
-            return connectionData;
+            connectionData = new ClientConnectionData(false);
         }
+
+        // wait for connection open or close
+        while (connectionData == null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while waiting for onOpen. Will keep waiting. Exception: " + e);
+            }
+        }
+
+        isObserver = connectionData.isObserver;
+        return connectionData;
     }
 
     public void disconnect() {
@@ -105,8 +107,12 @@ public class NetworkGameClient
 
 
     public void sendPacket(NetworkPacket packet) {
-        logger.debug("Sending packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
-        client.sendPacket(packet);
+        if (!isObserver) {
+            logger.debug("Sending packet, type: " + packet.getClass().getSimpleName() + " data: " + packet);
+            client.sendPacket(packet);
+        } else {
+            logger.warn("An observer can not send packets");
+        }
     }
 
     public boolean isConnected() {

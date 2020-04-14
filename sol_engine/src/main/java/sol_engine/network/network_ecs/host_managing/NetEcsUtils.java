@@ -52,8 +52,7 @@ public class NetEcsUtils {
         return world.addEntity(entity);
     }
 
-    static Entity addEntityForHost(
-            boolean isServer,
+    static Entity addServerEntityForPlayerHost(
             GameHost host,
             String entityClass,
             Set<Component> modifyComponents,
@@ -68,10 +67,9 @@ public class NetEcsUtils {
                 hostEntity.modifyIfHasComponent(targetComp.getClass(), comp -> comp.copy(targetComp))
         );
 
-        if (isServer) {
-            String inputGroup = "t" + host.teamIndex + "p" + host.playerIndex;
-            hostEntity.modifyIfHasComponent(InputComp.class, comp -> comp.inputGroup = inputGroup);
-        }
+        String inputGroup = "t" + host.teamIndex + "p" + host.playerIndex;
+        hostEntity.modifyIfHasComponent(InputComp.class, comp -> comp.inputGroup = inputGroup);
+
         return hostEntity;
     }
 

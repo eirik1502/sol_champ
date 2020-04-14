@@ -108,7 +108,7 @@ class SolGameSimulationClient(
                 if (playerClass != null) SolClientPlayerSystem::class.java else null,  // takes input from the player
                 InputSystem::class.java,  // retrieves input from the registered InputSourceModule
                 InputToSolActionsSystem::class.java,
-                ClientNetworkOutputSystem::class.java,  // send the inputs to the server
+                if (!isObserver) ClientNetworkOutputSystem::class.java else null,  // send the inputs to the server
 
                 // rendering
                 if (!headless && debugUI && allowGui) CreatorSystem::class.java else null,

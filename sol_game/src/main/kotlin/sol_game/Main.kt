@@ -17,7 +17,8 @@ data class ServerConfig(
 
 data class ClientConfig(
         val teamIndex: Int,
-        val headless: Boolean
+        val headless: Boolean,
+        val observer: Boolean
 )
 
 class Args(parser: ArgParser) {
@@ -32,14 +33,15 @@ class Args(parser: ArgParser) {
 
     val clients by parser.adding(
             "--client",
-            help = "Clients to connect to the pool server. Followed by comma separated options: [teamIndex?=(int = 0),headless?]"
+            help = "Clients to connect to the pool server. Followed by comma separated options: [teamIndex?=(int = 0),headless?,observer?]"
     ) {
         val args = this.split(",")
         val teamIndex = args.find { arg -> arg.startsWith("teamindex") }?.split("=")?.getOrNull(1)
                 ?.toInt()
                 ?: 0
         val headless = args.contains("headless")
-        ClientConfig(teamIndex, headless)
+        val observer = args.contains("observer")
+        ClientConfig(teamIndex, headless, observer)
     }
 
     val runExhaustion by parser.flagging(
@@ -60,7 +62,7 @@ fun main(args: Array<String>) = mainBody {
 
         clients.forEach {
             println("Running client: $it")
-            runConnectClientToPool(it.headless, it.teamIndex)
+            runConnectClientToPool(it.headless, it.teamIndex, it.observer)
 //            Thread.sleep(500)
         }
     }
@@ -78,11 +80,15 @@ fun runPoolServer(headless: Boolean) {
     poolServer.serve(55555, charactersConfig)
 }
 
-fun runConnectClientToPool(headless: Boolean, teamIndex: Int) {
+fun runConnectClientToPool(headless: Boolean, teamIndex: Int, observer: Boolean) {
     val serverConnectionData = requestGameServerInstance(
             "localhost", 55555)
     if (serverConnectionData != null) {
-        runClient(serverConnectionData, headless, teamIndex)
+        if (observer) {
+            runObserver(serverConnectionData, headless)
+        } else {
+            runClient(serverConnectionData, headless, teamIndex)
+        }
     } else {
         println("Could not connect to server")
     }
@@ -132,10 +138,32 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
     return client
 }
 
+fun runObserver(serverConnectionData: ServerConnectionData, headless: Boolean): SolGameClient {
+    val client = SolGameClient(
+            serverConnectionData.address,
+            serverConnectionData.port,
+            serverConnectionData.gameId,
+            serverConnectionData.observerKey,
+            isObserver = true,
+            player = SolTestObserver::class.java,
+            updateFrameTime = 0f,
+            headless = headless,
+            debugUI = !headless,
+            allowGui = !headless
+    )
+
+    client.setup()
+    client.start()
+    return client
+}
+
 fun runManyFastSimulations() {
-    val teamWins = (0..100)
+    val teamWins = (0..1000)
             .map {
-                println("running simulation $it")
+                if (it < 10 || it % 10 == 0) {
+                    println("starting simulation $it")
+                }
+
                 runFastSimulation()
             }
     println("player 0 won: ${teamWins.filter { it == 0 }.count()}")
@@ -147,11 +175,10 @@ fun runFastSimulation(): Int {
     val server = SolGameServer(
             charactersConfigs = listOf(frankConfig, frankConfig),
             updateFrameTime = 0f,
-            headless = false
+            headless = true
     )
     val serverConnectionData: ServerConnectionData = server.setup()
     server.start()
-    println("server started")
 
     val clients = (0..1)
             .map { teamIndex ->
@@ -171,6 +198,16 @@ fun runFastSimulation(): Int {
                 //                Thread.sleep(100)
                 it.start()
             }
+    val observer = SolGameClient(
+            serverConnectionData.address,
+            serverConnectionData.port,
+            serverConnectionData.gameId,
+            serverConnectionData.observerKey,
+            isObserver = true,
+            player = SolRandomTestPlayer::class.java,
+            updateFrameTime = 0f,
+            headless = true
+    )
 //    server.waitUntilFinished()
 //    Thread.sleep(3000)
     clients[0].waitUntilFinished()

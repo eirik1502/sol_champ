@@ -14,12 +14,6 @@ public class LinearTicker implements Ticker {
     private DeltaTimer deltaTimer;
 
 
-    //store runtime data
-    public List<Float> deltaTimes = new ArrayList<>(1000);
-    public List<Float> timeBetweenUpdates = new ArrayList<>(1000);
-    public List<Integer> iterationsBetweenUpdates = new ArrayList<>(1000);
-
-
     public LinearTicker(float tickTime) {
         this(tickTime, null);
     }
@@ -56,17 +50,12 @@ public class LinearTicker implements Ticker {
 
                 listener.onTick(timeSinceUpdate);
 
-                deltaTimes.add(deltaTime);
-                timeBetweenUpdates.add(timeSinceUpdate);
-                iterationsBetweenUpdates.add(iterationsBetweenUpdate);
-
                 deltaTime -= tickTime;
                 timeSinceUpdate = 0;
                 iterationsBetweenUpdate = 0;
 
             } else {
                 ++iterationsBetweenUpdate;
-
             }
         }
     }
