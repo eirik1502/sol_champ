@@ -33,6 +33,7 @@ class SolGameClient(
 
     fun setup() {
         threadedLoop.setup();
+        threadedLoop.onTermination { _, _, _ -> println("SolClient ended") }
     }
 
     fun start() {

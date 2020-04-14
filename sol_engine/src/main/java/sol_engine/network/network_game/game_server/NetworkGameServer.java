@@ -2,12 +2,9 @@ package sol_engine.network.network_game.game_server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sol_engine.network.communication_layer.Host;
 import sol_engine.network.communication_layer.NetworkServer;
 import sol_engine.network.network_game.GameHost;
 import sol_engine.network.network_game.PacketsQueue;
-import sol_engine.network.network_game.PacketsQueueByHost;
-import sol_engine.network.network_game.PacketsQueueByType;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
 import sol_engine.network.communication_layer_impls.websockets.NetworkWebsocketsServer;
@@ -20,23 +17,28 @@ public class NetworkGameServer {
     private final Logger logger = LoggerFactory.getLogger(NetworkGameServer.class);
 
     private ServerGameHostsManager hostsManager;
+    private ServerConnectionManager connectionManager;
     private ServerConnectionData connectionData;
-
 
     private NetworkServer server;
 
 
     public ServerConnectionData setup(GameServerConfig config) {
         logger.info("setup with config: " + config);
-        server = new NetworkWebsocketsServer();  // may use another server implementation
+
+        // create a server implementation
+        server = new NetworkWebsocketsServer();
 
         connectionData = createConnectionData(config);
         hostsManager = new ServerGameHostsManager(connectionData);
+        connectionManager = new ServerConnectionManager(connectionData, hostsManager::checkTeamPlayerFree);
+        connectionManager.onGameHostOpen(hostsManager::addGameHost);
+        connectionManager.onHostClosed(hostsManager::removeHost);
 
-        // assign handlers to the server
-        server.onHandshake(hostsManager);
-        server.onOpen(hostsManager);
-        server.onClose(hostsManager);
+        // assign handlers on the server implementation
+        server.onHandshake(connectionManager);
+        server.onOpen(connectionManager);
+        server.onClose(connectionManager);
         server.onPacket(hostsManager);
 
         logger.info("setup finished with connection data: " + connectionData);
@@ -97,7 +99,12 @@ public class NetworkGameServer {
     }
 
     public Deque<GameHost> popNewDisconnections() {
-        return hostsManager.popNewDisconnectedHosts();
+
+        Deque<GameHost> hosts = hostsManager.popNewDisconnectedHosts();
+        if (!hosts.isEmpty()) {
+            System.out.println("Game server disconnections: " + hosts);
+        }
+        return hosts;
     }
 
     public PacketsQueue peekInputPacketsQueue() {
@@ -108,21 +115,6 @@ public class NetworkGameServer {
         return hostsManager.popInputPacketQueue();
     }
 
-//    public PacketsQueueByType peekPacketsForHost(GameHost host) {
-//        return hostsManager.peekPacketsForHost(host);
-//    }
-//
-//    public <T extends NetworkPacket> PacketsQueueByHost<T> peekPacketsOfType(Class<T> type) {
-//        return hostsManager.peekPacketsOfType(type);
-//    }
-//
-//    public PacketsQueueByType pollPacketsForHost(GameHost host) {
-//        return hostsManager.pollPacketsForHost(host);
-//    }
-//
-//    public <T extends NetworkPacket> PacketsQueueByHost<T> pollPacketsOfType(Class<T> type) {
-//        return hostsManager.pollPacketsOfType(type);
-//    }
 
     public void sendPacketAll(NetworkPacket packet) {
         server.sendPacketAll(packet);

@@ -48,13 +48,10 @@ public class TeamPlayerHosts {
         return getAllPlayerHosts().contains(host);
     }
 
-    public void setHost(int teamIndex, int playerIndex, GameHost host) {
-        teamPlayerHosts.get(teamIndex).set(playerIndex, host);
+    public void setHost(GameHost host) {
+        teamPlayerHosts.get(host.teamIndex).set(host.playerIndex, host);
     }
 
-    public void setHost(TeamPlayer teamPlayer, GameHost host) {
-        setHost(teamPlayer.teamIndex, teamPlayer.playerIndex, host);
-    }
 
     public GameHost getHost(int teamIndex, int playerIndex) {
         return teamPlayerHosts.get(teamIndex).get(playerIndex);
@@ -65,8 +62,14 @@ public class TeamPlayerHosts {
     }
 
     public void replaceHost(GameHost oldHost, GameHost newHost) {
-        TeamPlayer oldHostTeamPlayer = getTeamPlayer(oldHost);
-        setHost(oldHostTeamPlayer, newHost);
+        if (oldHost.teamIndex != newHost.teamIndex || oldHost.playerIndex != newHost.playerIndex) {
+            throw new IllegalArgumentException("Cannot replace a host with different teamPlayer index");
+        }
+        setHost(newHost);
+    }
+
+    public void removeHost(GameHost gameHost) {
+        teamPlayerHosts.get(gameHost.teamIndex).set(gameHost.playerIndex, null);
     }
 
     public TeamPlayer getTeamPlayer(GameHost host) {
@@ -129,5 +132,13 @@ public class TeamPlayerHosts {
 
     public boolean allPlayersPresent() {
         return teamPlayerHosts.stream().flatMap(List::stream).allMatch(Objects::nonNull);
+    }
+
+    public boolean checkTeamPlayerFree(int teamIndex, int playerIndex) {
+        return teamPlayerHosts.get(teamIndex).get(playerIndex) == null;
+    }
+
+    public boolean checkTeamPlayerOccupied(int teamIndex, int playerIndex) {
+        return !checkTeamPlayerFree(teamIndex, playerIndex);
     }
 }

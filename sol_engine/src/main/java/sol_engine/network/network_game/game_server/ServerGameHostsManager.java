@@ -16,14 +16,12 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, NetworkServer.OpenHandler,
-        NetworkServer.CloseHandler, NetworkCommunicationServer.PacketHandler {
+public class ServerGameHostsManager implements NetworkCommunicationServer.PacketHandler {
     private final Logger logger = LoggerFactory.getLogger(ServerGameHostsManager.class);
-    private static int nextSessionId = 0;
+
 
     private ServerConnectionData connectionData;
 
-    private Map<Host, GameHost> unopenedAcceptedHosts = new HashMap<>();  // hosts passed handshake but not yet opened
 
     private Map<Host, GameHost> openHosts = new ConcurrentHashMap<>();  // all open hosts
     private TeamPlayerHosts teamPlayerHosts;  // open player hosts
@@ -41,6 +39,41 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
                         .map(List::size)
                         .collect(Collectors.toList())
         );
+    }
+
+    public void addGameHost(GameHost gameHost, Host host) {
+        openHosts.put(host, gameHost);
+        if (gameHost.isObserver) {
+            observerHosts.add(gameHost);
+        } else {
+            // the teamPlayer position must be checked to be free before the host is added
+            teamPlayerHosts.setHost(gameHost);
+        }
+        logger.info("Game host added: " + gameHost);
+        newConnectedHosts.add(gameHost);
+    }
+
+    public void removeHost(Host host) {
+        GameHost gameHost = openHosts.remove(host);
+        if (gameHost == null) {
+            logger.warn("Removed host that was never added");
+        } else {
+            if (gameHost.isObserver) {
+                observerHosts.remove(gameHost);
+            } else {
+                teamPlayerHosts.removeHost(gameHost);
+            }
+            newDisconnectedHosts.add(gameHost);
+            logger.info("GameHost removed: " + gameHost);
+        }
+    }
+
+    boolean checkTeamPlayerFree(GameHost gameHost) {
+        return checkTeamPlayerFree(gameHost.teamIndex, gameHost.playerIndex);
+    }
+
+    boolean checkTeamPlayerFree(int teamIndex, int playerIndex) {
+        return teamPlayerHosts.checkTeamPlayerFree(teamIndex, playerIndex);
     }
 
     @Override
@@ -72,7 +105,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         return new ArrayDeque<>(newConnectedHosts);
     }
 
-    public Deque<GameHost> popNewConnectedHosts() {
+    public synchronized Deque<GameHost> popNewConnectedHosts() {
         Deque<GameHost> holdNewConnections = peekNewConnectedHosts();
         newConnectedHosts.clear();
         return holdNewConnections;
@@ -82,7 +115,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         return new ArrayDeque<>(newDisconnectedHosts);
     }
 
-    public Deque<GameHost> popNewDisconnectedHosts() {
+    public synchronized Deque<GameHost> popNewDisconnectedHosts() {
         Deque<GameHost> holdNewDisconnections = peekNewDisconnectedHosts();
         newDisconnectedHosts.clear();
         return holdNewDisconnections;
@@ -92,7 +125,7 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         return new PacketsQueue(inputPacketQueue);
     }
 
-    public PacketsQueue popInputPacketQueue() {
+    public synchronized PacketsQueue popInputPacketQueue() {
         PacketsQueue holdQueue = peekInputPacketQueue();
         inputPacketQueue.clear();
         return holdQueue;
@@ -114,172 +147,5 @@ public class ServerGameHostsManager implements NetworkServer.HandshakeHandler, N
         return new HashSet<>(openHosts.values());
     }
 
-    private Set<GameHost> getAllPendingHosts() {
-        return new HashSet<>(unopenedAcceptedHosts.values());
-    }
-
-    private Set<GameHost> getAllConnectedAndPendingHosts() {
-        return Sets.union(getAllConnectedHosts(), getAllPendingHosts()).immutableCopy();
-    }
-
-    /**
-     * To be called on handshake to validate the connecting host and create a Host representation
-     *
-     * @param host representing the connecting host
-     * @return a Host representation of the connectingHost or null if the conneciton could not be established
-     */
-    @Override
-    public NetworkServer.HandshakeResponse handleHandshake(Host host, Map<String, String> params) {
-        GameHostConnectionParams connectionParams = GameHostConnectionParams.fromParmaMap(params);
-
-        GameHost gameHost = verifyAndCreateGameHost(host, connectionParams);
-        if (gameHost == null) {
-            return new NetworkServer.HandshakeResponse(false, null);
-        } else {
-            Map<String, String> responseParams = Map.of(
-                    "sessionId", Integer.toString(gameHost.sessionId),
-                    "isObserver", Boolean.toString(gameHost.isObserver),
-                    "teamIndex", Integer.toString(gameHost.teamIndex),
-                    "playerIndex", Integer.toString(gameHost.playerIndex)
-            );
-            unopenedAcceptedHosts.put(host, gameHost);
-            return new NetworkServer.HandshakeResponse(true, responseParams);
-        }
-    }
-
-    /**
-     * Call when connection is opened. Validates the host again
-     *
-     * @param host that represents the connecting host
-     * @return wether the connection is still valid
-     */
-    @Override
-    public boolean handleOpen(Host host) {
-        // check if host was registered after handshake
-        if (!unopenedAcceptedHosts.containsKey(host)) {
-            logger.info("Connection opened for host not registered in handshake, for host: " + host);
-            return false;
-        }
-
-        GameHost gameHost = unopenedAcceptedHosts.remove(host);
-
-        if (gameHost.isObserver) {
-            observerHosts.add(gameHost);
-        } else {
-            // check if the connection key was used between handshake and open
-            if (teamPlayerHosts.checkConnectonKeyExists(gameHost.connectionKey)) {
-                logger.info("ConnectionKey already used when connection is opened for host: " + host);
-                return false;
-            } else {
-                teamPlayerHosts.setHost(gameHost.teamIndex, gameHost.playerIndex, gameHost);
-            }
-        }
-        openHosts.put(host, gameHost);
-        newConnectedHosts.add(gameHost);  // add as new connection to be retrieved
-
-        logger.info("Connection opened for GameHost: " + gameHost);
-        return true;
-    }
-
-    @Override
-    public boolean handleClose(Host host) {
-        if (unopenedAcceptedHosts.containsKey(host)) {
-            GameHost gameHost = unopenedAcceptedHosts.get(host);
-            unopenedAcceptedHosts.remove(host);
-            logger.warn("Connection closed before client was opened for GameHost: " + gameHost);
-        } else if (openHosts.containsKey(host)) {
-            GameHost gameHost = openHosts.get(host);
-
-            if (gameHost.isObserver) {
-                observerHosts.remove(gameHost);
-            } else {
-                teamPlayerHosts.replaceHost(gameHost, null);
-            }
-            openHosts.remove(host);
-            newDisconnectedHosts.add(gameHost);
-            logger.info("Connection closed for GameHost: " + gameHost);
-        } else {
-            logger.warn("Disconnecting host was never connected");
-        }
-        return true;
-    }
-
-    private int createNewSessionId() {
-        if (nextSessionId == Integer.MAX_VALUE) {
-            logger.error("No more sessionIds, cannot handle more hosts");
-            throw new IllegalStateException("No more sessionIds, cannot handle more hosts");
-        }
-        return nextSessionId++;
-    }
-
-    private GameHost verifyAndCreateGameHost(Host connectingHost, GameHostConnectionParams params) {
-        logger.info("Client initiating handshake. Host: " + connectingHost + ", with params: " + params);
-
-        if (params.gameId.equals("") || params.connectionKey.equals("")) {
-            logger.info("gameId and/or connectionKey not present");
-            return null;
-        }
-
-        if (!connectionData.gameId.equals(params.gameId)) {
-            logger.info("gameId invalid");
-            return null;
-        }
-
-        int sessionId = createNewSessionId();
-
-        // Observer host branch
-        if (params.isObserver) {
-            if (!connectionData.allowObservers) {
-                logger.info("observers are not allowed");
-                return null;
-            } else if (!params.connectionKey.equals(connectionData.observerKey)) {
-                logger.info("invalid observer connectionKey");
-                return null;
-            }
-
-            return new GameHost(
-                    connectingHost.address,
-                    connectingHost.port,
-                    sessionId,
-                    params.name,
-                    params.connectionKey,
-                    true,
-                    -1,
-                    -1
-            );
-        }
-
-        // Player host branch
-        else {
-            int teamIndex = IntStream.range(0, connectionData.teamsPlayersKeys.size())
-                    .filter(ti -> connectionData.teamsPlayersKeys.get(ti).contains(params.connectionKey))
-                    .findAny()
-                    .orElse(-1);
-            if (teamIndex == -1) {
-                logger.info("invalid player connectionKey");
-                return null;
-            }
-
-            int playerIndex = connectionData.teamsPlayersKeys.get(teamIndex).indexOf(params.connectionKey);
-
-            // check if the key is already used
-            if (teamPlayerHosts.checkConnectonKeyExists(params.connectionKey)) {
-                logger.info("player connectionKey already used");
-                return null;
-            }
-
-            return new GameHost(
-                    connectingHost.address,
-                    connectingHost.port,
-                    sessionId,
-                    params.name,
-                    params.connectionKey,
-                    false,
-                    teamIndex,
-                    playerIndex
-            );
-        }
-
-    }
 
 }

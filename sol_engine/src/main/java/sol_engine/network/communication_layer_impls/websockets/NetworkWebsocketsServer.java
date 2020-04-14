@@ -3,6 +3,7 @@ package sol_engine.network.communication_layer_impls.websockets;
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.exceptions.InvalidDataException;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshakeBuilder;
@@ -84,7 +85,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
             }
 
             @Override
-            public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+            public synchronized void onClose(WebSocket conn, int code, String reason, boolean remote) {
                 if (socketToHost.containsKey(conn)) {
                     Host host = socketToHost.get(conn);
 
@@ -189,8 +190,12 @@ public class NetworkWebsocketsServer implements NetworkServer {
 
             if (packetString != null) {
                 Collection<WebSocket> toSockets = hosts.stream().map(hostToSocket::get).collect(Collectors.toList());
-                wsServer.broadcast(packetString, toSockets);
-                logger.debug("Packet broadcasted: " + packet);
+                try {
+                    wsServer.broadcast(packetString, toSockets);
+                    logger.debug("Packet broadcasted: " + packet);
+                } catch (WebsocketNotConnectedException e) {
+                    logger.warn("Websockets closed when sending packet");
+                }
             } else {
                 logger.warn("Packet could not be broadcasted due to conversion failure");
             }

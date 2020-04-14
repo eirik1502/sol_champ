@@ -6,6 +6,8 @@ import sol_engine.utils.Function;
 import sol_engine.utils.mutable_primitives.MObject;
 import sol_engine.utils.tickers.Ticker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 // Don't use this class yet
@@ -25,8 +27,7 @@ public class ThreadedSimulationLoop {
     private AtomicBoolean setupComplete = new AtomicBoolean(false);
     private AtomicBoolean waitForNextStepFinished = new AtomicBoolean(false);
 
-    private TerminationCallback terminationCallback = (a, b, c) -> {
-    };
+    private List<TerminationCallback> terminationCallbacks = new ArrayList<>();
 
 
     public ThreadedSimulationLoop(SimulationLoop simulationLoop) {
@@ -47,6 +48,9 @@ public class ThreadedSimulationLoop {
 
             logger.info("Starting");
             simulationLoop.start();
+
+            terminationCallbacks.forEach(callback ->
+                    callback.onTermination(this, simulationLoop, simulationLoop.getSimulation()));
         }, "SimulationLoop_" + simulationLoop.getSimulation().getClass().getSimpleName());
     }
 
@@ -63,7 +67,7 @@ public class ThreadedSimulationLoop {
     }
 
     public void onTermination(TerminationCallback callback) {
-        terminationCallback = callback;
+        terminationCallbacks.add(callback);
     }
 
     public void setup() {
@@ -125,7 +129,6 @@ public class ThreadedSimulationLoop {
         } else {
             logger.warn("Trying to wait for simulation before it is started");
         }
-        terminationCallback.onTermination(this, simulationLoop, simulationLoop.getSimulation());
     }
 
     public void terminate() {

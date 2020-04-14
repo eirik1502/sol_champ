@@ -103,8 +103,9 @@ public class NetServerSystem extends ModuleSystemBase {
 
     private void handleNewDisconnectedHosts(Set<GameHost> disconnectedHosts) {
         disconnectedHosts.forEach(host -> {
-            if (entityHosts.containsKey(host)) {
-                Entity removeEntityHost = entityHosts.remove(host);
+            Entity removeEntityHost = entityHosts.remove(host);
+            System.out.println("host entity removed: " + removeEntityHost);
+            if (removeEntityHost != null) {
                 world.removeEntity(removeEntityHost);
             } else {
                 logger.warn("A disconnecting host is not registered as connected");

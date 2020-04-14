@@ -51,6 +51,7 @@ class SolGameServer(
     fun setup(): ServerConnectionData {
         threadedLoop.setup();
         connectionData = serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
+        threadedLoop.onTermination() { threadedLoop, loop, sim -> println("sol server finished") }
         return connectionData
     }
 

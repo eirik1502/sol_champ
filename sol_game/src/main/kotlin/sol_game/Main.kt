@@ -41,21 +41,28 @@ class Args(parser: ArgParser) {
         val headless = args.contains("headless")
         ClientConfig(teamIndex, headless)
     }
+
+    val runExhaustion by parser.flagging(
+            "--runExhaustion",
+            help = "Run many sped up games with headless server and clients"
+    )
 }
 
 fun main(args: Array<String>) = mainBody {
     ArgParser(args).parseInto(::Args).run {
-        runManyFastSimulations()
-//        if (this.poolServer.use) {
-//            println("Running pool server: $poolServer")
-//            runPoolServer(headless = this.poolServer.headless)
-//        }
-//
-//        clients.forEach {
-//            println("Running client: $it")
-//            runConnectClientToPool(it.headless, it.teamIndex)
+        if (runExhaustion) {
+            runManyFastSimulations()
+        }
+        if (this.poolServer.use) {
+            println("Running pool server: $poolServer")
+            runPoolServer(headless = this.poolServer.headless)
+        }
+
+        clients.forEach {
+            println("Running client: $it")
+            runConnectClientToPool(it.headless, it.teamIndex)
 //            Thread.sleep(500)
-//        }
+        }
     }
 }
 
@@ -126,7 +133,7 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
 }
 
 fun runManyFastSimulations() {
-    val teamWins = (0..10)
+    val teamWins = (0..300)
             .map {
                 println("running simulation $it")
                 runFastSimulation()
@@ -140,7 +147,7 @@ fun runFastSimulation(): Int {
     val server = SolGameServer(
             charactersConfigs = listOf(frankConfig, frankConfig),
             updateFrameTime = 0f,
-            headless = true
+            headless = false
     )
     val serverConnectionData: ServerConnectionData = server.setup()
     println("Server connection: $serverConnectionData")

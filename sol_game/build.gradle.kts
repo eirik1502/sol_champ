@@ -96,9 +96,19 @@ tasks.register<JavaExec>("runClient2") {
 tasks.register<JavaExec>("runServerWithTwoClients") {
     setRunSolProps(
             this,
-            withArgs = listOf("--poolServer", "true", "--client", "teamindex=0,headless", "--client", "teamindex=1,headless"),
+            withArgs = listOf("--poolServer", "headless", "--client", "teamindex=0", "--client", "teamindex=1,headless"),
+//            withArgs = listOf("--poolServer", "true", "--client", "teamindex=0,headless", "--client", "teamindex=1,headless"),
             withJvmArgs = listOf(),
             debugLevel = "info"
+    )
+}
+
+tasks.register<JavaExec>("runExhaustion") {
+    setRunSolProps(
+            this,
+            withArgs = listOf("--runExhaustion"),
+            withJvmArgs = listOf(),
+            debugLevel = "error"
     )
 }
 

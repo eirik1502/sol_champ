@@ -1,6 +1,8 @@
 package sol_engine.network.communication_layer_impls.websockets;
 
+import javafx.scene.chart.ScatterChart;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
@@ -123,7 +125,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
 
     @Override
     public void sendPacket(NetworkPacket packet) {
-        if (isConnected()) {
+        try {
             String packetString = packetConverter.packetToString(packet);
 
             if (packetString != null) {
@@ -133,8 +135,8 @@ public class NetworkWebsocketsClient implements NetworkClient {
             } else {
                 logger.warn("Packet could not be converted to string: " + packet);
             }
-        } else {
-            logger.warn("Sending packet while not connected to server: " + packet);
+        } catch (WebsocketNotConnectedException e) {
+            logger.debug("Sending packet while not connected to server: " + packet);
         }
     }
 

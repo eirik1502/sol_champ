@@ -83,7 +83,7 @@ public class NetworkClientModule extends Module {
 
     @Override
     public void onEnd() {
-        client.disconnect();
+        disconnect();
     }
 
     @Override

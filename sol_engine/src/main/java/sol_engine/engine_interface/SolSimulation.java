@@ -75,10 +75,10 @@ public abstract class SolSimulation {
 
     public final void terminate() {
         if (!terminated) {
-            terminated = true;
             logger.info("terminating");
             onEnd();
             modulesHandler.internalEnd();
+            terminated = true;
         } else {
             logger.warn("terminated called, but already terminating");
         }
