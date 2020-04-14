@@ -125,7 +125,7 @@ public class WorldEditor implements CreatorFrame {
     private void drawInputOfValue(GuiCommands imgui, String fieldName, Object value, String fieldLabel, boolean deactivated, int indentationCount) {
         String indentationStr = indentationStr(indentationCount);
 
-        if (indentationCount > 5) {
+        if (indentationCount > 7) {
             imgui.core.text(indentationStr + "{ max depth }");
             return;
         }
@@ -159,6 +159,8 @@ public class WorldEditor implements CreatorFrame {
                     newValue = imgui.input.inputFloat(label, ((Number) value).floatValue(), 1f, 10f, "%.3f", itemStatusFlagsArr);
 //                } else if (fieldIsPrimitive) {
 //                    imgui.core.text(value.toString() + label);
+                } else if (value instanceof Enum<?>) {
+                    imgui.input.inputText(label, ((Enum<?>) value).toString(), itemStatusFlagsArr);
                 } else if (value instanceof Entity) {
                     imgui.input.inputText(label, ((Entity) value).getName(), itemStatusFlagsArr);
                 } else if (value instanceof Class) {
