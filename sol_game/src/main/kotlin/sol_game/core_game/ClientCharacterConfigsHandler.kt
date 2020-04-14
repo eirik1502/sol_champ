@@ -9,7 +9,6 @@ class ClientCharacterConfigsHandler : StaticConnectionPacketHandler {
         packet?.let {
             val charactersConfig = (packet as CharactersConfigsPacket).charactersConfigs
             addAllCharactersEntityClasses(false, charactersConfig, world)
-            println("added character classes!: $charactersConfig")
         }
     }
 }

@@ -31,7 +31,7 @@ class SolGameServerSystem : SystemBase() {
                 .filter { it.hasComponent(CharacterComp::class.java) }
                 .count()
 
-        return if (charactersCount == 1) SolGameComp.GameState.RUNNING else SolGameComp.GameState.BEFORE_START
+        return if (charactersCount >= 1) SolGameComp.GameState.RUNNING else SolGameComp.GameState.BEFORE_START
     }
 
     private fun handleGameRunning(gameComp: SolGameComp): SolGameComp.GameState {

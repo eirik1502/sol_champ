@@ -109,7 +109,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
                     if (packet != null) {
                         packetHandler.handlePacket(packet, fromHost);
                     } else {
-                        logger.warn("Could not handle packet as it could not be converted from string");
+                        logger.error("Could not handle packet as it could not be converted from string");
                     }
                 } else {
                     logger.warn("Got message from a host that is not connected");
@@ -197,7 +197,7 @@ public class NetworkWebsocketsServer implements NetworkServer {
                     logger.warn("Websockets closed when sending packet");
                 }
             } else {
-                logger.warn("Packet could not be broadcasted due to conversion failure");
+                logger.error("Packet could not be broadcasted due to conversion failure");
             }
         } else {
             logger.warn("WebsocketsServer not instanciated when pushing packet: " + packet);

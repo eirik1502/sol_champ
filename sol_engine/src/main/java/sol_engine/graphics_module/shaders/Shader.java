@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL20;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.utils.BufferUtils;
 
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.Map;
  * Created by eirik on 13.06.2017.
  */
 public abstract class Shader {
+    private Logger logger = LoggerFactory.getLogger(Shader.class);
 
     public static class NULL extends Shader {
     }
@@ -31,9 +34,9 @@ public abstract class Shader {
     }
 
     public Shader(String vertex, String frag) {
-        System.out.println("Compiling shader: " + vertex + " " + frag);
+        logger.info("Compiling shader: " + vertex + " " + frag);
         this.programId = ShaderLoader.loadShader(vertex, frag);
-        System.out.println("Shadered compiled: " + vertex + " " + frag);
+        logger.info("Shadered compiled: " + vertex + " " + frag);
         shaderCompiled = true;
     }
 

@@ -99,12 +99,7 @@ public class NetworkGameServer {
     }
 
     public Deque<GameHost> popNewDisconnections() {
-
-        Deque<GameHost> hosts = hostsManager.popNewDisconnectedHosts();
-        if (!hosts.isEmpty()) {
-            System.out.println("Game server disconnections: " + hosts);
-        }
-        return hosts;
+        return hostsManager.popNewDisconnectedHosts();
     }
 
     public PacketsQueue peekInputPacketsQueue() {

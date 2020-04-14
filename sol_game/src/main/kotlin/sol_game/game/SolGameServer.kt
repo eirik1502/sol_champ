@@ -1,5 +1,7 @@
 package sol_game.game
 
+import mu.KotlinLogging
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.engine_interface.ThreadedSimulationLoop
@@ -30,6 +32,7 @@ class SolGameServer(
         // gui is not supported when running multiple instances of SolGameServer / Client on multiple threads
         allowGui: Boolean = true
 ) {
+    private val logger = KotlinLogging.logger { }
 
     private lateinit var connectionData: ServerConnectionData
 
@@ -51,7 +54,7 @@ class SolGameServer(
     fun setup(): ServerConnectionData {
         threadedLoop.setup();
         connectionData = serverSim.modulesHandler.getModule(NetworkServerModule::class.java).connectionData
-        threadedLoop.onTermination() { threadedLoop, loop, sim -> println("sol server finished") }
+        threadedLoop.onTermination() { threadedLoop, loop, sim -> logger.info { "sol server finished" } }
         return connectionData
     }
 

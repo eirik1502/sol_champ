@@ -27,8 +27,6 @@ class SolGameClientSystem : SystemBase() {
                         .requestDisconnect = true
 
                 world.removeSystem(ClientNetworkOutputSystem::class.java)
-
-                println("gameState: ${gameComp.gameState}")
             }
             // assuming there is only one of this comp
             prevGameState = gameComp.gameState

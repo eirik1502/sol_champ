@@ -133,7 +133,7 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
 }
 
 fun runManyFastSimulations() {
-    val teamWins = (0..300)
+    val teamWins = (0..100)
             .map {
                 println("running simulation $it")
                 runFastSimulation()
@@ -150,7 +150,6 @@ fun runFastSimulation(): Int {
             headless = false
     )
     val serverConnectionData: ServerConnectionData = server.setup()
-    println("Server connection: $serverConnectionData")
     server.start()
     println("server started")
 
@@ -169,13 +168,13 @@ fun runFastSimulation(): Int {
             }
             .onEach { it.setup() }
             .onEach {
-                Thread.sleep(100)
+                //                Thread.sleep(100)
                 it.start()
             }
 //    server.waitUntilFinished()
-    Thread.sleep(3000)
+//    Thread.sleep(3000)
+    clients[0].waitUntilFinished()
     server.terminate()
-    server.waitUntilFinished()
     clients.forEach { it.terminate() }
     return server.getTeamIndexWon()
 }

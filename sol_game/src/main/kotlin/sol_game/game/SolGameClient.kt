@@ -1,5 +1,6 @@
 package sol_game.game
 
+import mu.KotlinLogging
 import sol_engine.engine_interface.ThreadedSimulationLoop
 import sol_game.core_game.SolGameSimulationClient
 
@@ -16,6 +17,7 @@ class SolGameClient(
         debugUI: Boolean = false,  // cannot be set in headless mode
         allowGui: Boolean = true
 ) {
+    private val logger = KotlinLogging.logger { }
 
     private val clientSim: SolGameSimulationClient = SolGameSimulationClient(
             connectAddress,
@@ -33,7 +35,7 @@ class SolGameClient(
 
     fun setup() {
         threadedLoop.setup();
-        threadedLoop.onTermination { _, _, _ -> println("SolClient ended") }
+        threadedLoop.onTermination { _, _, _ -> logger.info { "SolClient finished" } }
     }
 
     fun start() {

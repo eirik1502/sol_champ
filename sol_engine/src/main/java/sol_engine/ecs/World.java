@@ -97,6 +97,7 @@ public class World {
         // might be better to call setup when the system is actually added,
         // but we do it here now so world listeners may be setup before entities are added
         sys.internalSetup(this); // component families must be set here
+        listeners.systemWillBeAddedListeners.forEach(listener -> listener.handleSystemWillBeAdded(sys.getClass(), sys));
         systemsScheduledForAdd.add(sys);
         return sys;
     }

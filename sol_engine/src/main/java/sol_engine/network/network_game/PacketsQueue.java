@@ -16,7 +16,7 @@ public class PacketsQueue {
     private final Deque<NetworkPacket> EMPTY_QUEUE = new ArrayDeque<>();
 
     private Map<Class<? extends NetworkPacket>, Map<GameHost, Deque<NetworkPacket>>> queueByType
-            = new HashMap<>();
+            = new ConcurrentHashMap<>();
 
 
     public PacketsQueue() {

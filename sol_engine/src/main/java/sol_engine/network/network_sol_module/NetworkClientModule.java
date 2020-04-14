@@ -35,7 +35,7 @@ public class NetworkClientModule extends Module {
         if (client != null) {
             client.usePacketTypes(packetTypes);
         } else {
-            logger.warn("calling usePacketTypes() before client is setup");
+            logger.error("calling usePacketTypes() before client is setup");
         }
     }
 

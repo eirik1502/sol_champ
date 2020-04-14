@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
 import sol_engine.ecs.listeners.SystemAddedListener;
 import sol_engine.ecs.World;
+import sol_engine.ecs.listeners.SystemWillBeAddedListener;
 import sol_engine.module.Module;
 import sol_engine.module.ModulesHandler;
 
@@ -16,7 +17,7 @@ public abstract class SolSimulation {
     protected World world;
     protected ModulesHandler modulesHandler;
 
-    private SystemAddedListener systemAddedListener;
+    private SystemWillBeAddedListener systemWillBeAddedListener;
     private boolean isSetup = false;
     private boolean terminated = false;
 
@@ -48,14 +49,14 @@ public abstract class SolSimulation {
         world = new World();
 
         // make sure module based systems know about modules
-        systemAddedListener = (sysType, sys) -> {
+        systemWillBeAddedListener = (sysType, sys) -> {
             if (sys instanceof ModuleSystemBase) {
                 ModuleSystemBase modSys = (ModuleSystemBase) sys;
                 modSys.setModulesHandler(modulesHandler);
                 modSys.internalSetupEnd();
             }
         };
-        world.listeners.addSystemAddedListener(systemAddedListener);
+        world.listeners.addSystemWillBeAddedListener(systemWillBeAddedListener);
 
         onSetupWorld();  // components and systems are added
 

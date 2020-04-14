@@ -74,7 +74,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
                 if (packet != null) {
                     packetHandler.handlePacket(packet);
                 } else {
-                    logger.warn("Received packet that could not be converted from string");
+                    logger.error("Received packet that could not be converted from string: " + message);
                 }
             }
 
@@ -133,7 +133,7 @@ public class NetworkWebsocketsClient implements NetworkClient {
 
                 logger.debug("Packet sendt: " + packetString);
             } else {
-                logger.warn("Packet could not be converted to string: " + packet);
+                logger.error("Packet could not be converted to string. Packet type: " + packet.getClass().getSimpleName() + ", packet: " + packet);
             }
         } catch (WebsocketNotConnectedException e) {
             logger.debug("Sending packet while not connected to server: " + packet);

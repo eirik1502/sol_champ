@@ -1,9 +1,6 @@
 package sol_engine.ecs;
 
-import sol_engine.ecs.listeners.EntityClassInstanciateListener;
-import sol_engine.ecs.listeners.EntityListener;
-import sol_engine.ecs.listeners.SystemAddedListener;
-import sol_engine.ecs.listeners.WorldUpdateListener;
+import sol_engine.ecs.listeners.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.Map;
 public class WorldListeners {
 
     List<SystemAddedListener> systemAddedListeners = new ArrayList<>();
+    List<SystemWillBeAddedListener> systemWillBeAddedListeners = new ArrayList<>();
     List<WorldUpdateListener> worldUpdateListeners = new ArrayList<>();
     List<EntityListener.WillBeAdded> entityWillBeAddedListeners = new ArrayList<>();
     List<EntityListener.WillBeRemoved> entityWillBeRemovedListeners = new ArrayList<>();
@@ -36,6 +34,15 @@ public class WorldListeners {
     public void removeSystemAddedListener(SystemAddedListener listener) {
         systemAddedListeners.remove(listener);
     }
+
+    public void addSystemWillBeAddedListener(SystemWillBeAddedListener listener) {
+        systemWillBeAddedListeners.add(listener);
+    }
+
+    public void removeSystemWillBeAddedListener(SystemWillBeAddedListener listener) {
+        systemWillBeAddedListeners.remove(listener);
+    }
+
 
     public void addWorldUpdateListener(WorldUpdateListener listener) {
         this.worldUpdateListeners.add(listener);
