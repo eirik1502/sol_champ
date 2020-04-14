@@ -1,6 +1,5 @@
 package sol_engine.network.communication_layer_impls.websockets;
 
-import javafx.scene.chart.ScatterChart;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.framing.CloseFrame;
@@ -11,10 +10,12 @@ import sol_engine.network.communication_layer.NetworkClient;
 import sol_engine.network.communication_layer.PacketClassStringConverter;
 import sol_engine.network.network_utils.NetworkUtils;
 import sol_engine.network.packet_handling.NetworkPacket;
-import sol_engine.network.communication_layer.Host;
 
 import java.net.URI;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
