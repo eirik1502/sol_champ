@@ -3,6 +3,9 @@ package sol_game.game
 import org.joml.Vector2f
 
 data class SolGameState(
+        val gameStarted: Boolean,
+        val gameEnded: Boolean,
+        val playerIndexWon: Int,
         val controlledPlayerIndex: Int,
         val charactersState: List<SolCharacterState>
 )

@@ -12,6 +12,7 @@ import sol_engine.physics_module.PhysicsBodyShape
 import sol_game.core_game.components.CharacterComp
 import sol_game.core_game.components.HitboxComp
 import sol_game.core_game.components.HurtboxComp
+import sol_game.core_game.components.SolGameComp
 import sol_game.game.SolCharacterState
 import sol_game.game.SolCharacterStateTag
 import sol_game.game.SolGameState
@@ -29,6 +30,7 @@ object SolGameStateUtils {
 
     fun retrieveSolGameState(world: World): SolGameState {
         val entitiesByTeam: List<List<Entity>> = world.insight.entities
+                .asSequence()
                 .filter { it.hasComponent(TeamPlayerComp::class.java) }
                 .groupBy { it.getComponent(TeamPlayerComp::class.java).teamIndex }
                 .toSortedMap(Comparator { teamIndex1, teamIndex2 -> teamIndex2 - teamIndex1 })
@@ -81,7 +83,19 @@ object SolGameStateUtils {
         }
 
         val controllingPlayerIndex = characterStates.indexOfFirst { it.playerControlled }
+        val gameComp = world.insight.entities
+                .asSequence()
+                .find { it.hasComponent(SolGameComp::class.java) }
+                ?.getComponent(SolGameComp::class.java)
+
+        var gameStarted = gameComp?.gameState == SolGameComp.GameState.RUNNING ?: false
+        val gameEnded = gameComp?.gameState == SolGameComp.GameState.ENDED ?: false
+        val playerIndexWon = gameComp?.teamIndexWon ?: -1
+
         return SolGameState(
+                gameStarted = gameStarted,
+                gameEnded = gameEnded,
+                playerIndexWon = playerIndexWon,
                 controlledPlayerIndex = controllingPlayerIndex,
                 charactersState = characterStates
         )
