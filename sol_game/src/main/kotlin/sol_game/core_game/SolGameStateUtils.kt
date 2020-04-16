@@ -1,22 +1,16 @@
 package sol_game.core_game
 
+import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.ecs.Component
 import sol_engine.ecs.Entity
 import sol_engine.ecs.World
-import sol_engine.network.network_ecs.host_managing.ClientControlledComp
 import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
 import sol_engine.physics_module.CollisionComp
 import sol_engine.physics_module.PhysicsBodyComp
 import sol_engine.physics_module.PhysicsBodyShape
-import sol_game.core_game.components.CharacterComp
-import sol_game.core_game.components.HitboxComp
-import sol_game.core_game.components.HurtboxComp
-import sol_game.core_game.components.SolGameComp
-import sol_game.game.SolCharacterState
-import sol_game.game.SolCharacterStateTag
-import sol_game.game.SolGameState
-import sol_game.game.SolHitboxState
+import sol_game.core_game.components.*
+import sol_game.game.*
 
 object SolGameStateUtils {
 
@@ -28,6 +22,49 @@ object SolGameStateUtils {
         }
     }
 
+    private fun toRectangleObstacle(entitiesWithCollTrans: List<Entity>): List<RectangleObstacle> =
+            entitiesWithCollTrans
+                    .filter { it.getComponent(CollisionComp::class.java).bodyShape is PhysicsBodyShape.Rect }
+                    .map {
+                        val transComp = it.getComponent(TransformComp::class.java)
+                        val bodyShape = it.getComponent(CollisionComp::class.java).bodyShape as PhysicsBodyShape.Rect
+                        RectangleObstacle(
+                                position = Vector2f(transComp.position),
+                                size = Vector2f(bodyShape.width, bodyShape.height)
+                        )
+                    }
+
+    private fun toCircleObstacle(entitiesWithCollTrans: List<Entity>): List<CircleObstacle> =
+            entitiesWithCollTrans
+                    .filter { it.getComponent(CollisionComp::class.java).bodyShape is PhysicsBodyShape.Circ }
+                    .map {
+                        val transComp = it.getComponent(TransformComp::class.java)
+                        val bodyShape = it.getComponent(CollisionComp::class.java).bodyShape as PhysicsBodyShape.Circ
+                        CircleObstacle(
+                                position = Vector2f(transComp.position),
+                                radius = bodyShape.radius
+                        )
+                    }
+
+    fun retrieveStaticGameState(world: World): SolStaticGameState {
+        val holeEntities = world.insight.entities
+                .filter { it.hasComponents(setOf(HoleComp::class.java, CollisionComp::class.java, TransformComp::class.java)) }
+        val rectangleHoles = toRectangleObstacle(holeEntities)
+        val circleHoles = toCircleObstacle(holeEntities)
+
+        val wallEntities = world.insight.entities
+                .filter { it.hasComponents(setOf(WallComp::class.java, CollisionComp::class.java, TransformComp::class.java)) }
+        val rectangleWalls = toRectangleObstacle(wallEntities)
+        val circleWalls = toCircleObstacle(wallEntities)
+
+        return SolStaticGameState(
+                rectangleWalls = rectangleWalls,
+                circleWalls = circleWalls,
+                rectangleHoles = rectangleHoles,
+                circleHoles = circleHoles
+        )
+    }
+
     fun retrieveSolGameState(world: World): SolGameState {
         val entitiesByTeam: List<List<Entity>> = world.insight.entities
                 .asSequence()
@@ -35,7 +72,7 @@ object SolGameStateUtils {
                 .groupBy { it.getComponent(TeamPlayerComp::class.java).teamIndex }
                 .toSortedMap(Comparator { teamIndex1, teamIndex2 -> teamIndex1 - teamIndex2 })
                 .values.toList()
-        
+
         val characterStates = entitiesByTeam.map { entitiesOfTeam ->
 
             val hitboxEntities = entitiesOfTeam.filter { entity -> entity.hasComponent(HitboxComp::class.java) }
