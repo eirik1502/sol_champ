@@ -3,6 +3,9 @@ package sol_engine.ecs;
 import sol_engine.utils.Function;
 import sol_engine.utils.collections.ImmutableListView;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public abstract class SystemBase {
@@ -25,6 +28,10 @@ public abstract class SystemBase {
 
     @SafeVarargs
     final protected void usingComponents(Class<? extends Component>... compTypes) {
+        usingComponents(Set.of(compTypes));
+    }
+
+    final protected void usingComponents(Set<Class<? extends Component>> compTypes) {
         this.compFamily = new ComponentFamily(compTypes);
     }
 
