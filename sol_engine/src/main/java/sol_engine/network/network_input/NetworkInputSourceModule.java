@@ -34,7 +34,7 @@ public class NetworkInputSourceModule extends InputSourceModule {
 
 
     @Override
-    public boolean checkAction(String label) {
+    public boolean checkTrigger(String label) {
         return triggerActions.getOrDefault(label, false);
     }
 
@@ -44,8 +44,13 @@ public class NetworkInputSourceModule extends InputSourceModule {
     }
 
     @Override
-    public Vector2f vectorInput(String label) {
-        return new Vector2f();
+    public boolean hasTrigger(String label) {
+        return triggerActions.containsKey(label);
+    }
+
+    @Override
+    public boolean hasFloatInput(String label) {
+        return floatActions.containsKey(label);
     }
 
     @Override

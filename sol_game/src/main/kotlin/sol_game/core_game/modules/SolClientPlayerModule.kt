@@ -2,24 +2,14 @@ package sol_game.core_game.modules
 
 import mu.KotlinLogging
 import org.joml.Vector2f
-import sol_engine.core.TransformComp
-import sol_engine.ecs.Component
-import sol_engine.ecs.Entity
 import sol_engine.ecs.World
 import sol_engine.input_module.InputSourceModule
 import sol_engine.network.network_ecs.host_managing.ClientControlledComp
-import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
-import sol_engine.physics_module.CollisionComp
-import sol_engine.physics_module.PhysicsBodyComp
-import sol_engine.physics_module.PhysicsBodyShape
 import sol_engine.utils.reflection_utils.ClassUtils
-import sol_game.core_game.SolActionsPacket
+import sol_game.core_game.SolActions
 import sol_game.core_game.SolGameStateUtils
 import sol_game.core_game.components.CharacterComp
-import sol_game.core_game.components.HitboxComp
-import sol_game.core_game.components.HurtboxComp
 import sol_game.game.*
-import kotlin.Comparator
 
 data class SolClientPlayerModuleConfig(
         val playerClass: Class<out SolClientPlayer>
@@ -41,7 +31,7 @@ class SolClientPlayerModule(
 
     var teamIndexWon: Int = -1
 
-    private var currSolActions: SolActionsPacket = SolActionsPacket()
+    private var currSolActions: SolActions = SolActions()
 
 
     override fun onSetup() {
@@ -56,22 +46,29 @@ class SolClientPlayerModule(
     override fun onStart() {
     }
 
+    // returns -1 if no controlled player found
+    private fun retrieveControlledCharacterIndex(): Int =
+            world.insight.entities
+                    .indexOfFirst { it.hasComponents(setOf(CharacterComp::class.java, ClientControlledComp::class.java)) }
+
+
     override fun onUpdate() {
-        if (teamIndexWon != -1) {
-            player.onEnd(world, false, teamIndexWon, 0)
-            simulationShouldTerminate()
-        } else if (gameStarted) {
+        val controlledPlayerIndex = retrieveControlledCharacterIndex()
+        if (controlledPlayerIndex != -1) {
             val gameState = SolGameStateUtils.retrieveSolGameState(world)
-            if (gameState.controlledPlayerIndex != -1) {
+
+            if (teamIndexWon != -1) {
+                player.onEnd(controlledPlayerIndex, gameState, world)
+                simulationShouldTerminate()
+            } else if (gameStarted) {
 
                 if (!calledPlayerStart) {
-                    player.onStart(world, gameState)
+                    player.onStart(controlledPlayerIndex, gameState, world)
                     calledPlayerStart = true
                 }
 
-                currSolActions = player.onUpdate(world, gameState)
+                currSolActions = player.onUpdate(controlledPlayerIndex, gameState, world)
             }
-
         }
     }
 
@@ -79,13 +76,8 @@ class SolClientPlayerModule(
 
     }
 
-    override fun vectorInput(label: String?): Vector2f {
-        logger.error { "Does not support vector input" }
-        return Vector2f()
-    }
 
-
-    override fun checkAction(label: String?): Boolean {
+    override fun checkTrigger(label: String?): Boolean {
         return when (label) {
             "mvLeft" -> currSolActions.mvLeft
             "mvRight" -> currSolActions.mvRight
@@ -105,4 +97,10 @@ class SolClientPlayerModule(
             else -> 0f
         }
     }
+
+    override fun hasTrigger(label: String?): Boolean =
+            setOf("mvLeft", "mvRight", "mvUp", "mvDown", "ability1", "ability2", "ability3").contains(label)
+
+
+    override fun hasFloatInput(label: String?): Boolean = setOf("aimX", "aimY").contains(label)
 }

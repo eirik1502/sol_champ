@@ -58,7 +58,9 @@ class AbilitySystem : SystemBase() {
 
     private fun instanciateAbilityEntity(ability: Ability, owner: Entity, characterPos: Vector2f, targetPos: Vector2f) {
         val aimDirVec: Vector2f = targetPos.sub(characterPos, Vector2f())
-        val normAimDirVec = aimDirVec.normalize(Vector2f())
+        val normAimDirVec =
+                if (aimDirVec.lengthSquared() == 0f) Vector2f(1f, 0f)
+                else aimDirVec.normalize(Vector2f())
 //        val position = characterPos.add(offset, Vector2f())
         val impulse: Vector2f = normAimDirVec.mul(ability.initialImpulse, Vector2f())
 

@@ -1,22 +1,25 @@
 package sol_game.game
 
 import sol_engine.ecs.World
-import sol_game.core_game.SolActionsPacket
+import sol_game.core_game.SolActions
 
 class SolTestObserver : SolClientPlayer {
     override fun onSetup() {
 
     }
 
-    override fun onStart(world: World, gameState: SolGameState) {
+    override fun onStart(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
+
     }
 
-    override fun onUpdate(world: World, gameState: SolGameState): SolActionsPacket {
+    override fun onUpdate(controlledCharacterIndex: Int, gameState: SolGameState, world: World): SolActions {
         println("observer updated")
 
-        return SolActionsPacket()
+        return SolActions()
     }
 
-    override fun onEnd(world: World, won: Boolean, winnerTeamIndex: Int, winnerPlayerIndex: Int) {
+    override fun onEnd(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
     }
+
+
 }

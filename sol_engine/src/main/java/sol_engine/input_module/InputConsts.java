@@ -36,9 +36,8 @@ public class InputConsts {
     public static final int MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST + KEY_LAST + 1;
 
     public static final int
-            CURSOR_VEC = MOUSE_BUTTON_LAST + 1,
-            CURSOR_X = MOUSE_BUTTON_LAST + 2,
-            CURSOR_Y = MOUSE_BUTTON_LAST + 3;
+            CURSOR_X = MOUSE_BUTTON_LAST + 1,
+            CURSOR_Y = MOUSE_BUTTON_LAST + 2;
 
     public static final int
             ACTION_RELEASE = GLFW_RELEASE,

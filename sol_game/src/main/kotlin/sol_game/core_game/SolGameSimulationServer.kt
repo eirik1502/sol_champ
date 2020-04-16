@@ -53,7 +53,7 @@ open class SolGameSimulationServer(
                 false
         )))
         addModule(NetworkInputSourceModule(NetworkInputSourceModuleConfig(
-                SolActionsPacket::class.java
+                SolActions::class.java
         )))
         addModule(InputModule(InputModuleConfig(
                 NetworkInputSourceModule::class.java

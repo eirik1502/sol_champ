@@ -15,4 +15,12 @@ public class TeamPlayerComp extends Component {
         this.teamIndex = teamIndex;
         this.playerIndex = playerIndex;
     }
+
+    @Override
+    public String toString() {
+        return "TeamPlayerComp{" +
+                "teamIndex=" + teamIndex +
+                ", playerIndex=" + playerIndex +
+                '}';
+    }
 }

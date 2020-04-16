@@ -1,27 +1,28 @@
 package sol_game.game
 
 import sol_engine.ecs.World
-import sol_game.core_game.SolActionsPacket
+import sol_game.core_game.SolActions
 
 interface SolClientPlayer {
 
     fun onSetup()
 
     fun onStart(
-            world: World,
-            gameState: SolGameState
+            controlledCharacterIndex: Int,
+            gameState: SolGameState,
+            world: World
     )
 
     fun onUpdate(
-            world: World,
-            gameState: SolGameState
-    ): SolActionsPacket
+            controlledCharacterIndex: Int,
+            gameState: SolGameState,
+            world: World
+    ): SolActions
 
     fun onEnd(
-            world: World,
-            won: Boolean,
-            winnerTeamIndex: Int,
-            winnerPlayerIndex: Int
+            controlledCharacterIndex: Int,
+            gameState: SolGameState,
+            world: World
     )
 
 }

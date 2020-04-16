@@ -6,12 +6,10 @@ data class SolGameState(
         val gameStarted: Boolean,
         val gameEnded: Boolean,
         val playerIndexWon: Int,
-        val controlledPlayerIndex: Int,
         val charactersState: List<SolCharacterState>
 )
 
 data class SolCharacterState(
-        val playerControlled: Boolean = false,  // true if this player controlls this character
         val position: Vector2f = Vector2f(),
         val velocity: Vector2f = Vector2f(),
         val acceleration: Vector2f = Vector2f(),

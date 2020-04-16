@@ -35,7 +35,7 @@ public class MoveByVelocitySystem extends SystemBase {
             if (moveVelComp.disabled) return;
 
             List<Float> directionalSpeed = moveVelComp.directionalInput.stream()
-                    .map(inp -> inpComp.checkAction(inp) ? 1f : 0f)
+                    .map(inp -> inpComp.checkTrigger(inp) ? 1f : 0f)
                     .collect(Collectors.toList());
 
             if (directionalSpeed.size() < 4)

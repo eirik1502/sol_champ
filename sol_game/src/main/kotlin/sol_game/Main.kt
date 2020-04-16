@@ -5,8 +5,10 @@ package sol_game
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import sol_engine.engine_interface.SimulationLoop
 import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_game.core_game.CharacterConfig
+import sol_game.core_game.SolGameSimulationOffline
 import sol_game.game.*
 
 
@@ -51,6 +53,11 @@ class Args(parser: ArgParser) {
             "--runExhaustion",
             help = "Run many sped up games with headless server and clients"
     )
+
+    val offline by parser.flagging(
+            "--runOffline",
+            help = "Run offline"
+    )
 }
 
 fun main(args: Array<String>) = mainBody {
@@ -68,6 +75,10 @@ fun main(args: Array<String>) = mainBody {
             runConnectClientToPool(it.headless, it.disableGui, it.teamIndex, it.observer)
 //            Thread.sleep(500)
         }
+
+        if (offline) {
+            runOffline()
+        }
     }
 }
 
@@ -77,6 +88,15 @@ val charactersConfig = listOf(
         frankConfig,
         frankConfig
 )
+
+fun runOffline() {
+    val loop = SimulationLoop(SolGameSimulationOffline(
+            charactersConfigs = charactersConfig,
+            graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = true)
+    ))
+    loop.setup()
+    loop.start()
+}
 
 fun runPoolServer(headless: Boolean) {
     val poolServer = SimpleSolGameServerPoolServer(headless = headless)

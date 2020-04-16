@@ -21,7 +21,7 @@ class CharacterSystem : SystemBase() {
             // trigger abilities
             charComp.abilityInputActions.stream()
                     .map(WithIndex.map())
-                    .filter { inputI -> inputComp.checkAction(inputI.value) }
+                    .filter { inputI -> inputComp.checkTrigger(inputI.value) }
                     .filter { inputI -> inputI.i < abComp.abilities.size }
                     .map { inputI -> abComp.abilities[inputI.i] }
                     .forEach { ab -> ab.trigger = true }

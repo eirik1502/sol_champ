@@ -22,9 +22,6 @@ public class InputSystem extends ModuleSystemBase {
 
             inputComp.floatInputs.keySet()
                     .forEach(label -> inputComp.floatInputs.replace(label, inpModule.floatInput(inputLabelPrefix + label)));
-
-            inputComp.vectorInputs.keySet()
-                    .forEach(label -> inputComp.vectorInputs.replace(label, inpModule.vectorInput(inputLabelPrefix + label)));
         });
     }
 }

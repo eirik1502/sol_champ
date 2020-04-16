@@ -31,7 +31,7 @@ class MovementSystem : SystemBase() {
             val inputDirectionVec = movementComp.inputActions
                     .subList(0, directionalUnitVecs.size)
                     .mapIndexed { i, inputAction ->
-                        if (inputComp.checkAction(inputAction)) directionalUnitVecs[i]
+                        if (inputComp.checkTrigger(inputAction)) directionalUnitVecs[i]
                         else zeroVec
                     }
                     .fold(Vector2f()) { acc, inputVec -> acc.add(inputVec) }

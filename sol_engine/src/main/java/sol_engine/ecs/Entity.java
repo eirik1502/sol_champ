@@ -2,6 +2,7 @@ package sol_engine.ecs;
 
 import sol_engine.utils.Function;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,11 @@ public class Entity {
     // TODO: This will not work after the entity is added
     public Entity addComponent(Component comp) {
         this.comps.put(comp.getClass(), comp);
+        return this;
+    }
+
+    public Entity addComponents(Component... comps) {
+        Arrays.stream(comps).forEach(this::addComponent);
         return this;
     }
 

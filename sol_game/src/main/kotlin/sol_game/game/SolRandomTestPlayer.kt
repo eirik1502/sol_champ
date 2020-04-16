@@ -2,7 +2,7 @@ package sol_game.game
 
 import sol_engine.ecs.World
 import sol_engine.utils.math.MathF
-import sol_game.core_game.SolActionsPacket
+import sol_game.core_game.SolActions
 
 class SolRandomTestPlayer : SolClientPlayer {
 
@@ -12,13 +12,12 @@ class SolRandomTestPlayer : SolClientPlayer {
 
     }
 
-    override fun onStart(world: World, gameState: SolGameState) {
-
+    override fun onStart(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
     }
 
-    override fun onUpdate(world: World, gameState: SolGameState): SolActionsPacket {
-        val myChar = gameState.charactersState[gameState.controlledPlayerIndex]
-        val otherChar = gameState.charactersState.getOrNull((gameState.controlledPlayerIndex + 1) % 2)
+    override fun onUpdate(controlledCharacterIndex: Int, gameState: SolGameState, world: World): SolActions {
+        val myChar = gameState.charactersState[controlledCharacterIndex]
+        val otherChar = gameState.charactersState.getOrNull((controlledCharacterIndex + 1) % 2)
 
         val aimX: Float = otherChar?.position?.x ?: MathF.randRange(0f, 1600f)
         val aimY: Float = otherChar?.position?.y ?: MathF.randRange(0f, 900f)
@@ -31,7 +30,7 @@ class SolRandomTestPlayer : SolClientPlayer {
         val useAb2 = MathF.randInt(0, 60 * 3) == 0
         val useAb3 = MathF.randInt(0, 60 * 5) == 0
 
-        return SolActionsPacket(
+        return SolActions(
                 mvLeft = moveDirection == 0,
                 mvRight = moveDirection == 1,
                 mvUp = moveDirection == 2,
@@ -44,7 +43,7 @@ class SolRandomTestPlayer : SolClientPlayer {
         )
     }
 
-    override fun onEnd(world: World, won: Boolean, winnerTeamIndex: Int, winnerPlayerIndex: Int) {
-
+    override fun onEnd(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
     }
+
 }

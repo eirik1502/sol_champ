@@ -1,12 +1,9 @@
 package sol_engine.network.network_input;
 
 import org.junit.Test;
-import sol_engine.module.ModulesHandler;
 import sol_engine.network.network_input.network_input_utils.TestInputPacket;
 import sol_engine.network.network_test_utils.TestUtils;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertThat;
@@ -31,9 +28,9 @@ public class NetworkInputSourceModuleTest {
         // the inputs should be set for the group given by teamIndex and playerIndex: group t{teamIndex}p{playerIndex}
         packetsByGroup.forEach((inputGroup, packet) -> {
             assertThat(testingLabel + ": " + inputGroup + " mvLeft incorrect value",
-                    inputModule.checkAction(inputGroup + ":mvLeft"), is(packet.mvLeft));
+                    inputModule.checkTrigger(inputGroup + ":mvLeft"), is(packet.mvLeft));
             assertThat(testingLabel + ": " + inputGroup + " mvRight incorrect value",
-                    inputModule.checkAction(inputGroup + ":mvRight"), is(packet.mvRight));
+                    inputModule.checkTrigger(inputGroup + ":mvRight"), is(packet.mvRight));
             assertThat(testingLabel + ": " + inputGroup + " aimX incorrect value",
                     inputModule.floatInput(inputGroup + ":aimX"), is(packet.aimX));
         });
@@ -43,9 +40,9 @@ public class NetworkInputSourceModuleTest {
         // the inputs should be set for the group given by teamIndex and playerIndex: group t{teamIndex}p{playerIndex}
         packetsByGroup.forEach((inputGroup, packet) -> {
             assertThat(testingLabel + ": " + inputGroup + " mvLeft incorrect value",
-                    inputModule.checkAction(inputGroup + ":mvLeft"), is(not(packet.mvLeft)));
+                    inputModule.checkTrigger(inputGroup + ":mvLeft"), is(not(packet.mvLeft)));
             assertThat(testingLabel + ": " + inputGroup + " mvRight incorrect value",
-                    inputModule.checkAction(inputGroup + ":mvRight"), is(not(packet.mvRight)));
+                    inputModule.checkTrigger(inputGroup + ":mvRight"), is(not(packet.mvRight)));
             assertThat(testingLabel + ": " + inputGroup + " aimX incorrect value",
                     inputModule.floatInput(inputGroup + ":aimX"), is(not(packet.aimX)));
         });

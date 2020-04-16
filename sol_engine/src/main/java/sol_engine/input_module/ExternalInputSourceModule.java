@@ -10,7 +10,6 @@ public class ExternalInputSourceModule extends InputSourceModule {
 
     private Map<String, Boolean> triggerInputs = new HashMap<>();
     private Map<String, Float> floatInputs = new HashMap<>();
-    private Map<String, Vector2f> vectorInputs = new HashMap<>();
 
 
     public ExternalInputSourceModule(ExternalInputSourceModuleConfig config) {
@@ -35,16 +34,9 @@ public class ExternalInputSourceModule extends InputSourceModule {
         inputs.forEach(this::updateFloatInput);
     }
 
-    public void updateVectorInput(String label, Vector2f value) {
-        vectorInputs.put(label, value);
-    }
-
-    public void updateVectorInputs(Map<String, Vector2f> inputs) {
-        inputs.forEach(this::updateVectorInput);
-    }
 
     @Override
-    public boolean checkAction(String label) {
+    public boolean checkTrigger(String label) {
         return triggerInputs.getOrDefault(label, false);
     }
 
@@ -54,8 +46,13 @@ public class ExternalInputSourceModule extends InputSourceModule {
     }
 
     @Override
-    public Vector2f vectorInput(String label) {
-        return vectorInputs.getOrDefault(label, ZERO_VECTOR);
+    public boolean hasTrigger(String label) {
+        return triggerInputs.containsKey(label);
+    }
+
+    @Override
+    public boolean hasFloatInput(String label) {
+        return floatInputs.containsKey(label);
     }
 
     @Override

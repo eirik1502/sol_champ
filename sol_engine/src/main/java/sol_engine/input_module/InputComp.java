@@ -16,7 +16,6 @@ public class InputComp extends Component implements InputSource {
     public String inputGroup = "";
     Map<String, Boolean> triggers = new HashMap<>();
     Map<String, Float> floatInputs = new HashMap<>();
-    Map<String, Vector2f> vectorInputs = new HashMap<>();
 
     public InputComp() {
     }
@@ -24,25 +23,22 @@ public class InputComp extends Component implements InputSource {
     public InputComp(
             String inputGroup,
             Set<String> triggerLabels,
-            Set<String> floatInputLabels,
-            Set<String> vectorInputLabels
+            Set<String> floatInputLabels
     ) {
         this.inputGroup = inputGroup;
         this.triggers.putAll(triggerLabels.stream().collect(Collectors.toMap(Function.identity(), x -> false)));
         this.floatInputs.putAll(floatInputLabels.stream().collect(Collectors.toMap(Function.identity(), x -> 0f)));
-        this.vectorInputs.putAll(vectorInputLabels.stream().collect(Collectors.toMap(Function.identity(), x -> new Vector2f())));
     }
 
     public InputComp(
             Set<String> triggerLabels,
-            Set<String> floatInputLabels,
-            Set<String> vectorInputLabels
+            Set<String> floatInputLabels
     ) {
-        this("", triggerLabels, floatInputLabels, vectorInputLabels);
+        this("", triggerLabels, floatInputLabels);
     }
 
     @Override
-    public boolean checkAction(String label) {
+    public boolean checkTrigger(String label) {
         return triggers.getOrDefault(label, false);
     }
 
@@ -52,8 +48,13 @@ public class InputComp extends Component implements InputSource {
     }
 
     @Override
-    public Vector2f vectorInput(String label) {
-        return vectorInputs.getOrDefault(label, ZERO_VEC);
+    public boolean hasTrigger(String label) {
+        return triggers.containsKey(label);
+    }
+
+    @Override
+    public boolean hasFloatInput(String label) {
+        return floatInputs.containsKey(label);
     }
 
     @Override
@@ -62,12 +63,5 @@ public class InputComp extends Component implements InputSource {
         inputGroup = otherComp.inputGroup;
         triggers = new HashMap<>(otherComp.triggers);
         floatInputs = new HashMap<>(otherComp.floatInputs);
-        vectorInputs = new HashMap<>(
-                otherComp.vectorInputs.entrySet().stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                entry -> new Vector2f(entry.getValue())
-                        ))
-        );
     }
 }

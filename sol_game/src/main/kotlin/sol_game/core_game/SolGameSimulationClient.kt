@@ -127,8 +127,7 @@ class SolGameSimulationClient(
                 world.createEntity("client-actions-output")
                         .addComponent(InputComp(
                                 setOf("mvLeft", "mvRight", "mvUp", "mvDown", "ability1", "ability2", "ability3"),
-                                setOf("aimX", "aimY"),
-                                setOf()
+                                setOf("aimX", "aimY")
                         ))
                         .addComponent(SolActionsPacketComp())
         )

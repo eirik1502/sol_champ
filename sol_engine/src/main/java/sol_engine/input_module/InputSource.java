@@ -4,10 +4,12 @@ import org.joml.Vector2f;
 
 public interface InputSource {
 
-    boolean checkAction(String label);
+    boolean checkTrigger(String label);
 
     float floatInput(String label);
 
-    Vector2f vectorInput(String label);
+    boolean hasTrigger(String label);
+
+    boolean hasFloatInput(String label);
 
 }

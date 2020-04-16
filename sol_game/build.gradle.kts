@@ -114,6 +114,15 @@ tasks.register<JavaExec>("runExhaustion") {
     )
 }
 
+tasks.register<JavaExec>("runOffline") {
+    setRunSolProps(
+            this,
+            withArgs = listOf("--runOffline"),
+            withJvmArgs = listOf(),
+            debugLevel = "warn"
+    )
+}
+
 java {
     disableAutoTargetJvm()
 }

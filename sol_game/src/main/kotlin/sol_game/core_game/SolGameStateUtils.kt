@@ -33,10 +33,11 @@ object SolGameStateUtils {
                 .asSequence()
                 .filter { it.hasComponent(TeamPlayerComp::class.java) }
                 .groupBy { it.getComponent(TeamPlayerComp::class.java).teamIndex }
-                .toSortedMap(Comparator { teamIndex1, teamIndex2 -> teamIndex2 - teamIndex1 })
+                .toSortedMap(Comparator { teamIndex1, teamIndex2 -> teamIndex1 - teamIndex2 })
                 .values.toList()
-
+        
         val characterStates = entitiesByTeam.map { entitiesOfTeam ->
+
             val hitboxEntities = entitiesOfTeam.filter { entity -> entity.hasComponent(HitboxComp::class.java) }
 
             val hitboxStates = hitboxEntities.map { hitboxEntity ->
@@ -66,7 +67,6 @@ object SolGameStateUtils {
                         val hurtboxComp = getComponentOrCompute(characterEntity, HurtboxComp::class.java) { HurtboxComp() }
 
                         SolCharacterState(
-                                playerControlled = characterEntity.hasComponent(ClientControlledComp::class.java),
                                 position = transComp.position,
                                 velocity = physBodyComp.velocity,
                                 acceleration = physBodyComp.acceleration,
@@ -82,7 +82,6 @@ object SolGameStateUtils {
             characterState
         }
 
-        val controllingPlayerIndex = characterStates.indexOfFirst { it.playerControlled }
         val gameComp = world.insight.entities
                 .asSequence()
                 .find { it.hasComponent(SolGameComp::class.java) }
@@ -96,7 +95,6 @@ object SolGameStateUtils {
                 gameStarted = gameStarted,
                 gameEnded = gameEnded,
                 playerIndexWon = playerIndexWon,
-                controlledPlayerIndex = controllingPlayerIndex,
                 charactersState = characterStates
         )
     }

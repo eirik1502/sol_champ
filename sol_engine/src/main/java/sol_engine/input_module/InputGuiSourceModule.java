@@ -22,7 +22,6 @@ public class InputGuiSourceModule extends InputSourceModule {
 
     private Map<String, Integer> triggerActionsKeyMap = new HashMap<>();
     private Map<String, Integer> triggerActionsMouseButtonMap = new HashMap<>();
-    private String cursorActionMap;
     private List<String> cursorCoordsActionsMap = Arrays.asList("", "");
 
     private final boolean[] keysHeld = new boolean[InputConsts.KEY_LAST];
@@ -37,8 +36,6 @@ public class InputGuiSourceModule extends InputSourceModule {
                 triggerActionsKeyMap.put(label, inputConst);
             } else if (inputConst <= InputConsts.MOUSE_BUTTON_LAST) {
                 triggerActionsMouseButtonMap.put(label, inputConst);
-            } else if (inputConst == InputConsts.CURSOR_VEC) {
-                cursorActionMap = label;
             } else if (inputConst == InputConsts.CURSOR_X) {
                 cursorCoordsActionsMap.set(0, label);
             } else if (inputConst == InputConsts.CURSOR_Y) {
@@ -52,7 +49,7 @@ public class InputGuiSourceModule extends InputSourceModule {
 
 
     @Override
-    public boolean checkAction(String label) {
+    public boolean checkTrigger(String label) {
         if (triggerActionsKeyMap.containsKey(label)) {
             return checkKeyPressed(triggerActionsKeyMap.get(label));
         } else if (triggerActionsMouseButtonMap.containsKey(label)) {
@@ -71,11 +68,13 @@ public class InputGuiSourceModule extends InputSourceModule {
     }
 
     @Override
-    public Vector2f vectorInput(String label) {
-        if (label.equals(cursorActionMap)) {
-            return new Vector2f(cursorPosition);
-        }
-        return new Vector2f();
+    public boolean hasTrigger(String label) {
+        return triggerActionsKeyMap.containsKey(label) || triggerActionsMouseButtonMap.containsKey(label);
+    }
+
+    @Override
+    public boolean hasFloatInput(String label) {
+        return cursorCoordsActionsMap.contains(label);
     }
 
     public boolean checkKeyPressed(int key) {

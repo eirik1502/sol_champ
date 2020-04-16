@@ -1,5 +1,6 @@
 package sol_game.core_game
 
+import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.ecs.Entity
 import sol_engine.ecs.EntityClass
@@ -10,6 +11,7 @@ import sol_engine.graphics_module.RenderShapeComp
 import sol_engine.graphics_module.graphical_objects.RenderableShape
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
+import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
 import sol_engine.network.network_ecs.world_syncing.NetSyncComp
 import sol_engine.physics_module.CollisionComp
 import sol_engine.physics_module.NaturalCollisionResolutionComp
@@ -69,7 +71,7 @@ fun addCharacterEntityClass(isServer: Boolean, config: CharacterConfig, world: W
 fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List<EntityClass> {
     val abAbilities: List<Pair<EntityClass, Ability>> = config.abilities.map { createAbility(config.name, it) }
 
-    val characterEntityClass = EntityClass(config.name)
+    val characterEntityClass = EntityClass(config.characterId)
             .addBaseComponents(
                     TransformComp(),
                     RenderShapeComp(RenderableShape.CirclePointing(config.radius, MattMaterial.RED())),
@@ -89,8 +91,7 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
         characterEntityClass.addBaseComponents(
                 InputComp(
                         setOf("mvLeft", "mvRight", "mvUp", "mvDown", "ability1", "ability2", "ability3"),
-                        setOf("aimX", "aimY"),
-                        setOf()
+                        setOf("aimX", "aimY")
                 )
         )
     } else {
@@ -100,10 +101,14 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
     return abAbilities.map { it.first } + characterEntityClass
 }
 
-fun instanciateCharacter(isServer: Boolean, world: World, name: String, teamIndex: Int, playerIndex: Int, startX: Float, startY: Float) {
+fun instanciateCharacter(isServer: Boolean, world: World, name: String, entityClass: String, teamIndex: Int, playerIndex: Int, startPosition: Vector2f) {
     val inputGroup = "t${teamIndex}p${playerIndex}"
-    val charEClass = world.addEntity(name, name)
-            .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(startX, startY) }
+    val charEClass = world.addEntity(name, entityClass)
+            .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(startPosition) }
+            .addComponentIfAbsent(TeamPlayerComp::class.java, { TeamPlayerComp() }, { comp ->
+                comp.teamIndex = teamIndex
+                comp.playerIndex = playerIndex
+            })
     if (isServer) {
         charEClass.modifyComponent(InputComp::class.java) { comp -> comp.inputGroup = inputGroup }
     }

@@ -3,9 +3,7 @@ package sol_engine.module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Module {
     private final Logger logger = LoggerFactory.getLogger(Module.class);
@@ -27,7 +25,11 @@ public abstract class Module {
 
     @SafeVarargs
     protected final void usingModules(Class<? extends Module>... moduleTypes) {
-        usingModules.addAll(Arrays.asList(moduleTypes));
+        usingModules(Arrays.asList(moduleTypes));
+    }
+
+    protected final void usingModules(Collection<Class<? extends Module>> moduleTypes) {
+        usingModules.addAll(moduleTypes);
     }
 
     public final void internalSetup(ModulesHandler modulesHandler) {
