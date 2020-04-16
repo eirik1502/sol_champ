@@ -36,7 +36,7 @@ public class RenderSystem extends ModuleSystemBase {
                     Vector3f position = new Vector3f(
                             transComp.getX() + renderComp.offsetX,
                             transComp.getY() + renderComp.offsetY,
-                            0
+                            renderComp.depth
                     );
                     graphics.getRenderer().renderObject(renderComp.renderable, position, transComp.rotationZ);
                 }

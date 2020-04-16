@@ -8,6 +8,7 @@ public class RenderShapeComp extends Component {
 
     public Renderable renderable;
     public float offsetX, offsetY;
+    public float depth;
 
 
     public RenderShapeComp() {
@@ -19,9 +20,14 @@ public class RenderShapeComp extends Component {
     }
 
     public RenderShapeComp(Renderable renderable, float offsetX, float offsetY) {
+        this(renderable, offsetX, offsetY, 0f);
+    }
+
+    public RenderShapeComp(Renderable renderable, float offsetX, float offsetY, float depth) {
         this.renderable = renderable;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
+        this.depth = depth;
     }
 
     @Override

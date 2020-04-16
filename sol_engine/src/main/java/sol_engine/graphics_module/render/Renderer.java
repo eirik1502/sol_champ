@@ -121,7 +121,6 @@ public class Renderer {
         toBeRenderedSolidTransparent.forEach(toBeRenderedSection -> {
             toBeRenderedSection.forEach(renderData -> {
                 Renderable renderable = renderData.renderable;
-
                 Matrix4f modTrans = new Matrix4f()
                         .translate(renderData.position)
                         .scale(renderable.width, renderable.height, 1)
