@@ -5,7 +5,8 @@ import sol_game.core_game.CharacterConfig
 import java.util.concurrent.ConcurrentHashMap
 
 class SolGameServerPool(
-        val headless: Boolean = true
+        val headless: Boolean = true,
+        val disableGui: Boolean = false
 ) {
 
     private val runningServers: MutableMap<String, SolGameServer> = ConcurrentHashMap()
@@ -21,7 +22,8 @@ class SolGameServerPool(
                 allowObservers = allowObservers,
                 updateFrameTime = 0f,
                 headless = headless,
-                debugUI = !headless
+                debugUI = !headless,
+                allowGui = !disableGui
         )
         val serverConnectData = server.setup()
         server.onTermination {

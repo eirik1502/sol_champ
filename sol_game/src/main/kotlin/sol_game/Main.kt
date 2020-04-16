@@ -12,19 +12,21 @@ import sol_game.game.*
 
 data class ServerConfig(
         val use: Boolean = false,
-        val headless: Boolean = false
+        val headless: Boolean = false,
+        val disableGui: Boolean = false
 )
 
 data class ClientConfig(
         val teamIndex: Int,
         val headless: Boolean,
-        val observer: Boolean
+        val observer: Boolean,
+        val disableGui: Boolean
 )
 
 class Args(parser: ArgParser) {
     val poolServer by parser.storing(
             "--poolServer",
-            help = "run a simple pool server. Followed by comma separated options: [headless?]"
+            help = "run a simple pool server. Followed by comma separated options: [headless?, disableGui?]"
     ) {
         val options = this.split(",")
         val headless = options.contains("headless")
@@ -33,7 +35,7 @@ class Args(parser: ArgParser) {
 
     val clients by parser.adding(
             "--client",
-            help = "Clients to connect to the pool server. Followed by comma separated options: [teamIndex?=(int = 0),headless?,observer?]"
+            help = "Clients to connect to the pool server. Followed by comma separated options: [teamIndex?=(int = 0),headless?,disableGui?,observer?]"
     ) {
         val args = this.split(",")
         val teamIndex = args.find { arg -> arg.startsWith("teamindex") }?.split("=")?.getOrNull(1)
@@ -41,7 +43,8 @@ class Args(parser: ArgParser) {
                 ?: 0
         val headless = args.contains("headless")
         val observer = args.contains("observer")
-        ClientConfig(teamIndex, headless, observer)
+        val disableGui = args.contains("disableGui")
+        ClientConfig(teamIndex, headless, observer, disableGui)
     }
 
     val runExhaustion by parser.flagging(
@@ -62,7 +65,7 @@ fun main(args: Array<String>) = mainBody {
 
         clients.forEach {
             println("Running client: $it")
-            runConnectClientToPool(it.headless, it.teamIndex, it.observer)
+            runConnectClientToPool(it.headless, it.disableGui, it.teamIndex, it.observer)
 //            Thread.sleep(500)
         }
     }
@@ -80,14 +83,14 @@ fun runPoolServer(headless: Boolean) {
     poolServer.serve(55555, charactersConfig)
 }
 
-fun runConnectClientToPool(headless: Boolean, teamIndex: Int, observer: Boolean) {
+fun runConnectClientToPool(headless: Boolean, disableGui: Boolean, teamIndex: Int, observer: Boolean) {
     val serverConnectionData = requestGameServerInstance(
             "localhost", 55555)
     if (serverConnectionData != null) {
         if (observer) {
             runObserver(serverConnectionData, headless)
         } else {
-            runClient(serverConnectionData, headless, teamIndex)
+            runClient(serverConnectionData, headless, disableGui, teamIndex)
         }
     } else {
         println("Could not connect to server")
@@ -99,7 +102,7 @@ fun runServerClient() {
 
     val serverConnectionData = serverPool.createServer(listOf(CharacterConfig(), CharacterConfig()))
 
-    val client = runClient(serverConnectionData, true, 0)
+    val client = runClient(serverConnectionData, true, true, 0)
 
     client.waitUntilFinished()
     serverPool.stopAll()
@@ -119,7 +122,7 @@ fun runServer(): SolGameServer {
     return server
 }
 
-fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, teamIndex: Int): SolGameClient {
+fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, disableGui: Boolean, teamIndex: Int): SolGameClient {
     val client = SolGameClient(
             serverConnectionData.address,
             serverConnectionData.port,
@@ -130,7 +133,7 @@ fun runClient(serverConnectionData: ServerConnectionData, headless: Boolean, tea
             updateFrameTime = 0f,
             headless = headless,
             debugUI = !headless,
-            allowGui = !headless
+            allowGui = !disableGui
     )
 
     client.setup()

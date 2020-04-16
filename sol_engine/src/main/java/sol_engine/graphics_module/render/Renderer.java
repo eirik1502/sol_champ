@@ -2,6 +2,8 @@ package sol_engine.graphics_module.render;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sol_engine.graphics_module.FrameBuffer;
 import sol_engine.graphics_module.RenderConfig;
 import sol_engine.graphics_module.RenderingContext;
@@ -20,6 +22,7 @@ import java.util.Set;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer {
+    private final Logger logger = LoggerFactory.getLogger(Renderer.class);
 
     private static class RenderData {
         public Renderable renderable;
@@ -56,8 +59,12 @@ public class Renderer {
         this.config = config;
         this.context = context;
 
-        guiRenderer = new GuiRenderer(context.getWindow());
-        guiRenderer.startFrame();
+        if (config.disableGui) {
+            guiRenderer = null;
+        } else {
+            guiRenderer = new GuiRenderer(context.getWindow());
+            guiRenderer.startFrame();
+        }
 
         shaderManager = new ShaderManager();
         meshManager = new MeshManager();
@@ -67,7 +74,10 @@ public class Renderer {
     }
 
     public void terminate() {
-        guiRenderer.terminate();
+        if (guiRenderer != null) {
+            guiRenderer.terminate();
+
+        }
     }
 
     public RenderingContext getContext() {
@@ -83,7 +93,12 @@ public class Renderer {
     }
 
     public GuiRenderer getGuiRenderer() {
-        return guiRenderer;
+        if (guiRenderer != null) {
+            return guiRenderer;
+        } else {
+            logger.error("Trying to access gui renderer after disabling gui");
+            return null;
+        }
     }
 
     public void render() {
@@ -129,14 +144,16 @@ public class Renderer {
                 glDrawElements(GL_TRIANGLES, mesh.getIndicesCount(), GL_UNSIGNED_BYTE, 0);
             });
         });
-
-        guiRenderer.render();
+        if (guiRenderer != null) {
+            guiRenderer.render();
+        }
         context.swapBuffers();
 
         toBeRendered.clear();
         time++;
 
-
-        guiRenderer.startFrame();
+        if (guiRenderer != null) {
+            guiRenderer.startFrame();
+        }
     }
 }

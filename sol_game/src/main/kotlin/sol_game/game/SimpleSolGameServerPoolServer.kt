@@ -44,12 +44,13 @@ fun requestGameServerInstance(address: String, port: Int): ServerConnectionData?
 }
 
 class SimpleSolGameServerPoolServer(
-        headless: Boolean = true
+        headless: Boolean = true,
+        disableGui: Boolean = true
 ) {
     private val logger = KotlinLogging.logger { }
     private val objectMapper = jacksonObjectMapper()
 
-    private val serverPool: SolGameServerPool = SolGameServerPool(headless)
+    private val serverPool: SolGameServerPool = SolGameServerPool(headless, disableGui)
 
 
     fun serve(port: Int, charactersConfigs: List<CharacterConfig>) {

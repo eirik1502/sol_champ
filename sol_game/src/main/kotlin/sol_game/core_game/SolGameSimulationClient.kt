@@ -38,7 +38,7 @@ class SolGameSimulationClient(
         if (!headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
                     WindowConfig(0.5f, 0.5f, "sol client", true),
-                    RenderConfig(800f, 450f, 1600f, 900f)
+                    RenderConfig(800f, 450f, 1600f, 900f, !allowGui)
             )))
         }
         val inputSourceModule = when (playerClass) {

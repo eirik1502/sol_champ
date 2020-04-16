@@ -38,7 +38,7 @@ open class SolGameSimulationServer(
         if (!headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
                     WindowConfig(0.5f, 0.5f, "sol server", false),
-                    RenderConfig(800f, 450f, 1600f, 900f)
+                    RenderConfig(800f, 450f, 1600f, 900f, !allowGui)
             )))
         }
         addModule(NetworkServerModule(NetworkServerModuleConfig(
