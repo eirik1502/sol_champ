@@ -13,7 +13,6 @@ import sol_game.core_game.components.SolGameComp
 import sol_game.core_game.systems.*
 import sol_game.game.SolGameState
 import sol_game.game.SolRandomTestPlayer
-import kotlin.system.exitProcess
 
 open class SolGameSimulationOffline(
         private val charactersConfigs: List<CharacterConfig>,
@@ -28,6 +27,8 @@ open class SolGameSimulationOffline(
             val allowGui: Boolean = true
     )
 
+    val worldSize = Vector2f(1600f * 1.2f, 900f * 1.2f)
+
     val testPlayer = SolRandomTestPlayer()
 
     init {
@@ -40,7 +41,7 @@ open class SolGameSimulationOffline(
         if (!graphicsSettings.headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
                     WindowConfig(0.5f, 0.5f, "sol server", false),
-                    RenderConfig(800f, 450f, 1600f, 900f, !graphicsSettings.allowGui)
+                    RenderConfig(worldSize.x / 2, worldSize.y / 2, worldSize.x, worldSize.y, !graphicsSettings.allowGui)
             )))
         }
 
@@ -48,7 +49,7 @@ open class SolGameSimulationOffline(
                 if (!graphicsSettings.headless && graphicsSettings.graphicalInput) run {
                     val inputGroupPrefix = "t${graphicsSettings.controlPlayerIndex}p0:"
                     InputGuiSourceModule(InputGuiSourceModuleConfig(
-                            Vector2f(1600f, 900f),
+                            Vector2f(worldSize.x, worldSize.y),
                             mapOf(
                                     "${inputGroupPrefix}mvLeft" to InputConsts.KEY_A,
                                     "${inputGroupPrefix}mvRight" to InputConsts.KEY_D,
@@ -82,13 +83,20 @@ open class SolGameSimulationOffline(
                 CharacterSystem::class.java,
                 AbilitySystem::class.java,
 
+                ControlDisabledSystem::class.java,
+
                 EmitterTimedSystem::class.java,
                 DestroySelfTimedSystem::class.java,
 
                 CollisionSystem::class.java,
+
                 DamageSystem::class.java,
                 KnockbackSystem::class.java,
-                ControlDisabledSystem::class.java,
+
+                FallIntoHoleSystem::class.java,
+                LoseStockByHoleSystem::class.java,
+                RespawnOnStockLossSystem::class.java,
+                ResetDamageOnStockLossSystem::class.java,
 
                 NaturalCollisionResolutionSystem::class.java,
                 PhysicsSystem::class.java,
@@ -107,13 +115,13 @@ open class SolGameSimulationOffline(
                 SolGameComp(gameState = SolGameComp.GameState.BEFORE_START)
         )
 
-        createWalls(world)
+        addStaticMapEntities(world, worldSize)
 
         charactersConfigs
                 .flatMap { createCharacterEntityClass(true, it) }
                 .forEach { world.addEntityClass(it) }
 
-        val startPositions = listOf(Vector2f(200f, 200f), Vector2f(1400f, 700f))
+        val startPositions = listOf(Vector2f(200f, worldSize.y / 2), Vector2f(worldSize.x - 200, worldSize.y / 2))
 
         charactersConfigs.forEachIndexed { index, characterConfig ->
             val startPosition = startPositions[index]

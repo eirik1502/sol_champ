@@ -1,5 +1,6 @@
 package sol_game.core_game
 
+import org.joml.Vector2f
 import sol_engine.core.TransformComp
 import sol_engine.creator.CreatorSystem
 import sol_engine.engine_interface.SolSimulation
@@ -94,7 +95,7 @@ open class SolGameSimulationServer(
 
         addGameEntity(true, world)
 
-        createWalls(world)
+        addStaticMapEntities(world, Vector2f(1600f, 900f))
 
         charactersConfigs
                 .flatMap { createCharacterEntityClass(true, it) }

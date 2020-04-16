@@ -9,6 +9,7 @@ import sol_engine.game_utils.DestroySelfTimedComp
 import sol_engine.game_utils.MoveByVelocityComp
 import sol_engine.graphics_module.RenderShapeComp
 import sol_engine.graphics_module.graphical_objects.RenderableShape
+import sol_engine.graphics_module.materials.Material
 import sol_engine.graphics_module.materials.MattMaterial
 import sol_engine.input_module.InputComp
 import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
@@ -76,7 +77,6 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
                     TransformComp(),
                     RenderShapeComp(RenderableShape.CirclePointing(config.radius, MattMaterial.RED())),
                     PhysicsBodyComp(10f, 0.9f, 0.5f),
-//                    MoveByVelocityComp(config.moveVelocity, "mvLeft", "mvRight", "mvUp", "mvDown"),
                     MovementComp(listOf("mvLeft", "mvRight", "mvUp", "mvDown"), maxSpeed = config.moveVelocity, acceleration = config.moveVelocity / 5),
                     AbilityComp(abAbilities.map { it.second }),
                     CollisionComp(PhysicsBodyShape.Circ(config.radius)),
@@ -85,7 +85,10 @@ fun createCharacterEntityClass(isServer: Boolean, config: CharacterConfig): List
                     FaceAimComp(),
                     HurtboxComp(),
                     NetSyncComp(setOf(TransformComp::class.java)),
-                    ControlDisabledComp()
+                    ControlDisabledComp(),
+                    StockComp(startingStockCount = 3),
+                    FallIntoHoleComp(),
+                    SpawnPositionComp()
             )
     if (isServer) {
         characterEntityClass.addBaseComponents(
@@ -105,6 +108,7 @@ fun instanciateCharacter(isServer: Boolean, world: World, name: String, entityCl
     val inputGroup = "t${teamIndex}p${playerIndex}"
     val charEClass = world.addEntity(name, entityClass)
             .modifyComponent(TransformComp::class.java) { comp -> comp.setPosition(startPosition) }
+            .modifyComponent(SpawnPositionComp::class.java) { comp -> comp.spawnPosition.set(startPosition) }
             .addComponentIfAbsent(TeamPlayerComp::class.java, { TeamPlayerComp() }, { comp ->
                 comp.teamIndex = teamIndex
                 comp.playerIndex = playerIndex
@@ -114,32 +118,55 @@ fun instanciateCharacter(isServer: Boolean, world: World, name: String, entityCl
     }
 }
 
-fun createWalls(world: World) {
-    world.addEntityClass(EntityClass("wall").addBaseComponents(
-            TransformComp(),
-            RenderShapeComp(RenderableShape.Rectangle(100f, 100f, MattMaterial.BLUE())),
-            PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
-            CollisionComp(PhysicsBodyShape.Rect(0f, 0f)),
-            NaturalCollisionResolutionComp()
-    ))
+fun addStaticCollideableRectObject(
+        world: World, name: String, position: Vector2f, size: Vector2f, positionInCenter: Boolean, material: Material
+): Entity =
+        world.addEntity(name).addComponents(
+                TransformComp(if (positionInCenter) position else position.add(size.mul(0.5f, Vector2f()))),
+                RenderShapeComp(
+                        RenderableShape.Rectangle(size.x, size.y, material),
+                        (-size.x) / 2,
+                        (-size.y) / 2
+                ),
+                PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
+                CollisionComp(PhysicsBodyShape.Rect(size.x, size.y))
+        )
 
-    val createWall = { name: String, x: Float, y: Float, width: Float, height: Float ->
-        world.addEntity(name, "wall")
-                .modifyComponent(TransformComp::class.java) { transComp -> transComp.setPosition(x + width / 2, y + height / 2) }
-                .modifyComponent(RenderShapeComp::class.java) { comp ->
-                    comp.renderable.width = width
-                    comp.renderable.height = height
-                    comp.offsetX = (-width) / 2
-                    comp.offsetY = (-height) / 2
-                }
-                .modifyComponent(CollisionComp::class.java) { c -> c.bodyShape = PhysicsBodyShape.Rect(width, height) }
-    }
+
+fun addRectWall(world: World, name: String, position: Vector2f, size: Vector2f, positionInCenter: Boolean): Entity =
+        addStaticCollideableRectObject(world, name, position, size, positionInCenter, MattMaterial.BLUE())
+                .addComponents(
+                        NaturalCollisionResolutionComp(),
+                        WallComp()
+                )
+
+fun addRectHole(world: World, name: String, position: Vector2f, size: Vector2f, positionInCenter: Boolean): Entity =
+        addStaticCollideableRectObject(world, name, position, size, positionInCenter, MattMaterial.RED())
+                .addComponents(
+                        HoleComp()
+                )
+                .modifyComponent(RenderShapeComp::class.java) { comp -> comp.depth = 1f }
+
+fun addStaticMapEntities(world: World, worldSize: Vector2f) {
 
     val wallThickness = 128f
-    val worldHeight = 900f
-    val worldWidth = 1600f
-    createWall("wall1", 0f, 0f, wallThickness, worldHeight)
-    createWall("wall2", 0f, 0f, worldWidth, wallThickness)
-    createWall("wall3", worldWidth - wallThickness, 0f, wallThickness, worldHeight)
-    createWall("wall4", 0f, worldHeight - wallThickness, worldWidth, wallThickness)
+    val worldWidth = worldSize.x
+    val worldHeight = worldSize.y
+    addRectWall(world, "wall-left",
+            Vector2f(0f, 0f),
+            Vector2f(wallThickness, worldHeight),
+            false)
+    addRectWall(world, "wall-right",
+            Vector2f(worldWidth - wallThickness, 0f),
+            Vector2f(wallThickness, worldHeight),
+            false)
+    addRectHole(world, "hole-top",
+            Vector2f(0f, 0f),
+            Vector2f(worldWidth, wallThickness),
+            false)
+
+    addRectHole(world, "hole-bottom",
+            Vector2f(0f, worldHeight - wallThickness),
+            Vector2f(worldWidth, wallThickness),
+            false)
 }

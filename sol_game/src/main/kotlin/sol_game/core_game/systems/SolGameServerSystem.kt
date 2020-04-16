@@ -6,6 +6,7 @@ import sol_engine.network.network_ecs.host_managing.TeamPlayerComp
 import sol_game.core_game.components.CharacterComp
 import sol_game.core_game.components.HurtboxComp
 import sol_game.core_game.components.SolGameComp
+import sol_game.core_game.components.StockComp
 
 class SolGameServerSystem : SystemBase() {
 
@@ -38,9 +39,9 @@ class SolGameServerSystem : SystemBase() {
         val charEntitiesLost: Entity? = world.insight.entities
                 .asSequence()
                 .filter { it.hasComponent(CharacterComp::class.java) }
-                .filter { it.hasComponent(HurtboxComp::class.java) }
+                .filter { it.hasComponent(StockComp::class.java) }
                 .filter { it.hasComponent(TeamPlayerComp::class.java) }
-                .find { it.getComponent(HurtboxComp::class.java).totalDamageTaken > 1000f }
+                .find { it.getComponent(StockComp::class.java).currentStockCount <= 0 }
 
         charEntitiesLost
                 ?.let {

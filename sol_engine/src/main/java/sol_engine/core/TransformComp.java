@@ -17,6 +17,10 @@ public class TransformComp extends Component {
         position.set(x, y);
     }
 
+    public TransformComp(Vector2f position) {
+        this.position.set(position);
+    }
+
     public TransformComp setX(float x) {
         this.position.x = x;
         return this;

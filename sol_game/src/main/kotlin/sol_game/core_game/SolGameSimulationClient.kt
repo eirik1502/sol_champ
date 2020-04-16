@@ -133,7 +133,7 @@ class SolGameSimulationClient(
         )
 
 
-        createWalls(world)
+        addStaticMapEntities(world, Vector2f(1600f, 900f))
     }
 
     override fun onStart() {
