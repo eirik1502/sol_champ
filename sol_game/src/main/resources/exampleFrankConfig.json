@@ -16,8 +16,8 @@
       "endlagTime": 0,
       "rechargeTime": 10,
       "damage": 100,
-      "baseKnockback": 100,
-      "knockbackRatio": 1,
+      "baseKnockback": 200,
+      "knockbackRatio": 0.2,
       "knockbackPoint": 32,
       "knockbackTowardPoint": false
     },
@@ -33,8 +33,8 @@
       "endlagTime": 5,
       "rechargeTime": 10,
       "damage": 400,
-      "baseKnockback": 100,
-      "knockbackRatio": 1,
+      "baseKnockback": 400,
+      "knockbackRatio": 0.8,
       "knockbackPoint": 32,
       "knockbackTowardPoint": false
     },
@@ -51,7 +51,7 @@
       "rechargeTime": 10,
       "damage": 80,
       "baseKnockback": 800,
-      "knockbackRatio": 1,
+      "knockbackRatio": 0.1,
       "knockbackPoint": 32,
       "knockbackTowardPoint": false
     }

@@ -27,8 +27,6 @@ class DamageSystem : SystemBase() {
                     .filter() { otherEntity -> otherEntity.hasComponent(HurtboxComp::class.java) }
                     .filter() { otherEntity -> otherEntity.hasComponent(TransformComp::class.java) }
                     .filter() { otherEntity -> otherEntity != hitboxComp.owner }
-
-//                            .map() { otherEntity -> otherEntity.getComponent(HurtboxComp::class.java) }
                     .forEach() { otherEntity ->
                         val otherHurtboxComp = otherEntity.getComponent(HurtboxComp::class.java)
                         val otherTransComp = otherEntity.getComponent(TransformComp::class.java)
@@ -42,7 +40,7 @@ class DamageSystem : SystemBase() {
                         otherHurtboxComp.totalDamageTaken += damageToDeal
                         otherHurtboxComp.totalDamageTaken = MathF.min(otherHurtboxComp.totalDamageTaken, 9999f)
                         hitboxComp.currDamageDealt += damageToDeal
-                        
+
                         world.removeEntity(entity)
                     }
         }
