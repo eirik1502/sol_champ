@@ -1,18 +1,17 @@
 package sol_game.core_game.modules
 
 import mu.KotlinLogging
-import org.joml.Vector2f
 import sol_engine.ecs.World
 import sol_engine.input_module.InputSourceModule
 import sol_engine.network.network_ecs.host_managing.ClientControlledComp
 import sol_engine.utils.reflection_utils.ClassUtils
 import sol_game.core_game.SolActions
-import sol_game.core_game.SolGameStateUtils
+import sol_game.game_state.SolGameStateRetrieval
 import sol_game.core_game.components.CharacterComp
 import sol_game.game.*
 
 data class SolClientPlayerModuleConfig(
-        val playerClass: Class<out SolClientPlayer>
+        val playerClass: Class<out SolPlayer>
 )
 
 class SolClientPlayerModule(
@@ -20,7 +19,7 @@ class SolClientPlayerModule(
 ) : InputSourceModule() {
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var player: SolClientPlayer
+    private lateinit var player: SolPlayer
 
     // should be set before start
     lateinit var world: World
@@ -55,7 +54,7 @@ class SolClientPlayerModule(
     override fun onUpdate() {
         val controlledPlayerIndex = retrieveControlledCharacterIndex()
         if (controlledPlayerIndex != -1) {
-            val gameState = SolGameStateUtils.retrieveSolGameState(world)
+            val gameState = SolGameStateRetrieval.retrieveSolGameState(world)
 
             if (teamIndexWon != -1) {
                 player.onEnd(controlledPlayerIndex, gameState, world)
@@ -63,7 +62,7 @@ class SolClientPlayerModule(
             } else if (gameStarted) {
 
                 if (!calledPlayerStart) {
-                    player.onStart(controlledPlayerIndex, gameState, world)
+                    player.onStart(controlledPlayerIndex, SolGameStateRetrieval.retrieveStaticGameState(world), gameState, world)
                     calledPlayerStart = true
                 }
 

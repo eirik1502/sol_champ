@@ -10,6 +10,7 @@ import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_game.core_game.CharacterConfig
 import sol_game.core_game.SolGameSimulationOffline
 import sol_game.game.*
+import sol_game.player.SolRandomTestPlayer
 
 
 data class ServerConfig(

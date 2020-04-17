@@ -11,8 +11,10 @@ import sol_engine.input_module.*
 import sol_engine.physics_module.*
 import sol_game.core_game.components.SolGameComp
 import sol_game.core_game.systems.*
-import sol_game.game.SolGameState
-import sol_game.game.SolRandomTestPlayer
+import sol_game.game_state.SolGameState
+import sol_game.player.SolRandomTestPlayer
+import sol_game.game_state.SolStaticGameState
+import sol_game.game_state.SolGameStateRetrieval
 
 open class SolGameSimulationOffline(
         private val charactersConfigs: List<CharacterConfig>,
@@ -139,9 +141,10 @@ open class SolGameSimulationOffline(
 
     }
 
-    fun retrieveGameState(): SolGameState {
-        return SolGameStateUtils.retrieveSolGameState(world)
-    }
+    fun retrieveGameState(): SolGameState = SolGameStateRetrieval.retrieveSolGameState(world)
+
+    fun retrieveStaticGameState(): SolStaticGameState = SolGameStateRetrieval.retrieveStaticGameState(world)
+
 
     // should be called on step end
     fun setInputs(playerIndex: Int, actions: SolActions) {
@@ -153,7 +156,7 @@ open class SolGameSimulationOffline(
                 "${inputGroupPrefix}mvUp" to actions.mvUp,
                 "${inputGroupPrefix}mvDown" to actions.mvDown,
                 "${inputGroupPrefix}ability1" to actions.ability1,
-                "${inputGroupPrefix}ability3" to actions.ability2,
+                "${inputGroupPrefix}ability2" to actions.ability2,
                 "${inputGroupPrefix}ability3" to actions.ability3
         ))
         inputSource.updateFloatInputs(mapOf(
@@ -164,13 +167,22 @@ open class SolGameSimulationOffline(
 
     override fun onStart() {
         testPlayer.onSetup()
-        testPlayer.onStart(1, retrieveGameState(), world)
     }
 
+    private var startCalled = false
     override fun onStepEnd() {
         val gameState = retrieveGameState()
-        val inputs = testPlayer.onUpdate(1, gameState, world)
-        setInputs(1, inputs)
+        if (gameState.gameStarted) {
+            if (!startCalled) {
+                testPlayer.onStart(1, retrieveStaticGameState(), retrieveGameState(), world)
+                startCalled = true
+            }
+
+            val inputs = testPlayer.onUpdate(1, gameState, world)
+            setInputs(1, inputs)
+        }
+
+
     }
 
     override fun onEnd() {

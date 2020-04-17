@@ -11,7 +11,7 @@ class SolGameClient(
         gameId: String,
         connectionKey: String,
         isObserver: Boolean,
-        player: Class<out SolClientPlayer>? = null,
+        player: Class<out SolPlayer>? = null,
         updateFrameTime: Float = 1f / 60f,  // set to run the game at a custom fixed frame times
         headless: Boolean = false,
         debugUI: Boolean = false,  // cannot be set in headless mode

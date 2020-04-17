@@ -1,6 +1,7 @@
-package sol_game.game
+package sol_game.game_state
 
 import org.joml.Vector2f
+
 
 data class SolGameState(
         val gameStarted: Boolean,
@@ -10,12 +11,12 @@ data class SolGameState(
 )
 
 data class SolCharacterState(
-        val position: Vector2f = Vector2f(),
+        val physicalObject: CircleObjectState = CircleObjectState(Vector2f(), 0f),
         val velocity: Vector2f = Vector2f(),
         val acceleration: Vector2f = Vector2f(),
         val rotation: Float = 0f,
         val damage: Float = 0f,
-        val radius: Float = 0f,
+        val stocks: Int = 0,
         val stateTag: SolCharacterStateTag = SolCharacterStateTag.NO_PLAYER_PRESENT,
         val currentHitboxes: List<SolHitboxState> = emptyList()
 )
@@ -30,12 +31,31 @@ enum class SolCharacterStateTag {
 }
 
 data class SolHitboxState(
-        val position: Vector2f,
+        val physicalObject: CircleObjectState,
         val velocity: Vector2f,
-        val radius: Float,
         val damage: Float,
         val baseKnockback: Float,
         val knockbackRatio: Float,
         val knockbackPoint: Float,
         val knockbackTowardsPoint: Boolean
 )
+
+data class SolStaticGameState(
+        val walls: List<ObjectState>,
+        val holes: List<ObjectState>
+)
+
+abstract class ObjectState {
+    abstract val position: Vector2f
+}
+
+data class CircleObjectState(
+        override val position: Vector2f,
+        val radius: Float
+) : ObjectState()
+
+// center position
+data class RectangleObjectState(
+        override val position: Vector2f,
+        val size: Vector2f
+) : ObjectState()

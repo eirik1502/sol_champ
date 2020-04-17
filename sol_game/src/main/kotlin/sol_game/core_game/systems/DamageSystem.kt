@@ -40,7 +40,7 @@ class DamageSystem : SystemBase() {
                         otherHurtboxComp.totalDamageTaken += damageToDeal
                         otherHurtboxComp.totalDamageTaken = MathF.min(otherHurtboxComp.totalDamageTaken, 9999f)
                         hitboxComp.currDamageDealt += damageToDeal
-
+                        
                         world.removeEntity(entity)
                     }
         }

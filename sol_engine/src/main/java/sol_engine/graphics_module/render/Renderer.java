@@ -69,7 +69,7 @@ public class Renderer {
         shaderManager = new ShaderManager();
         meshManager = new MeshManager();
         meshManager.addMesh(UNIT_CORNERED_RECTANGLE_MESH, MeshUtils.createUnitCorneredRectangleMesh());
-        meshManager.addMesh(UNIT_CENTERED_CIRCLE_MESH, MeshUtils.createUnitCenteredCircleMesh(16));
+        meshManager.addMesh(UNIT_CENTERED_CIRCLE_MESH, MeshUtils.createUnitCenteredCircleMesh(16 * 4));
         meshManager.addMesh(UNIT_CENTERED_CIRCLE_POINTING_MESH, MeshUtils.createUnitCenteredCirclePointingMesh(16));
     }
 

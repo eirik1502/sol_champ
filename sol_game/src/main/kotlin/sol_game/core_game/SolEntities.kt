@@ -132,9 +132,27 @@ fun addStaticCollideableRectObject(
                 CollisionComp(PhysicsBodyShape.Rect(size.x, size.y))
         )
 
+fun addStaticCollideableCircObject(
+        world: World, name: String, position: Vector2f, radius: Float, material: Material
+): Entity =
+        world.addEntity(name).addComponents(
+                TransformComp(position),
+                RenderShapeComp(
+                        RenderableShape.Circle(radius, material)
+                ),
+                PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
+                CollisionComp(PhysicsBodyShape.Circ(radius))
+        )
 
 fun addRectWall(world: World, name: String, position: Vector2f, size: Vector2f, positionInCenter: Boolean): Entity =
         addStaticCollideableRectObject(world, name, position, size, positionInCenter, MattMaterial.BLUE())
+                .addComponents(
+                        NaturalCollisionResolutionComp(),
+                        WallComp()
+                )
+
+fun addCircWall(world: World, name: String, position: Vector2f, radius: Float): Entity =
+        addStaticCollideableCircObject(world, name, position, radius, MattMaterial.BLUE())
                 .addComponents(
                         NaturalCollisionResolutionComp(),
                         WallComp()
@@ -152,14 +170,18 @@ fun addStaticMapEntities(world: World, worldSize: Vector2f) {
     val wallThickness = 128f
     val worldWidth = worldSize.x
     val worldHeight = worldSize.y
-    addRectWall(world, "wall-left",
-            Vector2f(0f, 0f),
-            Vector2f(wallThickness, worldHeight),
-            false)
-    addRectWall(world, "wall-right",
-            Vector2f(worldWidth - wallThickness, 0f),
-            Vector2f(wallThickness, worldHeight),
-            false)
+
+    val sideWallDistance = 1500f
+
+    addCircWall(world, "wall-right",
+            Vector2f(worldWidth + sideWallDistance, worldHeight / 2f),
+            sideWallDistance + wallThickness)
+
+    addCircWall(world, "wall-left",
+            Vector2f(-sideWallDistance, worldHeight / 2f),
+            sideWallDistance + wallThickness)
+
+
     addRectHole(world, "hole-top",
             Vector2f(0f, 0f),
             Vector2f(worldWidth, wallThickness),
