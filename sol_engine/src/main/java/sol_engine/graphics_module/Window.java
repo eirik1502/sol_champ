@@ -20,6 +20,8 @@ public class Window {
     private static final Logger logger = LoggerFactory.getLogger(Window.class);
 
     private static boolean GLFW_intied = false;
+    private static int GLFW_users = 0;
+
     private static final Object GLFW_set_inited_lock = new Object();
 
     private long windowId;
@@ -113,16 +115,18 @@ public class Window {
                 glfwDefaultWindowHints(); // optional, the current window hints are already the default
                 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
                 glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
-
                 GLFW_intied = true;
             }
+            GLFW_users++;
         }
     }
 
     private void destroyGLFW() {
         synchronized (GLFW_set_inited_lock) {
-            glfwTerminate();
-            GLFW_intied = false;
+            if (--GLFW_users == 0) {
+                glfwTerminate();
+                GLFW_intied = false;
+            }
         }
     }
 
