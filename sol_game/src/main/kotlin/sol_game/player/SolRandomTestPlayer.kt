@@ -9,7 +9,7 @@ import sol_game.game.SolPlayer
 import sol_game.game_state.SolGameStateFuncs
 import sol_game.game_state.SolStaticGameState
 
-class SolRandomTestPlayer : SolPlayer {
+open class SolRandomTestPlayer : SolPlayer {
 
     private var moveDirection: Vector2f = Vector2f()
 
@@ -36,12 +36,8 @@ class SolRandomTestPlayer : SolPlayer {
         val useAb2 = MathF.randInt(0, 60 * 2) == 0
         val useAb3 = MathF.randInt(0, 60 * 5) == 0
 
-//        otherChar?.let {
-//            println("left wall dist: ${SolGameStateFuncs.outerDistance(it.physicalObject, staticGameState.rectangleWalls[0]).length()}")
-//        }
         moveDirection.add(MathF.randRange(-0.5f, 0.5f), MathF.randRange(-0.5f, 0.5f))
-
-
+        
         val closestHole = SolGameStateFuncs.closestHole(myChar.physicalObject, staticGameState)
         if (closestHole.lengthSquared() != 0f) {
             val holeDistanceLinearRatio = (100f / closestHole.length().coerceAtLeast(0.01f))
