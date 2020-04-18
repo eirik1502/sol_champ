@@ -31,15 +31,13 @@ open class SolGameSimulationOffline(
 
     val worldSize = Vector2f(1600f * 1.2f, 900f * 1.2f)
 
-    val testPlayer = SolRandomTestPlayer()
-
     init {
         if (charactersConfigs.size != 2) {
             throw IllegalArgumentException("Two character configs must be given")
         }
     }
 
-    override fun onSetupModules() {
+    public override fun onSetupModules() {
         if (!graphicsSettings.headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
                     WindowConfig(0.5f, 0.5f, "sol server", false),
@@ -75,7 +73,7 @@ open class SolGameSimulationOffline(
         addModule(InputModule(InputModuleConfig(inputSourceModules.map { it::class.java })))
     }
 
-    override fun onSetupWorld() {
+    public override fun onSetupWorld() {
         world.addSystems(
                 InputSystem::class.java,
                 SolGameServerSystem::class.java,
@@ -163,29 +161,5 @@ open class SolGameSimulationOffline(
                 "${inputGroupPrefix}aimX" to actions.aimX,
                 "${inputGroupPrefix}aimY" to actions.aimY
         ))
-    }
-
-    override fun onStart() {
-        testPlayer.onSetup()
-    }
-
-    private var startCalled = false
-    override fun onStepEnd() {
-        val gameState = retrieveGameState()
-        if (gameState.gameStarted) {
-            if (!startCalled) {
-                testPlayer.onStart(1, retrieveStaticGameState(), retrieveGameState(), world)
-                startCalled = true
-            }
-
-            val inputs = testPlayer.onUpdate(1, gameState, world)
-            setInputs(1, inputs)
-        }
-
-
-    }
-
-    override fun onEnd() {
-        testPlayer.onEnd(1, retrieveGameState(), world)
     }
 }

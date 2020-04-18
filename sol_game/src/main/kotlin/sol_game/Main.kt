@@ -8,6 +8,7 @@ import com.xenomachina.argparser.mainBody
 import sol_engine.engine_interface.SimulationLoop
 import sol_engine.network.network_game.game_server.ServerConnectionData
 import sol_game.core_game.CharacterConfig
+import sol_game.core_game.SolGameBotSimulation
 import sol_game.core_game.SolGameSimulationOffline
 import sol_game.game.*
 import sol_game.player.SolRandomTestPlayer
@@ -91,10 +92,13 @@ val charactersConfig = listOf(
 )
 
 fun runOffline() {
-    val loop = SimulationLoop(SolGameSimulationOffline(
-            charactersConfigs = charactersConfig,
-            graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = true)
-    ))
+    val loop = SimulationLoop(SolGameBotSimulation(
+            SolGameSimulationOffline(
+                    charactersConfigs = charactersConfig,
+                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = false, controlPlayerIndex = 1)
+            ),
+            mapOf(0 to SolRandomTestPlayer(), 1 to SolRandomTestPlayer())
+    ), 0f)
     loop.setup()
     loop.start()
 }

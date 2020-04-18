@@ -3,7 +3,6 @@ package sol_engine.engine_interface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sol_engine.core.ModuleSystemBase;
-import sol_engine.ecs.listeners.SystemAddedListener;
 import sol_engine.ecs.World;
 import sol_engine.ecs.listeners.SystemWillBeAddedListener;
 import sol_engine.module.Module;
@@ -19,6 +18,7 @@ public abstract class SolSimulation {
 
     private SystemWillBeAddedListener systemWillBeAddedListener;
     private boolean isSetup = false;
+    private boolean finished = false;
     private boolean terminated = false;
 
     protected abstract void onSetupModules();
@@ -98,12 +98,21 @@ public abstract class SolSimulation {
 
         onStepEnd();
 
-        if (modulesHandler.isSimulationShouldTerminate()) {
-            terminate();
+        if (modulesHandler.isSimulationShouldTerminate() || world.isFinished()) {
+            setFinished(true);
         }
-        if (world.isFinished()) {
-            terminate();
-        }
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean value) {
+        finished = value;
+    }
+
+    public void setModulesHandler(ModulesHandler handler) {
+        this.modulesHandler = handler;
     }
 
     public ModulesHandler getModulesHandler() {
@@ -116,6 +125,10 @@ public abstract class SolSimulation {
 
     public World getWorld() {
         return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 
     protected void addModule(Module m) {

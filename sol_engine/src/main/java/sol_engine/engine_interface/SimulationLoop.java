@@ -52,15 +52,12 @@ public class SimulationLoop {
 
     private void runBlocking() {
         ticker.setListener(deltaTime -> {
-            if (shouldTerminate) {
+            if (shouldTerminate || simulation.isFinished()) {
                 logger.info("terminating");
                 simulation.terminate();
+                ticker.stop();
             } else {
                 simulation.step();
-            }
-            // simulation may be terminated by another condition, so this has to be checked as well
-            if (simulation.isTerminated()) {
-                ticker.stop();
             }
 
             while (!nextStepFinsishedCallbacks.isEmpty()) {
