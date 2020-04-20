@@ -5,10 +5,6 @@ import sol_engine.utils.math.MathF;
 
 public class CollisionFunctions {
 
-    private static final Vector2f distVec = new Vector2f();
-    private static final Vector2f closestRectPointToCircCenter = new Vector2f();
-    private static final Vector2f rectCircVec = new Vector2f();
-
     public static boolean collisionCircCirc(final Vector2f pos1, final float radius1,
                                             final Vector2f pos2, final float radius2,
                                             final CollisionData modifyableCollisionData) {
@@ -16,7 +12,7 @@ public class CollisionFunctions {
         float maxDist = radius1 + radius2;
         float maxDistSquared = MathF.pow2(maxDist);
 
-        pos2.sub(pos1, distVec);
+        Vector2f distVec = pos2.sub(pos1, new Vector2f());
 
         if (distVec.lengthSquared() >= maxDistSquared) {
             return false;
@@ -39,7 +35,7 @@ public class CollisionFunctions {
     public static boolean collisionRectRect(final Vector2f pos1, final Vector2f size1,
                                             final Vector2f pos2, final Vector2f size2,
                                             final CollisionData modifyableCollisionData) {
-        pos2.sub(pos1, distVec);
+        Vector2f distVec = pos2.sub(pos1, new Vector2f());
 
         // Calculate half extents along x axis for each object
         float rect1HExtentX = size1.x / 2.0f;
@@ -91,15 +87,17 @@ public class CollisionFunctions {
                                             final CollisionData modifyableCollisionData) {
 
         // Vector from A to B
-        posCirc.sub(posRect, distVec);
+        Vector2f distVec = posCirc.sub(posRect, new Vector2f());
 
         // Calculate half extents along each axis
         float rectHalfExtentX = sizeRect.x / 2;
         float rectHalfExtentY = sizeRect.y / 2;
 
         // Closest point on rect to center of circ
-        closestRectPointToCircCenter.set(MathF.clamp(distVec.x, -rectHalfExtentX, rectHalfExtentX),
-                MathF.clamp(distVec.y, -rectHalfExtentY, rectHalfExtentY));
+        Vector2f closestRectPointToCircCenter = new Vector2f(
+                MathF.clamp(distVec.x, -rectHalfExtentX, rectHalfExtentX),
+                MathF.clamp(distVec.y, -rectHalfExtentY, rectHalfExtentY)
+        );
 
         boolean circInsideRect = false;
 
@@ -125,7 +123,7 @@ public class CollisionFunctions {
             }
         }
 
-        distVec.sub(closestRectPointToCircCenter, rectCircVec);
+        Vector2f rectCircVec = distVec.sub(closestRectPointToCircCenter, new Vector2f());
         float rectCircDistSquared = rectCircVec.lengthSquared();
 
         // Can now determine if there is a collision

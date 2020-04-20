@@ -1,13 +1,9 @@
 package sol_engine.input_module;
 
-import org.joml.Vector2f;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class ExternalInputSourceModule extends InputSourceModule {
-    private static final Vector2f ZERO_VECTOR = new Vector2f();
-
     private Map<String, Boolean> triggerInputs = new HashMap<>();
     private Map<String, Float> floatInputs = new HashMap<>();
 
