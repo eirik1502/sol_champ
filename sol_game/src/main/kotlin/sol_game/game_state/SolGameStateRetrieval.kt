@@ -61,10 +61,10 @@ object SolGameStateRetrieval {
 
                         SolHitboxState(
                                 CircleObjectState(
-                                        transComp.position,
+                                        Vector2f(transComp.position),
                                         (collisionComp.bodyShape as PhysicsBodyShape.Circ).radius
                                 ),
-                                physicsBodyComp.velocity,
+                                Vector2f(physicsBodyComp.velocity),
                                 hitboxComp.damage,
                                 hitboxComp.baseKnockback,
                                 hitboxComp.knockbackRatio,
@@ -94,12 +94,12 @@ object SolGameStateRetrieval {
 
                         SolCharacterState(
                                 physicalObject = CircleObjectState(
-                                        position = transComp.position,
+                                        position = Vector2f(transComp.position),
                                         radius = (collisionComp.bodyShape as? PhysicsBodyShape.Circ)?.radius
                                                 ?: run { -1f }
                                 ),
-                                velocity = physBodyComp.velocity,
-                                acceleration = physBodyComp.acceleration,
+                                velocity = Vector2f(physBodyComp.velocity),
+                                acceleration = Vector2f(physBodyComp.acceleration),
                                 rotation = transComp.rotationZ,
                                 damage = hurtboxComp.totalDamageTaken,
                                 stocks = stockComp.currentStockCount,
@@ -124,6 +124,7 @@ object SolGameStateRetrieval {
         return SolGameState(
                 gameStarted = gameStarted,
                 gameEnded = gameEnded,
+                
                 playerIndexWon = playerIndexWon,
                 charactersState = characterStates
         )
