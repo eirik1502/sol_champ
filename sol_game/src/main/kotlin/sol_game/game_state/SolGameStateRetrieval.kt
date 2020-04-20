@@ -118,13 +118,13 @@ object SolGameStateRetrieval {
                 ?.getComponent(SolGameComp::class.java)
 
         var gameStarted = gameComp?.let { it.gameState != SolGameComp.GameState.BEFORE_START } ?: false
-        val gameEnded = gameComp?.let { it.gameState == SolGameComp.GameState.ENDED } ?: false
+        val gameEnded = gameComp?.let { it.gameState == SolGameComp.GameState.ENDING || it.gameState == SolGameComp.GameState.ENDED }
+                ?: false
         val playerIndexWon = gameComp?.teamIndexWon ?: -1
 
         return SolGameState(
                 gameStarted = gameStarted,
                 gameEnded = gameEnded,
-                
                 playerIndexWon = playerIndexWon,
                 charactersState = characterStates
         )

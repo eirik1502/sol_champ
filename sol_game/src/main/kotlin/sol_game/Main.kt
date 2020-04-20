@@ -98,7 +98,7 @@ fun runOffline() {
                     graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = false, controlPlayerIndex = 1)
             ),
             mapOf(0 to SolRandomTestPlayer(), 1 to SolRandomTestPlayer())
-    ), 0f)
+    ), 1f / 60f)
     loop.setup()
     loop.start()
 }
