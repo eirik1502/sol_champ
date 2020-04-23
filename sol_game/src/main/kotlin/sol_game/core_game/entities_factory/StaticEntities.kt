@@ -63,9 +63,16 @@ object StaticEntities {
                     )
                     .modifyComponent(RenderShapeComp::class.java) { comp -> comp.depth = 1f }
 
+    fun addCircHole(world: World, name: String, position: Vector2f, radius: Float): Entity =
+            addStaticCollideableCircObject(world, name, position, radius, MattMaterial.RED())
+                    .addComponents(
+                            HoleComp()
+                    )
+                    .modifyComponent(RenderShapeComp::class.java) { comp -> comp.depth = 1f }
+
     fun addStaticMapEntities(world: World, worldSize: Vector2f) {
 
-        val wallThickness = 128f
+        val wallThickness = 64f
         val worldWidth = worldSize.x
         val worldHeight = worldSize.y
 
@@ -89,6 +96,10 @@ object StaticEntities {
                 Vector2f(0f, worldHeight - wallThickness),
                 Vector2f(worldWidth, wallThickness),
                 false)
-    }
 
+//        addCircHole(world, "center-hole",
+//                Vector2f(worldWidth / 2f, worldHeight / 2f),
+//                48f
+//        )
+    }
 }

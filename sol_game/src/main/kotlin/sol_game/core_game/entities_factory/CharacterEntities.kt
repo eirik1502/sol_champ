@@ -70,7 +70,7 @@ object CharacterEntities {
                 .addBaseComponents(
                         TransformComp(),
                         RenderShapeComp(RenderableShape.CirclePointing(config.radius, MattMaterial.RED())),
-                        PhysicsBodyComp(10f, 0.9f, 0.5f),
+                        PhysicsBodyComp(10f, 5f, 0.5f),
                         MovementComp(listOf("mvLeft", "mvRight", "mvUp", "mvDown"), maxSpeed = config.moveVelocity, acceleration = config.moveVelocity / 5),
                         AbilityComp(abAbilities.map { it.second }),
                         CollisionComp(PhysicsBodyShape.Circ(config.radius)),
