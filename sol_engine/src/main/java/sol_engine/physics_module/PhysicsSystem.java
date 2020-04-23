@@ -7,10 +7,7 @@ import sol_engine.utils.math.MathF;
 
 public class PhysicsSystem extends SystemBase {
 
-    private final Vector2f tempVec = new Vector2f();
-    private final Vector2f newVelocity = new Vector2f();
-
-    private final float maxSpeed = 62;
+    private final float maxSpeed = 30f * 60f;  // per second
 
     @Override
     public void onSetup() {
@@ -27,20 +24,22 @@ public class PhysicsSystem extends SystemBase {
             PhysicsBodyComp physComp = entity.getComponent(PhysicsBodyComp.class);
             TransformComp transComp = entity.getComponent(TransformComp.class);
 
-            physComp.velocity.add(physComp.acceleration.mul(PhysicsConstants.FIXED_UPDATE_TIME, tempVec));
+            Vector2f accelerationPerFrame = physComp.acceleration.mul(PhysicsConstants.FIXED_UPDATE_TIME, new Vector2f());
+            physComp.velocity.add(accelerationPerFrame);
             physComp.velocity.add(physComp.impulse);
 
             // apply friction
-            physComp.velocity.mul(1 - physComp.frictionConst * PhysicsConstants.FIXED_UPDATE_TIME);
+            float velocityDecreaseRatio = 1 - (physComp.frictionConst * PhysicsConstants.FIXED_UPDATE_TIME);
+            physComp.velocity.mul(velocityDecreaseRatio);
 
-            physComp.velocity.mul(PhysicsConstants.FIXED_UPDATE_TIME, newVelocity);
+            float speedSquared = physComp.velocity.lengthSquared();
+            Vector2f cappedVelocity = (speedSquared > (maxSpeed * maxSpeed) && speedSquared != 0)
+                    ? physComp.velocity.normalize(maxSpeed, new Vector2f())
+                    : physComp.velocity;
 
-            float newSpeedSquared = newVelocity.lengthSquared();
-            if (newSpeedSquared > (maxSpeed * maxSpeed) && newSpeedSquared != 0) {
-                newVelocity.normalize(maxSpeed);
-            }
+            Vector2f velocityPerFrame = cappedVelocity.mul(PhysicsConstants.FIXED_UPDATE_TIME, new Vector2f());
 
-            transComp.position.add(newVelocity);
+            transComp.position.add(velocityPerFrame);
 
             physComp.acceleration.zero();
             physComp.impulse.zero();
