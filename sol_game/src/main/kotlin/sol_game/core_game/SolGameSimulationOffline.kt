@@ -30,7 +30,7 @@ open class SolGameSimulationOffline(
             val allowGui: Boolean = true
     )
 
-    val worldSize = Vector2f(1600f * 1.2f, 900f * 1.2f)
+    val worldSize = Vector2f(1600f, 900f)
 
     init {
         if (charactersConfigs.size != 2) {
