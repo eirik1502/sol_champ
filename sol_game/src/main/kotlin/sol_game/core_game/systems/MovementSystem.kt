@@ -36,15 +36,21 @@ class MovementSystem : SystemBase() {
                     }
                     .fold(Vector2f()) { acc, inputVec -> acc.add(inputVec) }
 
-            val addVelocity =
+
+            val movementImpulse =
                     if (inputDirectionVec.lengthSquared() == 0f) inputDirectionVec
                     else inputDirectionVec.normalize(movementComp.acceleration)
 
-            val newSpeed = physComp.velocity.add(addVelocity, Vector2f()).length()
+            val newSpeed = physComp.velocity.add(movementImpulse, Vector2f()).length()
             val currSpeed = physComp.velocity.length()
 
+            val breakSpeedLimit = movementComp.maxSpeed * 0.5f
+
             if (newSpeed < currSpeed || newSpeed < movementComp.maxSpeed) {
-                physComp.impulse.add(addVelocity)
+                physComp.impulse.add(movementImpulse)
+            }
+            if (movementImpulse.lengthSquared() == 0f && currSpeed < breakSpeedLimit && currSpeed != 0f) {
+                physComp.impulse.add(physComp.velocity.mul(0.1f, Vector2f()).negate())
             }
         }
     }
