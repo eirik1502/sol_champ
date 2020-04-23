@@ -11,7 +11,7 @@ import sol_game.core_game.CharacterConfig
 import sol_game.core_game.SolGameBotSimulation
 import sol_game.core_game.SolGameSimulationOffline
 import sol_game.game.*
-import sol_game.player.SolRandomTestPlayer
+import sol_game.sol_players.SolRandomTestPlayer
 
 
 data class ServerConfig(
@@ -84,18 +84,22 @@ fun main(args: Array<String>) = mainBody {
     }
 }
 
-val frankConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("exampleFrankConfig.json")
+val exampleConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("exampleFrankConfig.json")
+val shrankConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("shrankConfig.json")
+val schmathiasConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("schmathiasConfig.json")
+val brailConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("brailConfig.json")
+val magnetConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("magnetConfig.json")
 
 val charactersConfig = listOf(
-        frankConfig,
-        frankConfig
+        brailConfig,
+        magnetConfig
 )
 
 fun runOffline() {
     val loop = SimulationLoop(SolGameBotSimulation(
             SolGameSimulationOffline(
                     charactersConfigs = charactersConfig,
-                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = true, controlPlayerIndex = 1)
+                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = false, controlPlayerIndex = 0)
             ),
             mapOf(0 to SolRandomTestPlayer(), 1 to SolRandomTestPlayer())
     ), 1f / 60f)
@@ -201,7 +205,7 @@ fun runManyFastSimulations() {
 
 fun runFastSimulation(): Int {
     val server = SolGameServer(
-            charactersConfigs = listOf(frankConfig, frankConfig),
+            charactersConfigs = listOf(exampleConfig, exampleConfig),
             updateFrameTime = 0f,
             headless = true
     )

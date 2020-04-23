@@ -1,15 +1,15 @@
-package sol_game.player
+package sol_game.sol_players
 
 import org.joml.Vector2f
 import sol_engine.ecs.World
 import sol_engine.utils.math.MathF
 import sol_game.core_game.SolActions
-import sol_game.game_state.SolGameState
 import sol_game.game.SolPlayer
+import sol_game.game_state.SolGameState
 import sol_game.game_state.SolGameStateFuncs
 import sol_game.game_state.SolStaticGameState
 
-open class SolRandomTestPlayer : SolPlayer {
+class SolRandomTestPlayer : SolPlayer {
 
     private var moveDirection: Vector2f = Vector2f()
 
@@ -36,11 +36,16 @@ open class SolRandomTestPlayer : SolPlayer {
         val useAb2 = MathF.randInt(0, 60 * 2) == 0
         val useAb3 = MathF.randInt(0, 60 * 5) == 0
 
-        moveDirection.add(MathF.randRange(-0.5f, 0.5f), MathF.randRange(-0.5f, 0.5f))
-        
+        val changeMovementVal = 0.4f
+        moveDirection.add(
+                MathF.randRange(-changeMovementVal, changeMovementVal),
+                MathF.randRange(-changeMovementVal, changeMovementVal)
+        )
+
         val closestHole = SolGameStateFuncs.closestHole(myChar.physicalObject, staticGameState)
-        if (closestHole.lengthSquared() != 0f) {
-            val holeDistanceLinearRatio = (100f / closestHole.length().coerceAtLeast(0.01f))
+        val closestHoleDistSquared = closestHole.lengthSquared()
+        if (closestHoleDistSquared != 0f && closestHoleDistSquared < 200f * 200f) {
+            val holeDistanceLinearRatio = (80f / closestHole.length().coerceAtLeast(0.01f))
             val holeDistanceExpRatio = holeDistanceLinearRatio * holeDistanceLinearRatio
             closestHole.normalize(-holeDistanceExpRatio)
             moveDirection.add(closestHole)
@@ -63,5 +68,4 @@ open class SolRandomTestPlayer : SolPlayer {
 
     override fun onEnd(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
     }
-
 }

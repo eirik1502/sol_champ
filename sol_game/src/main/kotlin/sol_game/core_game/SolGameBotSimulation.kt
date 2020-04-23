@@ -2,7 +2,7 @@ package sol_game.core_game
 
 import sol_engine.engine_interface.SolSimulation
 import sol_game.game.SolPlayer
-import sol_game.player.SolRandomTestPlayer
+import sol_game.sol_players.SolRandomTestPlayer
 
 class SolGameBotSimulation(
         val simulation: SolGameSimulationOffline,
