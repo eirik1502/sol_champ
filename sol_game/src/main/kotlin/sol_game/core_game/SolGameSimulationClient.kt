@@ -12,6 +12,8 @@ import sol_engine.network.network_game.game_client.ClientConfig
 import sol_engine.network.network_sol_module.NetworkClientModule
 import sol_engine.network.network_sol_module.NetworkClientModuleConfig
 import sol_game.core_game.components.SolActionsPacketComp
+import sol_game.core_game.entities_factory.GameEntities
+import sol_game.core_game.entities_factory.StaticEntities
 import sol_game.core_game.modules.SolClientPlayerModule
 import sol_game.core_game.modules.SolClientPlayerModuleConfig
 import sol_game.core_game.systems.*
@@ -112,7 +114,7 @@ class SolGameSimulationClient(
                 if (!headless) RenderSystem::class.java else null
         )
 
-        addGameEntity(false, world)
+        GameEntities.addGameEntity(false, world)
 
         NetEcsUtils.addNetClientEntity(world,
                 CharactersConfigsPacket::class.java,
@@ -129,7 +131,7 @@ class SolGameSimulationClient(
         )
 
 
-        addStaticMapEntities(world, Vector2f(1600f, 900f))
+        StaticEntities.addStaticMapEntities(world, Vector2f(1600f, 900f))
     }
 
     override fun onStart() {

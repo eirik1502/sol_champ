@@ -2,6 +2,7 @@ package sol_game.core_game
 
 data class Ability(
         var abilityEntityClass: String = "",
+        var name: String,
         var cooldown: Int = 60,
         var initialOffset: Float = 0f,
         var initialImpulse: Float = 0f,

@@ -10,6 +10,7 @@ enum class AbilityType(val str: String) {
 
 data class AbilityConfig(
         val name: String = "default-ability-name",
+        val abilityId: String = NetworkUtils.uuid(),
         val type: AbilityType = AbilityType.MELEE,
         val radius: Float = 32f,
         val distanceFromChar: Float = 16f,

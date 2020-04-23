@@ -7,17 +7,21 @@ class HitboxComp(
         var damage: Float = 10f,
         var baseKnockback: Float = 0f,
         var knockbackRatio: Float = 0f,
+        var knockbackPoint: Float = 0f,
+        var knockbackTowardsPoint: Boolean = false,
         var owner: Entity? = null
 ) : Component() {
     var currDamageDealt: Float = 0f
 
     override fun copy(fromComp: Component?) {
         val otherComp = fromComp as HitboxComp
-        
+
         damage = otherComp.damage
         baseKnockback = otherComp.baseKnockback
         knockbackRatio = otherComp.knockbackRatio
         owner = otherComp.owner
         currDamageDealt = otherComp.currDamageDealt
+        knockbackPoint = otherComp.knockbackPoint
+        knockbackTowardsPoint = otherComp.knockbackTowardsPoint
     }
 }

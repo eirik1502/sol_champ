@@ -18,6 +18,9 @@ import sol_engine.network.network_input.NetworkInputSourceModule
 import sol_engine.network.network_input.NetworkInputSourceModuleConfig
 import sol_engine.network.network_sol_module.NetworkServerModule
 import sol_engine.physics_module.*
+import sol_game.core_game.entities_factory.CharacterEntities
+import sol_game.core_game.entities_factory.GameEntities
+import sol_game.core_game.entities_factory.StaticEntities
 import sol_game.core_game.systems.*
 
 open class SolGameSimulationServer(
@@ -76,8 +79,8 @@ open class SolGameSimulationServer(
                 DestroySelfTimedSystem::class.java,
 
                 CollisionSystem::class.java,
-                DamageSystem::class.java,
-                KnockbackSystem::class.java,
+                HitboxInteractionSystem::class.java,
+                HurtboxSystem::class.java,
                 ControlDisabledSystem::class.java,
                 NaturalCollisionResolutionSystem::class.java,
 
@@ -93,12 +96,12 @@ open class SolGameSimulationServer(
                 RenderSystem::class.java
         )
 
-        addGameEntity(true, world)
+        GameEntities.addGameEntity(true, world)
 
-        addStaticMapEntities(world, Vector2f(1600f, 900f))
+        StaticEntities.addStaticMapEntities(world, Vector2f(1600f, 900f))
 
         charactersConfigs
-                .flatMap { createCharacterEntityClass(true, it) }
+                .flatMap { CharacterEntities.createCharacterEntityClass(true, it) }
                 .forEach { world.addEntityClass(it) }
 
         NetEcsUtils.addNetServerEntity(

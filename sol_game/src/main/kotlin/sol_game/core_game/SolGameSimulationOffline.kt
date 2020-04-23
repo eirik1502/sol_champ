@@ -10,9 +10,10 @@ import sol_engine.input_module.*
 
 import sol_engine.physics_module.*
 import sol_game.core_game.components.SolGameComp
+import sol_game.core_game.entities_factory.CharacterEntities
+import sol_game.core_game.entities_factory.StaticEntities
 import sol_game.core_game.systems.*
 import sol_game.game_state.SolGameState
-import sol_game.player.SolRandomTestPlayer
 import sol_game.game_state.SolStaticGameState
 import sol_game.game_state.SolGameStateRetrieval
 
@@ -82,6 +83,7 @@ open class SolGameSimulationOffline(
                 FaceAimSystem::class.java,
                 CharacterSystem::class.java,
                 AbilitySystem::class.java,
+                DisableControlOnAbilityExecutionSystem::class.java,
 
                 ControlDisabledSystem::class.java,
 
@@ -90,8 +92,9 @@ open class SolGameSimulationOffline(
 
                 CollisionSystem::class.java,
 
-                DamageSystem::class.java,
-                KnockbackSystem::class.java,
+                HitboxInteractionSystem::class.java,
+                HurtboxSystem::class.java,
+                StunOnKnockbackSystem::class.java,
 
                 FallIntoHoleSystem::class.java,
                 LoseStockByHoleSystem::class.java,
@@ -115,17 +118,17 @@ open class SolGameSimulationOffline(
                 SolGameComp(gameState = SolGameComp.GameState.BEFORE_START)
         )
 
-        addStaticMapEntities(world, worldSize)
+        StaticEntities.addStaticMapEntities(world, worldSize)
 
         charactersConfigs
-                .flatMap { createCharacterEntityClass(true, it) }
+                .flatMap { CharacterEntities.createCharacterEntityClass(true, it) }
                 .forEach { world.addEntityClass(it) }
 
         val startPositions = listOf(Vector2f(200f, worldSize.y / 2), Vector2f(worldSize.x - 200, worldSize.y / 2))
 
         charactersConfigs.forEachIndexed { index, characterConfig ->
             val startPosition = startPositions[index]
-            instanciateCharacter(
+            CharacterEntities.instanciateCharacter(
                     true,
                     world,
                     characterConfig.name,

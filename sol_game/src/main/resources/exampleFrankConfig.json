@@ -11,14 +11,14 @@
       "distanceFromChar": 48,
       "speed": 600,
       "activeTime": 100,
-      "startupTime": 1,
-      "executionTime": 0,
-      "endlagTime": 0,
+      "startupTime": 3,
+      "executionTime": 10,
+      "endlagTime": 5,
       "rechargeTime": 10,
       "damage": 100,
       "baseKnockback": 200,
       "knockbackRatio": 0.2,
-      "knockbackPoint": 32,
+      "knockbackPoint": 0,
       "knockbackTowardPoint": false
     },
     {
@@ -35,7 +35,7 @@
       "damage": 400,
       "baseKnockback": 400,
       "knockbackRatio": 0.8,
-      "knockbackPoint": 32,
+      "knockbackPoint": 200,
       "knockbackTowardPoint": false
     },
     {
@@ -52,8 +52,8 @@
       "damage": 80,
       "baseKnockback": 800,
       "knockbackRatio": 0.1,
-      "knockbackPoint": 32,
-      "knockbackTowardPoint": false
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": true
     }
   ]
 }

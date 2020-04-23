@@ -25,9 +25,14 @@ class AbilitySystem : SystemBase() {
                 InputComp::class.java
         )
         { entity, abComp, transComp, userInputComp ->
+            if (abComp.triggerInterrupt) {
+                resetExecutingAbility(abComp)
+                abComp.triggerInterrupt = false
+            }
+
             if (abComp.isExecuting) {
                 handleExecutingAbility(entity, abComp, transComp, userInputComp)
-            } else {
+            } else if (!abComp.executionDisabled) {
                 abComp.abilities.stream()
                         .filter(Ability::trigger)
                         .filter() { ab -> ab.currentCooldown <= 0 }
@@ -46,7 +51,7 @@ class AbilitySystem : SystemBase() {
         val ability = abilityComp.executingAbility!!
         if (abilityComp.executingAbilityStartupDelayTimer-- == 0) {
 
-            instanciateAbilityEntity(ability, entity, transformComp.position,
+            instanciateAbilityEntity(ability, entity, transformComp,
                     Vector2f(inputComp.floatInput("aimX"), inputComp.floatInput("aimY"))
             )
         }
@@ -56,15 +61,19 @@ class AbilitySystem : SystemBase() {
         }
     }
 
-    private fun instanciateAbilityEntity(ability: Ability, owner: Entity, characterPos: Vector2f, targetPos: Vector2f) {
-        val aimDirVec: Vector2f = targetPos.sub(characterPos, Vector2f())
-        val normAimDirVec =
-                if (aimDirVec.lengthSquared() == 0f) Vector2f(1f, 0f)
-                else aimDirVec.normalize(Vector2f())
+    private fun instanciateAbilityEntity(ability: Ability, owner: Entity, transComp: TransformComp, targetPos: Vector2f) {
+//        val aimDirVec: Vector2f = targetPos.sub(transComp.position, Vector2f())
+        val normAimDirVec: Vector2f = Vector2f(
+                MathF.lengthdirX(1f, transComp.rotationZ),
+                MathF.lengthdirY(1f, transComp.rotationZ)
+        )
+//        val normAimDirVec =
+//                if (aimDirVec.lengthSquared() == 0f) Vector2f(1f, 0f)
+//                else aimDirVec.normalize(Vector2f())
 //        val position = characterPos.add(offset, Vector2f())
         val impulse: Vector2f = normAimDirVec.mul(ability.initialImpulse, Vector2f())
 
-        val abEntity = world.addEntity(ability.abilityEntityClass, ability.abilityEntityClass)
+        val abEntity = world.addEntity(ability.name, ability.abilityEntityClass)
                 .modifyIfHasComponent(HitboxComp::class.java) { comp -> comp.owner = owner }
                 .modifyIfHasComponent(PhysicsBodyComp::class.java) { comp -> comp.velocity.add(impulse) }
 
@@ -82,7 +91,7 @@ class AbilitySystem : SystemBase() {
                     .modifyIfHasComponent(TransformComp::class.java) { comp -> comp.setPosition(initialRelativePos) }
                     .modifyComponent(SceneChildComp::class.java) { comp -> comp.parent = owner }
         } else {
-            val initialPosition = normAimDirVec.mul(ability.initialOffset, Vector2f()).add(characterPos)
+            val initialPosition = normAimDirVec.mul(ability.initialOffset, Vector2f()).add(transComp.position)
             val pointDirection: Float = MathF.pointDirection(Vector2f(), normAimDirVec)
             abEntity.modifyIfHasComponent(TransformComp::class.java) { comp ->
                 comp.setPosition(initialPosition).setRotationZ(pointDirection)
