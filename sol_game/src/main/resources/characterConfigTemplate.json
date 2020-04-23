@@ -1,0 +1,58 @@
+{
+  "name": "",
+  "radius": 0,
+  "moveVelocity": 0,
+  "abilities": [
+    {
+      "name": "",
+      "type": "",
+      "radius": 0,
+      "distanceFromChar": 0,
+      "speed": 0,
+      "activeTime": 0,
+      "startupTime": 0,
+      "executionTime": 0,
+      "endlagTime": 0,
+      "rechargeTime": 0,
+      "damage": 0,
+      "baseKnockback": 0,
+      "knockbackRatio": 0,
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "",
+      "type": "",
+      "radius": 0,
+      "distanceFromChar": 0,
+      "speed": 0,
+      "startupTime": 0,
+      "activeTime": 0,
+      "executionTime": 0,
+      "endlagTime": 0,
+      "rechargeTime": 0,
+      "damage": 0,
+      "baseKnockback": 0,
+      "knockbackRatio": 0,
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": false
+    },
+    {
+      "name": "",
+      "type": "",
+      "radius": 0,
+      "distanceFromChar": 0,
+      "speed": 0,
+      "activeTime": 0,
+      "startupTime": 0,
+      "executionTime": 0,
+      "endlagTime": 0,
+      "rechargeTime": 0,
+      "damage": 0,
+      "baseKnockback": 0,
+      "knockbackRatio": 0,
+      "knockbackPoint": 0,
+      "knockbackTowardPoint": false
+    }
+  ]
+}
