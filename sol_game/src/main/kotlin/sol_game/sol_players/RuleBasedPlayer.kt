@@ -22,8 +22,6 @@ class RuleBasedPlayer : SolPlayer {
             SolPlayerRules.createMoveRandomRule() to 0.6f
     )
 
-    private lateinit var staticState: SolStaticGameState
-
     data class WeightedRuleOutput(
             val ruleOutput: RuleOutput,
             val weight: Float
@@ -32,13 +30,13 @@ class RuleBasedPlayer : SolPlayer {
     override fun onSetup() {
     }
 
-    override fun onStart(controlledCharacterIndex: Int, staticGameState: SolStaticGameState, gameState: SolGameState, world: World) {
-        staticState = staticGameState
+    override fun onStart(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
     }
 
     override fun onUpdate(controlledCharacterIndex: Int, gameState: SolGameState, world: World): SolActions {
         val myChar = gameState.charactersState[controlledCharacterIndex]
         val otherChar = gameState.charactersState[(controlledCharacterIndex + 1) % 2]
+        val staticState = gameState.staticGameState
 
         val aimX = otherChar.physicalObject.position.x
         val aimY = otherChar.physicalObject.position.y

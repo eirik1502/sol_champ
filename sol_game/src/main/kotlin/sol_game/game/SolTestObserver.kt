@@ -10,7 +10,7 @@ class SolTestObserver : SolPlayer {
 
     }
 
-    override fun onStart(controlledCharacterIndex: Int, staticGameState: SolStaticGameState, gameState: SolGameState, world: World) {
+    override fun onStart(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
 
     }
 

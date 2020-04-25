@@ -62,7 +62,7 @@ class SolClientPlayerModule(
             } else if (gameStarted) {
 
                 if (!calledPlayerStart) {
-                    player.onStart(controlledPlayerIndex, SolGameStateRetrieval.retrieveStaticGameState(world), gameState, world)
+                    player.onStart(controlledPlayerIndex, gameState, world)
                     calledPlayerStart = true
                 }
 

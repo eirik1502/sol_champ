@@ -115,7 +115,10 @@ open class SolGameSimulationOffline(
         )
 
         world.addEntity("sol-game-status").addComponents(
-                SolGameComp(gameState = SolGameComp.GameState.BEFORE_START)
+                SolGameComp(
+                        gameState = SolGameComp.GameState.BEFORE_START,
+                        worldSize = Vector2f(worldSize)
+                )
         )
 
         StaticEntities.addStaticMapEntities(world, worldSize)
@@ -141,11 +144,14 @@ open class SolGameSimulationOffline(
 
 
     }
+    
+    var cachedStaticGameState: SolStaticGameState? = null
 
-    fun retrieveGameState(): SolGameState = SolGameStateRetrieval.retrieveSolGameState(world)
-
-    fun retrieveStaticGameState(): SolStaticGameState = SolGameStateRetrieval.retrieveStaticGameState(world)
-
+    fun retrieveGameState(): SolGameState {
+        val gameState = SolGameStateRetrieval.retrieveSolGameState(world, cachedStaticGameState)
+        cachedStaticGameState = gameState.staticGameState
+        return gameState
+    }
 
     // should be called on step end
     fun setInputs(playerIndex: Int, actions: SolActions) {

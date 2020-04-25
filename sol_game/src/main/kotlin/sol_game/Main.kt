@@ -11,6 +11,7 @@ import sol_game.core_game.CharacterConfig
 import sol_game.core_game.SolGameBotSimulation
 import sol_game.core_game.SolGameSimulationOffline
 import sol_game.game.*
+import sol_game.sol_players.RuleBasedPlayer
 import sol_game.sol_players.SolRandomTestPlayer
 
 
@@ -91,17 +92,17 @@ val brailConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("brail
 val magnetConfig: CharacterConfig = CharacterConfigLoader.fromResourceFile("magnetConfig.json")
 
 val charactersConfig = listOf(
-        brailConfig,
-        magnetConfig
+        shrankConfig,
+        schmathiasConfig
 )
 
 fun runOffline() {
     val loop = SimulationLoop(SolGameBotSimulation(
             SolGameSimulationOffline(
                     charactersConfigs = charactersConfig,
-                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = false, controlPlayerIndex = 0)
+                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = true, controlPlayerIndex = 0)
             ),
-            mapOf(0 to SolRandomTestPlayer(), 1 to SolRandomTestPlayer())
+            mapOf(0 to RuleBasedPlayer(), 1 to RuleBasedPlayer())
     ), 1f / 60f)
     loop.setup()
     loop.start()

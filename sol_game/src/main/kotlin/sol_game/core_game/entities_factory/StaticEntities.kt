@@ -26,7 +26,7 @@ object StaticEntities {
                             (-size.x) / 2,
                             (-size.y) / 2
                     ),
-                    PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
+                    PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.7f),
                     CollisionComp(PhysicsBodyShape.Rect(size.x, size.y))
             )
 
@@ -38,7 +38,7 @@ object StaticEntities {
                     RenderShapeComp(
                             RenderableShape.Circle(radius, material)
                     ),
-                    PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.2f),
+                    PhysicsBodyComp(PhysicsBodyComp.INF_MASS, 1f, 0.7f),
                     CollisionComp(PhysicsBodyShape.Circ(radius))
             )
 
@@ -97,9 +97,9 @@ object StaticEntities {
                 Vector2f(worldWidth, wallThickness),
                 false)
 
-//        addCircHole(world, "center-hole",
-//                Vector2f(worldWidth / 2f, worldHeight / 2f),
-//                48f
-//        )
+        addCircWall(world, "center-hole",
+                Vector2f(worldWidth / 2f, worldHeight / 2f),
+                48f
+        )
     }
 }

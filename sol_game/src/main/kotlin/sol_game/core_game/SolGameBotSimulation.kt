@@ -30,8 +30,7 @@ class SolGameBotSimulation(
         val gameState = simulation.retrieveGameState()
         if (gameState.gameStarted) {
             if (!startCalled) {
-                val staticGameState = simulation.retrieveStaticGameState()
-                players.forEach { (playerIndex, player) -> player.onStart(playerIndex, staticGameState, gameState, world) }
+                players.forEach { (playerIndex, player) -> player.onStart(playerIndex, gameState, world) }
                 startCalled = true
             }
 

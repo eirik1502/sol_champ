@@ -11,7 +11,6 @@ interface SolPlayer {
 
     fun onStart(
             controlledCharacterIndex: Int,
-            staticGameState: SolStaticGameState,
             gameState: SolGameState,
             world: World
     )

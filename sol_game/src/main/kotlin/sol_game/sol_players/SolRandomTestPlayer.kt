@@ -13,14 +13,11 @@ class SolRandomTestPlayer : SolPlayer {
 
     private var moveDirection: Vector2f = Vector2f()
 
-    private lateinit var staticGameState: SolStaticGameState
-
     override fun onSetup() {
 
     }
 
-    override fun onStart(controlledCharacterIndex: Int, staticGameState: SolStaticGameState, gameState: SolGameState, world: World) {
-        this.staticGameState = staticGameState
+    override fun onStart(controlledCharacterIndex: Int, gameState: SolGameState, world: World) {
         moveDirection = Vector2f(MathF.randRange(-1f, 1f), MathF.randRange(-1f, 1f))
     }
 
@@ -42,7 +39,7 @@ class SolRandomTestPlayer : SolPlayer {
                 MathF.randRange(-changeMovementVal, changeMovementVal)
         )
 
-        val closestHole = SolGameStateFuncs.closestHole(myChar.physicalObject, staticGameState)
+        val closestHole = SolGameStateFuncs.closestHole(myChar.physicalObject, gameState.staticGameState)
         val closestHoleDistSquared = closestHole.lengthSquared()
         if (closestHoleDistSquared != 0f && closestHoleDistSquared < 200f * 200f) {
             val holeDistanceLinearRatio = (80f / closestHole.length().coerceAtLeast(0.01f))

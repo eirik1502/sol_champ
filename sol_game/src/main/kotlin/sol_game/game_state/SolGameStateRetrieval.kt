@@ -25,13 +25,20 @@ object SolGameStateRetrieval {
         val rectangleWalls = toRectangleObject(wallEntities)
         val circleWalls = toCircleObstacle(wallEntities)
 
+        val gameComp = world.insight.entities
+                .asSequence()
+                .find { it.hasComponent(SolGameComp::class.java) }
+                ?.getComponent(SolGameComp::class.java)
+        val worldSize = gameComp?.let { Vector2f(it.worldSize) } ?: Vector2f()
+
         return SolStaticGameState(
+                worldSize = worldSize,
                 walls = rectangleWalls + circleWalls,
                 holes = rectangleHoles + circleHoles
         )
     }
 
-    fun retrieveSolGameState(world: World): SolGameState {
+    fun retrieveSolGameState(world: World, staticGameState: SolStaticGameState? = null): SolGameState {
         val entitiesByTeam: List<List<Entity>> = world.insight.entities
                 .asSequence()
                 .filter { it.hasComponent(TeamPlayerComp::class.java) }
@@ -122,10 +129,15 @@ object SolGameStateRetrieval {
                 ?: false
         val playerIndexWon = gameComp?.teamIndexWon ?: -1
 
+        val useStaticGameState = staticGameState ?: run {
+            retrieveStaticGameState(world)
+        }
+
         return SolGameState(
                 gameStarted = gameStarted,
                 gameEnded = gameEnded,
                 playerIndexWon = playerIndexWon,
+                staticGameState = useStaticGameState,
                 charactersState = characterStates
         )
     }

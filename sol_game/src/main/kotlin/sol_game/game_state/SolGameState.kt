@@ -7,6 +7,7 @@ data class SolGameState(
         val gameStarted: Boolean,
         val gameEnded: Boolean,
         val playerIndexWon: Int,
+        val staticGameState: SolStaticGameState,
         val charactersState: List<SolCharacterState>
 )
 
@@ -41,6 +42,7 @@ data class SolHitboxState(
 )
 
 data class SolStaticGameState(
+        val worldSize: Vector2f,
         val walls: List<ObjectState>,
         val holes: List<ObjectState>
 )
