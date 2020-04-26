@@ -1,5 +1,5 @@
 allprojects {
-    group = "org.solai"
+    group = "com.github.sol-ai"
     version = "1.0"
 
     repositories {
