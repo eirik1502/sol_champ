@@ -1,6 +1,7 @@
 package sol_game.game_state
 
 import org.joml.Vector2f
+import sol_engine.ecs.World
 
 
 data class SolGameState(
@@ -8,7 +9,8 @@ data class SolGameState(
         val gameEnded: Boolean,
         val playerIndexWon: Int,
         val staticGameState: SolStaticGameState,
-        val charactersState: List<SolCharacterState>
+        val charactersState: List<SolCharacterState>,
+        val world: World
 )
 
 data class SolCharacterState(

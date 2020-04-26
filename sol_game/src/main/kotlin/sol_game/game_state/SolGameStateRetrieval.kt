@@ -138,7 +138,8 @@ object SolGameStateRetrieval {
                 gameEnded = gameEnded,
                 playerIndexWon = playerIndexWon,
                 staticGameState = useStaticGameState,
-                charactersState = characterStates
+                charactersState = characterStates,
+                world = world
         )
     }
 

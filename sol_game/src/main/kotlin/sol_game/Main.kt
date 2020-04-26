@@ -100,7 +100,7 @@ fun runOffline() {
     val loop = SimulationLoop(SolGameBotSimulation(
             SolGameSimulationOffline(
                     charactersConfigs = charactersConfig,
-                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = true, controlPlayerIndex = 0)
+                    graphicsSettings = SolGameSimulationOffline.GraphicsSettings(graphicalInput = false, controlPlayerIndex = 0)
             ),
             mapOf(0 to RuleBasedPlayer(), 1 to RuleBasedPlayer())
     ), 1f / 60f)
