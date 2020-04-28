@@ -46,6 +46,7 @@ public class GuiRenderer {
     }
 
     public void terminate() {
+        imgui.endFrame();
         implGlfw.shutdown();
         implGl3.shutdown();
         ctx.destroy();
@@ -64,7 +65,7 @@ public class GuiRenderer {
     }
 
     public void render() {
-//        imgui.endFrame();
+        imgui.endFrame();
         imgui.render();
         DrawData drawData = imgui.getDrawData();
         if (drawData != null) {
