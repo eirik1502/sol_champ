@@ -1,12 +1,11 @@
 package sol_game.game
 
-import com.fasterxml.jackson.module.kotlin.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.sun.net.httpserver.HttpServer
 import mu.KotlinLogging
 import sol_engine.network.network_game.game_server.ServerConnectionData
-import sol_engine.network.network_utils.NetworkUtils
 import sol_game.core_game.CharacterConfig
-import sol_game.networked_sol_game.SolGameServerConfig
 import java.io.PrintWriter
 import java.net.InetSocketAddress
 import java.net.URI
