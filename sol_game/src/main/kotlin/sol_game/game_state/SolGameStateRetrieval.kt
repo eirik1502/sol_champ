@@ -76,7 +76,11 @@ object SolGameStateRetrieval {
                                 hitboxComp.baseKnockback,
                                 hitboxComp.knockbackRatio,
                                 -1f,  // not implemented yet
-                                false
+                                false,
+                                hitsGivenNow = hitboxComp.hitsGivenNow.map { HitboxHitState(
+                                        interactionVector = it.interactionVector,
+                                        damage = it.damage
+                                ) }
                         )
                     }
 

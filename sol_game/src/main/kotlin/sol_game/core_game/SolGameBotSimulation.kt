@@ -42,6 +42,7 @@ class SolGameBotSimulation(
 
         }
 
+        simulation.onStepEnd()
     }
 
     override fun onEnd() {

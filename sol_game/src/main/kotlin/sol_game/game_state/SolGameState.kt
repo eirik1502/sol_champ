@@ -40,7 +40,13 @@ data class SolHitboxState(
         val baseKnockback: Float,
         val knockbackRatio: Float,
         val knockbackPoint: Float,
-        val knockbackTowardsPoint: Boolean
+        val knockbackTowardsPoint: Boolean,
+        val hitsGivenNow: List<HitboxHitState>
+)
+
+data class HitboxHitState(
+        val interactionVector: Vector2f = Vector2f(),  // a vector representing the direction of knockback
+        val damage: Float = 0f
 )
 
 data class SolStaticGameState(

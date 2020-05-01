@@ -144,6 +144,9 @@ open class SolGameSimulationOffline(
 
 
     }
+
+    public override fun onStepEnd() {
+    }
     
     var cachedStaticGameState: SolStaticGameState? = null
 
