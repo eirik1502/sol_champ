@@ -2,6 +2,7 @@ package sol_game.core_game.systems
 
 import org.joml.Vector2f
 import sol_engine.core.TransformComp
+import sol_engine.ecs.EntitiesUtils
 import sol_engine.ecs.Entity
 import sol_engine.ecs.SystemBase
 import sol_engine.physics_module.CollisionComp
@@ -17,12 +18,23 @@ class HitboxInteractionSystem : SystemBase() {
     }
 
     override fun onUpdate() {
-        forEachWithComponents(HitboxComp::class.java) { _, hitboxComp ->
-            hitboxComp.currDamageDealt = 0f
-        }
 
-        forEachWithComponents(HitboxComp::class.java, CollisionComp::class.java, TransformComp::class.java)
-        { entity, hitboxComp, collComp, transComp ->
+        // remove and do not consider hitbox entities that hit last frame
+        val hitboxEntitiesNeverHit = entities.filter {
+            val hitboxComp = it.getComponent(HitboxComp::class.java)
+            if (hitboxComp.hitsGivenNow.isNotEmpty()) {
+                world.removeEntity(it)
+                false
+            } else {
+                hitboxComp.hitsGivenNow.clear()
+                true
+            }
+        }
+        EntitiesUtils.ForEachWithComponents(hitboxEntitiesNeverHit.stream(),
+                HitboxComp::class.java,
+                CollisionComp::class.java,
+                TransformComp::class.java
+        ) { _, hitboxComp, collComp, transComp ->
             collComp.collidingEntities.keys.stream()
                     .filter() { otherEntity -> otherEntity.hasComponent(HurtboxComp::class.java) }
                     .filter() { otherEntity -> otherEntity.hasComponent(TransformComp::class.java) }
@@ -31,13 +43,12 @@ class HitboxInteractionSystem : SystemBase() {
                         val otherHurtboxComp = otherEntity.getComponent(HurtboxComp::class.java)
                         val otherTransComp = otherEntity.getComponent(TransformComp::class.java)
 
-                        handleHit(entity, hitboxComp, transComp, otherHurtboxComp, otherTransComp)
+                        handleDeliverHit(hitboxComp, transComp, otherHurtboxComp, otherTransComp)
                     }
         }
     }
 
-    private fun handleHit(
-            fromEntity: Entity,
+    private fun handleDeliverHit(
             fromHitboxComp: HitboxComp,
             fromTransformComp: TransformComp,
             toHurtboxComp: HurtboxComp,
@@ -61,13 +72,15 @@ class HitboxInteractionSystem : SystemBase() {
             if (knockbackTowardsPoint) it.negate()
             else it
         }
-        toHurtboxComp.currHitsTaken.add(HurtboxComp.Hit(
+
+        val hit = HurtboxComp.Hit(
                 interactionVec,
                 damageToDeal,
                 fromHitboxComp.baseKnockback,
                 fromHitboxComp.knockbackRatio
-        ))
-        
-        world.removeEntity(fromEntity)
+        )
+
+        toHurtboxComp.currHitsTaken.add(hit)
+        fromHitboxComp.hitsGivenNow.add(hit)
     }
 }

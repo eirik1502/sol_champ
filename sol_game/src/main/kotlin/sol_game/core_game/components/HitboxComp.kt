@@ -11,7 +11,7 @@ class HitboxComp(
         var knockbackTowardsPoint: Boolean = false,
         var owner: Entity? = null
 ) : Component() {
-    var currDamageDealt: Float = 0f
+    var hitsGivenNow: MutableList<HurtboxComp.Hit> = mutableListOf()
 
     override fun copy(fromComp: Component?) {
         val otherComp = fromComp as HitboxComp
@@ -20,7 +20,7 @@ class HitboxComp(
         baseKnockback = otherComp.baseKnockback
         knockbackRatio = otherComp.knockbackRatio
         owner = otherComp.owner
-        currDamageDealt = otherComp.currDamageDealt
+        hitsGivenNow = otherComp.hitsGivenNow.toMutableList()
         knockbackPoint = otherComp.knockbackPoint
         knockbackTowardsPoint = otherComp.knockbackTowardsPoint
     }
