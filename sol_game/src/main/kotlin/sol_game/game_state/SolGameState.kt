@@ -69,3 +69,31 @@ data class RectangleObjectState(
         override val position: Vector2f,
         val size: Vector2f
 ) : ObjectState()
+
+fun emptyHitboxState() = SolHitboxState(
+        physicalObject = CircleObjectState(Vector2f(), 0f),
+        velocity = Vector2f(),
+        damage = 0f,
+        baseKnockback = 0f,
+        knockbackRatio = 0f,
+        knockbackPoint = 0f,
+        knockbackTowardsPoint = false,
+        hitsGivenNow = listOf()
+)
+
+fun emptyCharacterState() = SolCharacterState()
+
+fun emptyStaticGameState() = SolStaticGameState(
+        worldSize = Vector2f(),
+        walls = listOf(),
+        holes = listOf()
+)
+
+fun emptyGameState() = SolGameState(
+        gameStarted = true,
+        gameEnded = false,
+        playerIndexWon = -1,
+        staticGameState = emptyStaticGameState(),
+        charactersState = listOf(emptyCharacterState(), emptyCharacterState()),
+        world = World()
+)
