@@ -2,6 +2,7 @@ package sol_game.game_state
 
 import org.joml.Vector2f
 import sol_engine.ecs.World
+import sol_game.core_game.Ability
 
 
 data class SolGameState(
@@ -21,6 +22,7 @@ data class SolCharacterState(
         val damage: Float = 0f,
         val stocks: Int = 0,
         val stateTag: SolCharacterStateTag = SolCharacterStateTag.NO_PLAYER_PRESENT,
+        val abilities: List<Ability> = emptyList(),
         val currentHitboxes: List<SolHitboxState> = emptyList()
 )
 
@@ -34,6 +36,7 @@ enum class SolCharacterStateTag {
 }
 
 data class SolHitboxState(
+        val entityName: String,
         val physicalObject: CircleObjectState,
         val velocity: Vector2f,
         val damage: Float,
@@ -71,6 +74,7 @@ data class RectangleObjectState(
 ) : ObjectState()
 
 fun emptyHitboxState() = SolHitboxState(
+        entityName = "",
         physicalObject = CircleObjectState(Vector2f(), 0f),
         velocity = Vector2f(),
         damage = 0f,

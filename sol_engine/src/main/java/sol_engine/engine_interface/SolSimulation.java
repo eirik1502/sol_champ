@@ -70,6 +70,7 @@ public abstract class SolSimulation {
         } else {
             logger.info("Starting");
             modulesHandler.internalStart();
+            world.start();
             onStart();
         }
     }

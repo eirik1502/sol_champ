@@ -67,16 +67,17 @@ object SolGameStateRetrieval {
                         val hitboxComp = entity.getComponent(HitboxComp::class.java)
 
                         SolHitboxState(
-                                CircleObjectState(
+                                entityName = entity.name,
+                                physicalObject = CircleObjectState(
                                         Vector2f(transComp.position),
                                         (collisionComp.bodyShape as PhysicsBodyShape.Circ).radius
                                 ),
-                                Vector2f(physicsBodyComp.velocity),
-                                hitboxComp.damage,
-                                hitboxComp.baseKnockback,
-                                hitboxComp.knockbackRatio,
-                                -1f,  // not implemented yet
-                                false,
+                                velocity = Vector2f(physicsBodyComp.velocity),
+                                damage = hitboxComp.damage,
+                                baseKnockback = hitboxComp.baseKnockback,
+                                knockbackRatio = hitboxComp.knockbackRatio,
+                                knockbackPoint = hitboxComp.knockbackPoint,
+                                knockbackTowardsPoint = hitboxComp.knockbackTowardsPoint,
                                 hitsGivenNow = hitboxComp.hitsGivenNow.map { HitboxHitState(
                                         interactionVector = it.interactionVector,
                                         damage = it.damage
@@ -92,7 +93,8 @@ object SolGameStateRetrieval {
                         PhysicsBodyComp::class.java,
                         CollisionComp::class.java,
                         HurtboxComp::class.java,
-                        StockComp::class.java
+                        StockComp::class.java,
+                        AbilityComp::class.java
                 ))
             }
             val characterState = characterEntity
@@ -102,6 +104,7 @@ object SolGameStateRetrieval {
                         val collisionComp = characterEntity.getComponent(CollisionComp::class.java)
                         val hurtboxComp = characterEntity.getComponent(HurtboxComp::class.java)
                         val stockComp = characterEntity.getComponent(StockComp::class.java)
+                        val abilityComp = characterEntity.getComponent(AbilityComp::class.java)
 
                         SolCharacterState(
                                 physicalObject = CircleObjectState(
@@ -115,6 +118,7 @@ object SolGameStateRetrieval {
                                 damage = hurtboxComp.totalDamageTaken,
                                 stocks = stockComp.currentStockCount,
                                 stateTag = SolCharacterStateTag.CONTROLLED,
+                                abilities = abilityComp.abilities,
                                 currentHitboxes = hitboxStates
                         )
                     }

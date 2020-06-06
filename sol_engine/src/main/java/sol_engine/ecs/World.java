@@ -3,7 +3,6 @@ package sol_engine.ecs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sol_engine.ecs.listeners.EntityListener;
 import sol_engine.utils.collections.ImmutableListView;
 
 import java.lang.reflect.Constructor;
@@ -46,23 +45,30 @@ public class World {
         systems.values().forEach(SystemBase::internalEnd);
     }
 
+    public void start() {
+        handleScheduledUpdates();
+    }
+
     public void update() {
         listeners.worldUpdateListeners.forEach(listener -> listener.onUpdateStart(this));
-
-        listeners.worldUpdateListeners.forEach(listener -> listener.onInternalWorkStart(this));
-        addScheduledSystems();
-        removeScheduledSystems();
-        addScheduledEntities();
-        removeScheduledEntities();
-        listeners.worldUpdateListeners.forEach(listener -> listener.onInternalWorkEnd(this));
 
         systems.values().forEach(system -> {
             listeners.worldUpdateListeners.forEach(listener -> listener.onSystemUpdateStart(this, system));
             system.internalUpdate();
             listeners.worldUpdateListeners.forEach(listener -> listener.onSystemUpdateEnd(this, system));
         });
+        listeners.worldUpdateListeners.forEach(listener -> listener.onInternalWorkStart(this));
+        handleScheduledUpdates();
+        listeners.worldUpdateListeners.forEach(listener -> listener.onInternalWorkEnd(this));
 
         listeners.worldUpdateListeners.forEach(listener -> listener.onUpdateEnd(this));
+    }
+
+    private void handleScheduledUpdates() {
+        addScheduledSystems();
+        removeScheduledSystems();
+        addScheduledEntities();
+        removeScheduledEntities();
     }
 
     public void setFinished(boolean finished) {
