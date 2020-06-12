@@ -41,7 +41,7 @@ open class SolGameSimulationOffline(
     public override fun onSetupModules() {
         if (!graphicsSettings.headless) {
             addModule(GraphicsModule(GraphicsModuleConfig(
-                    WindowConfig(0.5f, 0.5f, "sol server", false),
+                    WindowConfig(1f, 1f, "sol server", false),
                     RenderConfig(worldSize.x / 2, worldSize.y / 2, worldSize.x, worldSize.y, !graphicsSettings.allowGui)
             )))
         }
